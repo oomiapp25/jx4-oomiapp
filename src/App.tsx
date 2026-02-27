@@ -32,6 +32,7 @@ import AdminAds from './pages/admin/Ads';
 import AdminNews from './pages/admin/News';
 import AdminJobs from './pages/admin/Jobs';
 import AdminServices from './pages/admin/Services';
+import AdminSettings from './pages/admin/Settings';
 
 export default function App() {
   const { user, loading } = useAuth();
@@ -83,6 +84,7 @@ export default function App() {
           <Route path="noticias" element={<AdminNews />} />
           <Route path="empleos" element={<AdminJobs />} />
           <Route path="servicios" element={<AdminServices />} />
+          <Route path="configuracion" element={<AdminSettings />} />
         </Route>
       </Routes>
     </Router>

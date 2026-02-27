@@ -12,7 +12,8 @@ import {
   ChevronRight,
   Bell,
   Briefcase,
-  Wrench
+  Wrench,
+  Settings
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
@@ -23,17 +24,22 @@ export default function AdminLayout() {
   const navigate = useNavigate();
 
   const menuItems = [
-    { icon: LayoutDashboard, label: 'Dashboard', path: '/admin' },
-    { icon: Package, label: 'Productos', path: '/admin/productos' },
-    { icon: Tags, label: 'Categorías', path: '/admin/categorias' },
-    { icon: Building2, label: 'Departamentos', path: '/admin/departamentos' },
-    { icon: Truck, label: 'Transportes', path: '/admin/transportes' },
-    { icon: Briefcase, label: 'Empleos', path: '/admin/empleos' },
-    { icon: Wrench, label: 'Servicios', path: '/admin/servicios' },
-    { icon: Users, label: 'Usuarios', path: '/admin/usuarios' },
-    { icon: ImageIcon, label: 'Publicidad', path: '/admin/ads' },
-    { icon: Newspaper, label: 'Noticias', path: '/admin/noticias' },
+    { icon: LayoutDashboard, label: 'Dashboard', path: '/admin', roles: ['admin'] },
+    { icon: Package, label: 'Productos', path: '/admin/productos', roles: ['admin', 'category_admin', 'department_admin'] },
+    { icon: Tags, label: 'Categorías', path: '/admin/categorias', roles: ['admin'] },
+    { icon: Building2, label: 'Departamentos', path: '/admin/departamentos', roles: ['admin'] },
+    { icon: Truck, label: 'Transportes', path: '/admin/transportes', roles: ['admin', 'transport_admin'] },
+    { icon: Briefcase, label: 'Empleos', path: '/admin/empleos', roles: ['admin'] },
+    { icon: Wrench, label: 'Servicios', path: '/admin/servicios', roles: ['admin'] },
+    { icon: Users, label: 'Usuarios', path: '/admin/usuarios', roles: ['admin'] },
+    { icon: ImageIcon, label: 'Publicidad', path: '/admin/ads', roles: ['admin'] },
+    { icon: Newspaper, label: 'Noticias', path: '/admin/noticias', roles: ['admin'] },
+    { icon: Settings, label: 'Configuración', path: '/admin/configuracion', roles: ['admin'] },
   ];
+
+  const filteredMenu = menuItems.filter(item => 
+    user && item.roles.includes(user.role)
+  );
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -52,7 +58,7 @@ export default function AdminLayout() {
         </div>
 
         <nav className="flex-grow px-4 space-y-1">
-          {menuItems.map((item) => {
+          {filteredMenu.map((item) => {
             const isActive = location.pathname === item.path;
             return (
               <Link
