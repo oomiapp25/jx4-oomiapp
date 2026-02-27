@@ -1,10 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, ChangeEvent, FormEvent } from 'react';
 import { supabase, Ad } from '../../lib/supabase';
-import { Plus, Image as ImageIcon, ExternalLink, Calendar, Trash2, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Plus, Image as ImageIcon, ExternalLink, Calendar, Trash2, ToggleLeft, ToggleRight, X, Loader2, Upload } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { uploadToImgBB } from '../../services/imgbbService';
 
 export default function AdminAds() {
   const [ads, setAds] = useState<Ad[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [formData, setFormData] = useState({
+    image_url: '',
+    link: '',
+    priority: 0,
+    ends_at: ''
+  });
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchAds();
@@ -16,15 +28,133 @@ export default function AdminAds() {
     setLoading(false);
   }
 
+  async function handleImageUpload(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const url = await uploadToImgBB(file);
+      setFormData({ ...formData, image_url: url });
+    } catch (error) {
+      alert('Error al subir imagen');
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+
+    const { error } = await supabase.from('ads').insert({
+      image_url: formData.image_url,
+      link: formData.link,
+      priority: formData.priority,
+      ends_at: formData.ends_at,
+      active: true,
+      starts_at: new Date().toISOString()
+    });
+
+    if (error) {
+      alert('Error: ' + error.message);
+    } else {
+      setIsModalOpen(false);
+      setFormData({ image_url: '', link: '', priority: 0, ends_at: '' });
+      fetchAds();
+    }
+    setLoading(false);
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-black text-stone-900">Banners Publicitarios</h1>
-        <button className="bg-stone-900 text-white px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-emerald-600 transition-all active:scale-95">
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="bg-stone-900 text-white px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-emerald-600 transition-all active:scale-95"
+        >
           <Plus className="w-4 h-4" />
           Nuevo Banner
         </button>
       </div>
+
+      <AnimatePresence>
+        {isModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsModalOpen(false)}
+              className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl p-8"
+            >
+              <h3 className="text-xl font-black mb-6">Nuevo Banner</h3>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div 
+                  onClick={() => fileInputRef.current?.click()}
+                  className="aspect-[21/9] rounded-2xl border-2 border-dashed border-stone-200 flex flex-col items-center justify-center text-stone-400 hover:border-emerald-500 hover:text-emerald-600 transition-all cursor-pointer overflow-hidden relative"
+                >
+                  {formData.image_url ? (
+                    <img src={formData.image_url} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <>
+                      {uploading ? <Loader2 className="w-8 h-8 animate-spin" /> : <Upload className="w-8 h-8" />}
+                      <span className="text-xs font-bold mt-2">{uploading ? 'Subiendo...' : 'Subir Imagen'}</span>
+                    </>
+                  )}
+                </div>
+                <input type="file" ref={fileInputRef} onChange={handleImageUpload} className="hidden" accept="image/*" />
+
+                <div>
+                  <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1 px-1">Enlace (URL)</label>
+                  <input 
+                    type="url" 
+                    value={formData.link}
+                    onChange={e => setFormData({...formData, link: e.target.value})}
+                    className="w-full px-4 py-2 bg-stone-50 border border-stone-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+                    placeholder="https://..."
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1 px-1">Prioridad</label>
+                    <input 
+                      type="number" 
+                      value={formData.priority}
+                      onChange={e => setFormData({...formData, priority: parseInt(e.target.value)})}
+                      className="w-full px-4 py-2 bg-stone-50 border border-stone-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1 px-1">Fecha Fin</label>
+                    <input 
+                      type="date" 
+                      value={formData.ends_at}
+                      onChange={e => setFormData({...formData, ends_at: e.target.value})}
+                      className="w-full px-4 py-2 bg-stone-50 border border-stone-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 py-3 border border-stone-200 rounded-xl text-sm font-bold text-stone-600">Cancelar</button>
+                  <button type="submit" disabled={loading || uploading} className="flex-1 py-3 bg-stone-900 text-white rounded-xl text-sm font-bold hover:bg-emerald-600 transition-all disabled:opacity-50">
+                    {loading ? 'Guardando...' : 'Crear Banner'}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {ads.map((ad) => (

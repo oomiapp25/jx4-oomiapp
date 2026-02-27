@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, ChangeEvent, FormEvent } from 'react';
 import { supabase, Product } from '../../lib/supabase';
 import { Plus, Search, Edit2, Trash2, Package, X, Upload, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { uploadToImgBB } from '../../services/imgbbService';
 
 export default function AdminProducts() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -38,24 +39,13 @@ export default function AdminProducts() {
     const newImages = [...formData.images];
 
     for (const file of Array.from(files)) {
-      const fileExt = (file as File).name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `product-images/${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('products')
-        .upload(filePath, file as File);
-
-      if (uploadError) {
-        console.error('Error uploading image:', uploadError.message);
-        continue;
+      try {
+        const imageUrl = await uploadToImgBB(file as File);
+        newImages.push(imageUrl);
+      } catch (error) {
+        console.error('Error uploading image to ImgBB:', error);
+        alert('Error al subir imagen. Por favor intenta de nuevo.');
       }
-
-      const { data: { publicUrl } } = supabase.storage
-        .from('products')
-        .getPublicUrl(filePath);
-
-      newImages.push(publicUrl);
     }
 
     setFormData({ ...formData, images: newImages });
