@@ -8,6 +8,7 @@ export default function AdminProducts() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [uploading, setUploading] = useState(false);
   
   // Form state
@@ -16,19 +17,86 @@ export default function AdminProducts() {
     description: '',
     price: '',
     stock: '',
+    category_id: '',
+    department_id: '',
     images: [] as string[]
   });
+  const [categories, setCategories] = useState<any[]>([]);
+  const [departments, setDepartments] = useState<any[]>([]);
+  const [manualImageUrl, setManualImageUrl] = useState('');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchProducts();
+    fetchMetadata();
   }, []);
 
+  useEffect(() => {
+    if (editingProduct) {
+      setFormData({
+        title: editingProduct.title,
+        description: editingProduct.description,
+        price: editingProduct.price.toString(),
+        stock: editingProduct.stock.toString(),
+        category_id: editingProduct.category_id || '',
+        department_id: editingProduct.department_id || '',
+        images: editingProduct.images || []
+      });
+    } else {
+      setFormData({ 
+        title: '', 
+        description: '', 
+        price: '', 
+        stock: '', 
+        category_id: '', 
+        department_id: '', 
+        images: [] 
+      });
+    }
+  }, [editingProduct]);
+
   async function fetchProducts() {
-    const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+    const { data } = await supabase
+      .from('products')
+      .select('*, categories(name)')
+      .order('created_at', { ascending: false });
     if (data) setProducts(data);
     setLoading(false);
+  }
+
+  async function fetchMetadata() {
+    const { data: cats } = await supabase.from('categories').select('*');
+    const { data: depts } = await supabase.from('departments').select('*');
+    if (cats) setCategories(cats);
+    if (depts) setDepartments(depts);
+  }
+
+  function openCreateModal() {
+    setEditingProduct(null);
+    setIsModalOpen(true);
+  }
+
+  function openEditModal(product: Product) {
+    setEditingProduct(product);
+    setIsModalOpen(true);
+  }
+
+  async function deleteProduct(id: string) {
+    if (!confirm('¿Estás seguro de eliminar este producto?')) return;
+    const { error } = await supabase.from('products').delete().eq('id', id);
+    if (error) alert('Error: ' + error.message);
+    else fetchProducts();
+  }
+
+  function addManualImage() {
+    if (!manualImageUrl.trim()) return;
+    if (!manualImageUrl.startsWith('http')) {
+      alert('Por favor ingresa una URL válida (debe empezar con http)');
+      return;
+    }
+    setFormData({ ...formData, images: [...formData.images, manualImageUrl.trim()] });
+    setManualImageUrl('');
   }
 
   async function handleImageUpload(e: ChangeEvent<HTMLInputElement>) {
@@ -61,18 +129,35 @@ export default function AdminProducts() {
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await supabase.from('products').insert({
+    const productData = {
       title: formData.title,
       description: formData.description,
       price: parseFloat(formData.price),
       stock: parseInt(formData.stock),
+      category_id: formData.category_id || null,
+      department_id: formData.department_id || null,
       images: formData.images,
-    });
+    };
+
+    let error;
+    if (editingProduct) {
+      const { error: updateError } = await supabase
+        .from('products')
+        .update(productData)
+        .eq('id', editingProduct.id);
+      error = updateError;
+    } else {
+      const { error: insertError } = await supabase
+        .from('products')
+        .insert(productData);
+      error = insertError;
+    }
 
     if (error) {
-      alert('Error al crear producto: ' + error.message);
+      alert('Error: ' + error.message);
     } else {
       setIsModalOpen(false);
+      setEditingProduct(null);
       setFormData({ title: '', description: '', price: '', stock: '', images: [] });
       fetchProducts();
     }
@@ -91,7 +176,7 @@ export default function AdminProducts() {
           />
         </div>
         <button 
-          onClick={() => setIsModalOpen(true)}
+          onClick={openCreateModal}
           className="bg-stone-900 text-white px-6 py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-emerald-600 transition-all active:scale-95"
         >
           <Plus className="w-4 h-4" />
@@ -117,7 +202,9 @@ export default function AdminProducts() {
               className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
             >
               <div className="p-6 border-b border-stone-100 flex items-center justify-between">
-                <h3 className="text-lg font-black text-stone-900">Nuevo Producto</h3>
+                <h3 className="text-lg font-black text-stone-900">
+                  {editingProduct ? 'Editar Producto' : 'Nuevo Producto'}
+                </h3>
                 <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-stone-50 rounded-full transition-colors">
                   <X className="w-5 h-5 text-stone-400" />
                 </button>
@@ -159,6 +246,34 @@ export default function AdminProducts() {
                         />
                       </div>
                     </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1.5 px-1">Categoría</label>
+                        <select 
+                          value={formData.category_id}
+                          onChange={e => setFormData({...formData, category_id: e.target.value})}
+                          className="w-full px-4 py-2.5 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                        >
+                          <option value="">Seleccionar...</option>
+                          {categories.map(cat => (
+                            <option key={cat.id} value={cat.id}>{cat.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1.5 px-1">Departamento</label>
+                        <select 
+                          value={formData.department_id}
+                          onChange={e => setFormData({...formData, department_id: e.target.value})}
+                          className="w-full px-4 py-2.5 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                        >
+                          <option value="">Seleccionar...</option>
+                          {departments.map(dept => (
+                            <option key={dept.id} value={dept.id}>{dept.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
                     <div>
                       <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1.5 px-1">Descripción</label>
                       <textarea 
@@ -173,6 +288,25 @@ export default function AdminProducts() {
                   <div className="space-y-4">
                     <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1.5 px-1">Imágenes del Producto</label>
                     
+                    {/* Manual URL Input */}
+                    <div className="flex gap-2">
+                      <input 
+                        type="text" 
+                        placeholder="Pegar URL de imagen..."
+                        value={manualImageUrl}
+                        onChange={(e) => setManualImageUrl(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addManualImage())}
+                        className="flex-grow px-4 py-2 bg-stone-50 border border-stone-100 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 outline-none"
+                      />
+                      <button 
+                        type="button"
+                        onClick={addManualImage}
+                        className="px-4 py-2 bg-stone-100 text-stone-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-stone-200 transition-all"
+                      >
+                        Añadir
+                      </button>
+                    </div>
+
                     <div className="grid grid-cols-3 gap-2">
                       {formData.images.map((url, index) => (
                         <div key={index} className="aspect-square rounded-xl overflow-hidden bg-stone-100 relative group">
@@ -221,7 +355,7 @@ export default function AdminProducts() {
                     disabled={loading || uploading}
                     className="flex-1 py-3 bg-stone-900 text-white rounded-xl text-sm font-bold hover:bg-emerald-600 transition-all disabled:opacity-50"
                   >
-                    {loading ? 'Guardando...' : 'Crear Producto'}
+                    {loading ? 'Guardando...' : (editingProduct ? 'Guardar Cambios' : 'Crear Producto')}
                   </button>
                 </div>
               </form>
@@ -256,7 +390,9 @@ export default function AdminProducts() {
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-stone-500">General</td>
+                  <td className="px-6 py-4 text-stone-500">
+                    {(product as any).categories?.name || 'Sin categoría'}
+                  </td>
                   <td className="px-6 py-4 font-bold text-stone-900">${product.price}</td>
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
@@ -268,10 +404,16 @@ export default function AdminProducts() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button className="p-2 text-stone-400 hover:text-emerald-600 transition-colors">
+                      <button 
+                        onClick={() => openEditModal(product)}
+                        className="p-2 text-stone-400 hover:text-emerald-600 transition-colors"
+                      >
                         <Edit2 className="w-4 h-4" />
                       </button>
-                      <button className="p-2 text-stone-400 hover:text-red-500 transition-colors">
+                      <button 
+                        onClick={() => deleteProduct(product.id)}
+                        className="p-2 text-stone-400 hover:text-red-500 transition-colors"
+                      >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>

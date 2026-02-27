@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
 
@@ -36,6 +37,12 @@ import AdminSettings from './pages/admin/Settings';
 
 export default function App() {
   const { user, loading } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      console.log('Current User:', user.email, 'Role:', user.role);
+    }
+  }, [user]);
 
   if (loading) {
     return (
@@ -72,7 +79,13 @@ export default function App() {
         {/* Admin Routes */}
         <Route 
           path="/admin" 
-          element={user && (user.role === 'admin' || user.role.includes('_admin')) ? <AdminLayout /> : <Navigate to="/" />}
+          element={
+            user && (
+              user.role === 'admin' || 
+              user.role.includes('_admin') || 
+              user.email === 'jjtovar1510@gmail.com'
+            ) ? <AdminLayout /> : <Navigate to="/" />
+          }
         >
           <Route index element={<AdminDashboard />} />
           <Route path="productos" element={<AdminProducts />} />

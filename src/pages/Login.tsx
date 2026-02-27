@@ -25,7 +25,23 @@ export default function Login() {
       setError(error.message);
       setLoading(false);
     } else {
-      navigate('/');
+      // Fetch profile to check role
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', session.user.id)
+          .single();
+        
+        if (profile && (profile.role === 'admin' || profile.role.includes('_admin') || session.user.email === 'jjtovar1510@gmail.com')) {
+          navigate('/admin');
+        } else {
+          navigate('/');
+        }
+      } else {
+        navigate('/');
+      }
     }
   }
 
