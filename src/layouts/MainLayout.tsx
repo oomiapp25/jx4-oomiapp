@@ -1,5 +1,5 @@
 import { Link, Outlet, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Search, User, Menu, MessageCircle, ArrowUp, Home, Package, Shield, MapPin, Bus, Plus } from 'lucide-react';
+import { ShoppingCart, Search, User, Menu, MessageCircle, ArrowUp, Home, Package, Shield, MapPin, Bus, Plus, Briefcase, Wrench } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase, Ad, News, TransportLine } from '../lib/supabase';
@@ -146,6 +146,39 @@ export default function MainLayout() {
                 <span className="text-xs font-black text-stone-900 uppercase tracking-widest">Mis Pedidos</span>
                 <div className="w-10 h-10 bg-stone-100 rounded-xl flex items-center justify-center text-stone-600 group-hover:bg-emerald-600 group-hover:text-white transition-all">
                   <Package className="w-5 h-5" />
+                </div>
+              </Link>
+
+              <Link 
+                to="/transporte" 
+                onClick={() => setIsFabOpen(false)}
+                className="flex items-center gap-3 bg-white px-4 py-3 rounded-2xl shadow-xl border border-stone-100 group hover:bg-emerald-50 transition-colors"
+              >
+                <span className="text-xs font-black text-stone-900 uppercase tracking-widest">Transporte</span>
+                <div className="w-10 h-10 bg-stone-100 rounded-xl flex items-center justify-center text-stone-600 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                  <Bus className="w-5 h-5" />
+                </div>
+              </Link>
+
+              <Link 
+                to="/empleos" 
+                onClick={() => setIsFabOpen(false)}
+                className="flex items-center gap-3 bg-white px-4 py-3 rounded-2xl shadow-xl border border-stone-100 group hover:bg-emerald-50 transition-colors"
+              >
+                <span className="text-xs font-black text-stone-900 uppercase tracking-widest">Empleos</span>
+                <div className="w-10 h-10 bg-stone-100 rounded-xl flex items-center justify-center text-stone-600 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                  <Briefcase className="w-5 h-5" />
+                </div>
+              </Link>
+
+              <Link 
+                to="/servicios" 
+                onClick={() => setIsFabOpen(false)}
+                className="flex items-center gap-3 bg-white px-4 py-3 rounded-2xl shadow-xl border border-stone-100 group hover:bg-emerald-50 transition-colors"
+              >
+                <span className="text-xs font-black text-stone-900 uppercase tracking-widest">Servicios</span>
+                <div className="w-10 h-10 bg-stone-100 rounded-xl flex items-center justify-center text-stone-600 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                  <Wrench className="w-5 h-5" />
                 </div>
               </Link>
 
