@@ -1,0 +1,82 @@
+import { useState, useEffect } from 'react';
+import { supabase } from '../../lib/supabase';
+import { Plus, UserPlus, Shield, Mail, MoreVertical } from 'lucide-react';
+
+export default function AdminUsers() {
+  const [users, setUsers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  async function fetchUsers() {
+    const { data } = await supabase.from('users').select('*').order('created_at', { ascending: false });
+    if (data) setUsers(data);
+    setLoading(false);
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-xl font-black text-stone-900">Gestión de Usuarios</h1>
+        <button className="bg-stone-900 text-white px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-emerald-600 transition-all active:scale-95">
+          <UserPlus className="w-4 h-4" />
+          Invitar Admin
+        </button>
+      </div>
+
+      <div className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="bg-stone-50 text-[10px] font-black text-stone-400 uppercase tracking-widest">
+                <th className="px-6 py-4">Usuario</th>
+                <th className="px-6 py-4">Rol</th>
+                <th className="px-6 py-4">Email</th>
+                <th className="px-6 py-4">Fecha Registro</th>
+                <th className="px-6 py-4"></th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-stone-100">
+              {users.map((user) => (
+                <tr key={user.id} className="text-sm hover:bg-stone-50 transition-colors group">
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center font-bold text-stone-500 text-xs">
+                        {user.full_name?.[0] || 'U'}
+                      </div>
+                      <span className="font-bold text-stone-900">{user.full_name || 'Sin nombre'}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
+                      user.role === 'admin' ? 'bg-purple-50 text-purple-600' : 
+                      user.role === 'customer' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'
+                    }`}>
+                      {user.role}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-stone-500 font-medium">
+                    <div className="flex items-center gap-2">
+                      <Mail className="w-3 h-3" />
+                      {user.email}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-stone-400 text-xs">
+                    {new Date(user.created_at).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <button className="p-2 text-stone-400 hover:text-stone-900 transition-colors">
+                      <MoreVertical className="w-4 h-4" />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
