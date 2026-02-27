@@ -237,29 +237,31 @@ export default function MainLayout() {
       </div>
 
       <footer className="bg-white border-t border-stone-200 py-12">
-        <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="col-span-1 md:col-span-2">
-            <h3 className="text-lg font-bold mb-4">JX4 Paracotos</h3>
-            <p className="text-stone-500 text-sm max-w-sm">
-              Tu tienda de confianza en Paracotos. Calidad y servicio a tu alcance.
-            </p>
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <h3 className="text-xl font-black text-stone-900 tracking-tighter mb-4">
+            JX4<span className="text-emerald-600">PARACOTOS</span>
+          </h3>
+          <p className="text-stone-500 text-sm max-w-md mx-auto mb-8">
+            Tu tienda de confianza en Paracotos. Calidad y servicio a tu alcance.
+          </p>
+          
+          <div className="flex items-center justify-center gap-6 mb-8">
+            <Link to="/" className="text-xs font-bold text-stone-400 hover:text-emerald-600 uppercase tracking-widest transition-colors">Inicio</Link>
+            <Link to="/mis-pedidos" className="text-xs font-bold text-stone-400 hover:text-emerald-600 uppercase tracking-widest transition-colors">Mis Pedidos</Link>
+            <a 
+              href="https://wa.me/584120000000" 
+              target="_blank" 
+              rel="noreferrer"
+              className="flex items-center gap-2 text-xs font-bold text-stone-400 hover:text-emerald-600 uppercase tracking-widest transition-colors"
+            >
+              <MessageCircle className="w-4 h-4" />
+              WhatsApp
+            </a>
           </div>
-          <div>
-            <h4 className="text-sm font-bold uppercase tracking-wider text-stone-400 mb-4">Enlaces</h4>
-            <ul className="space-y-2 text-sm text-stone-600">
-              <li><Link to="/" className="hover:text-emerald-600">Inicio</Link></li>
-              <li><Link to="/mis-pedidos" className="hover:text-emerald-600">Mis Pedidos</Link></li>
-              <li><Link to="/admin" className="hover:text-emerald-600">Admin</Link></li>
-            </ul>
+
+          <div className="pt-8 border-t border-stone-100 text-[10px] font-bold text-stone-400 uppercase tracking-widest">
+            © 2026 JX4 Paracotos. Todos los derechos reservados.
           </div>
-          <div>
-            <h4 className="text-sm font-bold uppercase tracking-wider text-stone-400 mb-4">Contacto</h4>
-            <p className="text-sm text-stone-600">Soporte: +58 412-0000000</p>
-            <p className="text-sm text-stone-600">Email: hola@jx4paracotos.com</p>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto px-4 mt-12 pt-8 border-t border-stone-100 text-center text-xs text-stone-400">
-          © 2026 JX4 Paracotos. Todos los derechos reservados.
         </div>
       </footer>
     </div>
