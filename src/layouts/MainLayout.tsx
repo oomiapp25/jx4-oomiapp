@@ -103,13 +103,33 @@ export default function MainLayout() {
           </div>
 
           <nav className="flex items-center gap-4">
+            {user && (user.role === 'admin' || user.role.includes('_admin') || user.email === 'jjtovar1510@gmail.com') && (
+              <Link to="/admin" className="hidden md:flex items-center gap-2 px-4 py-2 bg-stone-900 text-white rounded-full text-xs font-bold hover:bg-emerald-600 transition-all">
+                <Shield className="w-3.5 h-3.5" />
+                Admin
+              </Link>
+            )}
             <Link to="/cart" className="p-2 hover:bg-stone-100 rounded-full transition-colors relative">
               <ShoppingCart className="w-5 h-5 text-stone-700" />
               <span className="absolute top-0 right-0 bg-emerald-600 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">0</span>
             </Link>
-            <Link to="/login" className="p-2 hover:bg-stone-100 rounded-full transition-colors">
-              <User className="w-5 h-5 text-stone-700" />
-            </Link>
+            {user ? (
+              <div className="flex items-center gap-2">
+                <Link to="/mis-pedidos" className="p-2 hover:bg-stone-100 rounded-full transition-colors">
+                  <User className="w-5 h-5 text-stone-700" />
+                </Link>
+                <button 
+                  onClick={() => supabase.auth.signOut()}
+                  className="hidden sm:block text-[10px] font-black text-stone-400 uppercase tracking-widest hover:text-red-500 transition-colors"
+                >
+                  Salir
+                </button>
+              </div>
+            ) : (
+              <Link to="/login" className="p-2 hover:bg-stone-100 rounded-full transition-colors">
+                <User className="w-5 h-5 text-stone-700" />
+              </Link>
+            )}
             <button className="md:hidden p-2 hover:bg-stone-100 rounded-full transition-colors">
               <Menu className="w-5 h-5 text-stone-700" />
             </button>

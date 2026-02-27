@@ -38,7 +38,7 @@ export default function AdminLayout() {
   ];
 
   const filteredMenu = menuItems.filter(item => 
-    user && item.roles.includes(user.role)
+    user && (item.roles.includes(user.role) || user.email === 'jjtovar1510@gmail.com')
   );
 
   async function handleLogout() {
