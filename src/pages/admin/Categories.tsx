@@ -1,14 +1,34 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { supabase, Category } from '../../lib/supabase';
-import { Plus, Edit2, Trash2, Folder } from 'lucide-react';
+import { Plus, Edit2, Trash2, Folder, X, Loader2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 export default function AdminCategories() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  const [formData, setFormData] = useState({
+    name: '',
+    slug: ''
+  });
 
   useEffect(() => {
     fetchCategories();
   }, []);
+
+  useEffect(() => {
+    if (editingCategory) {
+      setFormData({
+        name: editingCategory.name,
+        slug: editingCategory.slug
+      });
+    } else {
+      setFormData({ name: '', slug: '' });
+    }
+  }, [editingCategory]);
 
   async function fetchCategories() {
     const { data } = await supabase.from('categories').select('*').order('name');
@@ -16,15 +36,147 @@ export default function AdminCategories() {
     setLoading(false);
   }
 
+  function openCreateModal() {
+    setEditingCategory(null);
+    setIsModalOpen(true);
+  }
+
+  function openEditModal(cat: Category) {
+    setEditingCategory(cat);
+    setIsModalOpen(true);
+  }
+
+  async function deleteCategory(id: string) {
+    if (!confirm('¿Estás seguro de eliminar esta categoría?')) return;
+    const { error } = await supabase.from('categories').delete().eq('id', id);
+    if (error) alert('Error: ' + error.message);
+    else fetchCategories();
+  }
+
+  function generateSlug(name: string) {
+    return name.toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/[\s_-]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+
+  async function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    setSubmitting(true);
+
+    const slug = formData.slug || generateSlug(formData.name);
+    const data = { name: formData.name, slug };
+
+    let error;
+    if (editingCategory) {
+      const { error: updateError } = await supabase
+        .from('categories')
+        .update(data)
+        .eq('id', editingCategory.id);
+      error = updateError;
+    } else {
+      const { error: insertError } = await supabase
+        .from('categories')
+        .insert(data);
+      error = insertError;
+    }
+
+    if (error) {
+      alert('Error: ' + error.message);
+    } else {
+      setIsModalOpen(false);
+      setEditingCategory(null);
+      setFormData({ name: '', slug: '' });
+      fetchCategories();
+    }
+    setSubmitting(false);
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-black text-stone-900">Categorías</h1>
-        <button className="bg-stone-900 text-white px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-emerald-600 transition-all active:scale-95">
+        <button 
+          onClick={openCreateModal}
+          className="bg-stone-900 text-white px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-emerald-600 transition-all active:scale-95"
+        >
           <Plus className="w-4 h-4" />
           Nueva Categoría
         </button>
       </div>
+
+      {/* Modal */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsModalOpen(false)}
+              className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden"
+            >
+              <div className="p-6 border-b border-stone-100 flex items-center justify-between">
+                <h3 className="text-lg font-black text-stone-900">
+                  {editingCategory ? 'Editar Categoría' : 'Nueva Categoría'}
+                </h3>
+                <button onClick={() => setIsModalOpen(false)} className="p-2 hover:bg-stone-50 rounded-full transition-colors">
+                  <X className="w-5 h-5 text-stone-400" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSubmit} className="p-6 space-y-4">
+                <div>
+                  <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1.5 px-1">Nombre</label>
+                  <input 
+                    required
+                    type="text" 
+                    value={formData.name}
+                    onChange={e => setFormData({...formData, name: e.target.value})}
+                    className="w-full px-4 py-2.5 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                    placeholder="Ej. Celulares"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1.5 px-1">Slug (URL)</label>
+                  <input 
+                    type="text" 
+                    value={formData.slug}
+                    onChange={e => setFormData({...formData, slug: e.target.value})}
+                    className="w-full px-4 py-2.5 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                    placeholder="ej-celulares (opcional)"
+                  />
+                </div>
+
+                <div className="pt-4 flex gap-3">
+                  <button 
+                    type="button"
+                    onClick={() => setIsModalOpen(false)}
+                    className="flex-1 py-3 border border-stone-200 rounded-xl text-sm font-bold text-stone-600 hover:bg-stone-50 transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                  <button 
+                    type="submit"
+                    disabled={submitting}
+                    className="flex-1 py-3 bg-stone-900 text-white rounded-xl text-sm font-bold hover:bg-emerald-600 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
+                    {submitting ? 'Guardando...' : (editingCategory ? 'Guardar' : 'Crear')}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {categories.length > 0 ? categories.map((cat) => (
@@ -34,8 +186,18 @@ export default function AdminCategories() {
                 <Folder className="w-6 h-6 text-stone-400 group-hover:text-emerald-600" />
               </div>
               <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button className="p-2 text-stone-400 hover:text-stone-900"><Edit2 className="w-4 h-4" /></button>
-                <button className="p-2 text-stone-400 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
+                <button 
+                  onClick={() => openEditModal(cat)}
+                  className="p-2 text-stone-400 hover:text-stone-900 transition-colors"
+                >
+                  <Edit2 className="w-4 h-4" />
+                </button>
+                <button 
+                  onClick={() => deleteCategory(cat.id)}
+                  className="p-2 text-stone-400 hover:text-red-500 transition-colors"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </div>
             </div>
             <h3 className="text-lg font-bold text-stone-900">{cat.name}</h3>

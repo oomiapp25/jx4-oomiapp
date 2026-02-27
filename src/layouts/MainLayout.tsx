@@ -216,7 +216,7 @@ export default function MainLayout() {
                 </div>
               </Link>
 
-              {user && user.role !== 'customer' && (
+              {user && (user.role !== 'customer' || user.email === 'jjtovar1510@gmail.com') && (
                 <Link 
                   to="/admin" 
                   onClick={() => setIsFabOpen(false)}
