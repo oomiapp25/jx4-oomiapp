@@ -1,17 +1,23 @@
-import { Link, Outlet } from 'react-router-dom';
-import { ShoppingCart, Search, User, Menu, MessageCircle, ArrowUp } from 'lucide-react';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { ShoppingCart, Search, User, Menu, MessageCircle, ArrowUp, Home, Package, Shield, MapPin, Bus, Plus } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { supabase, Ad, News } from '../lib/supabase';
+import { supabase, Ad, News, TransportLine } from '../lib/supabase';
+import { useAuth } from '../hooks/useAuth';
 
 export default function MainLayout() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [ads, setAds] = useState<Ad[]>([]);
   const [news, setNews] = useState<News[]>([]);
+  const [transportLines, setTransportLines] = useState<TransportLine[]>([]);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [isFabOpen, setIsFabOpen] = useState(false);
 
   useEffect(() => {
     fetchAds();
     fetchNews();
+    fetchTransportLines();
     
     const handleScroll = () => setShowScrollTop(window.scrollY > 400);
     window.addEventListener('scroll', handleScroll);
@@ -28,6 +34,11 @@ export default function MainLayout() {
     if (data) setNews(data);
   }
 
+  async function fetchTransportLines() {
+    const { data } = await supabase.from('transport_lines').select('*').eq('active', true);
+    if (data) setTransportLines(data);
+  }
+
   return (
     <div className="min-h-screen bg-stone-50 flex flex-col font-sans">
       {/* Ads Carousel (Simplified) */}
@@ -38,6 +49,22 @@ export default function MainLayout() {
               <a key={ad.id} href={ad.link} className="mx-8 hover:text-emerald-400 transition-colors">
                 {ad.image_url} {/* Placeholder text for now */}
               </a>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Transport News Ticker */}
+      {transportLines.length > 0 && (
+        <div className="bg-emerald-600 text-white py-1.5 overflow-hidden border-b border-emerald-700">
+          <div className="flex animate-marquee whitespace-nowrap items-center">
+            {transportLines.map(line => (
+              <div key={line.id} className="mx-12 flex items-center gap-3 text-[11px] font-bold uppercase tracking-wider">
+                <Bus className="w-3.5 h-3.5" />
+                <span>{line.origin} → {line.destination}</span>
+                <span className="opacity-60">|</span>
+                <span className="text-emerald-200">{line.news_update || 'Operando normal'}</span>
+              </div>
             ))}
           </div>
         </div>
@@ -90,24 +117,76 @@ export default function MainLayout() {
         <Outlet />
       </main>
 
-      {/* FAB */}
-      <div className="fixed bottom-6 right-6 flex flex-col gap-3 z-50">
+      {/* FAB Navigation */}
+      <div className="fixed bottom-6 right-6 flex flex-col items-end gap-3 z-[100]">
         <AnimatePresence>
-          {showScrollTop && (
-            <motion.button
-              initial={{ opacity: 0, scale: 0.5 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.5 }}
-              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="p-3 bg-white shadow-lg border border-stone-200 rounded-full text-stone-600 hover:text-emerald-600 transition-colors"
+          {isFabOpen && (
+            <motion.div 
+              initial={{ opacity: 0, y: 20, scale: 0.8 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 20, scale: 0.8 }}
+              className="flex flex-col gap-3 mb-2"
             >
-              <ArrowUp className="w-6 h-6" />
-            </motion.button>
+              <Link 
+                to="/" 
+                onClick={() => setIsFabOpen(false)}
+                className="flex items-center gap-3 bg-white px-4 py-3 rounded-2xl shadow-xl border border-stone-100 group hover:bg-emerald-50 transition-colors"
+              >
+                <span className="text-xs font-black text-stone-900 uppercase tracking-widest">Inicio</span>
+                <div className="w-10 h-10 bg-stone-100 rounded-xl flex items-center justify-center text-stone-600 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                  <Home className="w-5 h-5" />
+                </div>
+              </Link>
+
+              <Link 
+                to="/mis-pedidos" 
+                onClick={() => setIsFabOpen(false)}
+                className="flex items-center gap-3 bg-white px-4 py-3 rounded-2xl shadow-xl border border-stone-100 group hover:bg-emerald-50 transition-colors"
+              >
+                <span className="text-xs font-black text-stone-900 uppercase tracking-widest">Mis Pedidos</span>
+                <div className="w-10 h-10 bg-stone-100 rounded-xl flex items-center justify-center text-stone-600 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                  <Package className="w-5 h-5" />
+                </div>
+              </Link>
+
+              {user && user.role !== 'customer' && (
+                <Link 
+                  to="/admin" 
+                  onClick={() => setIsFabOpen(false)}
+                  className="flex items-center gap-3 bg-white px-4 py-3 rounded-2xl shadow-xl border border-stone-100 group hover:bg-emerald-50 transition-colors"
+                >
+                  <span className="text-xs font-black text-stone-900 uppercase tracking-widest">Administración</span>
+                  <div className="w-10 h-10 bg-stone-100 rounded-xl flex items-center justify-center text-stone-600 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                    <Shield className="w-5 h-5" />
+                  </div>
+                </Link>
+              )}
+            </motion.div>
           )}
         </AnimatePresence>
-        <button className="p-4 bg-emerald-600 shadow-xl rounded-full text-white hover:bg-emerald-700 transition-all hover:scale-110 active:scale-95">
-          <MessageCircle className="w-6 h-6" />
-        </button>
+
+        <div className="flex flex-col gap-3">
+          <AnimatePresence>
+            {showScrollTop && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.5 }}
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className="w-14 h-14 bg-white shadow-lg border border-stone-200 rounded-2xl flex items-center justify-center text-stone-600 hover:text-emerald-600 transition-colors"
+              >
+                <ArrowUp className="w-6 h-6" />
+              </motion.button>
+            )}
+          </AnimatePresence>
+          
+          <button 
+            onClick={() => setIsFabOpen(!isFabOpen)}
+            className={`w-14 h-14 shadow-2xl rounded-2xl flex items-center justify-center text-white transition-all hover:scale-110 active:scale-95 ${isFabOpen ? 'bg-stone-900 rotate-45' : 'bg-emerald-600'}`}
+          >
+            <Plus className={`w-8 h-8 transition-transform ${isFabOpen ? 'rotate-0' : 'rotate-0'}`} />
+          </button>
+        </div>
       </div>
 
       <footer className="bg-white border-t border-stone-200 py-12">

@@ -53,6 +53,46 @@ export interface Transport {
   name: string;
   carrier_info: string;
   base_price: number;
+  has_papers: boolean;
+  vehicle_type: string;
+  whatsapp: string;
+  created_by: string;
+  created_at: string;
+}
+
+export interface TransportLine {
+  id: string;
+  name: string;
+  origin: string;
+  destination: string;
+  schedule: string;
+  price: number;
+  news_update: string;
+  whatsapp: string;
+  active: boolean;
+  created_by: string;
+  created_at: string;
+}
+
+export interface JobOffer {
+  id: string;
+  title: string;
+  company: string;
+  description: string;
+  contact_info: string;
+  active: boolean;
+  created_by: string;
+  created_at: string;
+}
+
+export interface ServicePortfolio {
+  id: string;
+  title: string;
+  provider_name: string;
+  description: string;
+  whatsapp: string;
+  category: string;
+  active: boolean;
   created_by: string;
   created_at: string;
 }

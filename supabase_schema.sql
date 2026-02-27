@@ -52,12 +52,55 @@ CREATE TABLE IF NOT EXISTS public.products (
     updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 
--- Transports
+-- Transports (Delivery/Private)
 CREATE TABLE IF NOT EXISTS public.transports (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     name TEXT NOT NULL,
     carrier_info TEXT,
     base_price DECIMAL(10,2) NOT NULL,
+    has_papers BOOLEAN DEFAULT false NOT NULL,
+    vehicle_type TEXT,
+    whatsapp TEXT,
+    created_by UUID REFERENCES public.users(id),
+    created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+
+-- Public Transport Lines (Routes & News)
+CREATE TABLE IF NOT EXISTS public.transport_lines (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    name TEXT NOT NULL,
+    origin TEXT NOT NULL,
+    destination TEXT NOT NULL,
+    schedule TEXT,
+    price DECIMAL(10,2),
+    news_update TEXT,
+    whatsapp TEXT,
+    active BOOLEAN DEFAULT true NOT NULL,
+    created_by UUID REFERENCES public.users(id),
+    created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+
+-- Job Offers
+CREATE TABLE IF NOT EXISTS public.job_offers (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    title TEXT NOT NULL,
+    company TEXT NOT NULL,
+    description TEXT,
+    contact_info TEXT,
+    active BOOLEAN DEFAULT true NOT NULL,
+    created_by UUID REFERENCES public.users(id),
+    created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+
+-- Services Portfolio
+CREATE TABLE IF NOT EXISTS public.services_portfolio (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    title TEXT NOT NULL,
+    provider_name TEXT NOT NULL,
+    description TEXT,
+    whatsapp TEXT,
+    category TEXT,
+    active BOOLEAN DEFAULT true NOT NULL,
     created_by UUID REFERENCES public.users(id),
     created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
@@ -116,6 +159,9 @@ ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.departments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.transports ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.transport_lines ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.job_offers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.services_portfolio ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.ads ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.news ENABLE ROW LEVEL SECURITY;
@@ -135,6 +181,17 @@ CREATE POLICY "Admins can manage categories" ON public.categories FOR ALL USING 
 
 CREATE POLICY "Anyone can view departments" ON public.departments FOR SELECT USING (true);
 CREATE POLICY "Admins can manage departments" ON public.departments FOR ALL USING (EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin'));
+
+-- Policies for Transport Lines
+CREATE POLICY "Anyone can view transport lines" ON public.transport_lines FOR SELECT USING (true);
+CREATE POLICY "Admins can manage transport lines" ON public.transport_lines FOR ALL USING (EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role IN ('admin', 'transport_admin')));
+
+-- Policies for Jobs & Services
+CREATE POLICY "Anyone can view jobs" ON public.job_offers FOR SELECT USING (active = true);
+CREATE POLICY "Admins can manage jobs" ON public.job_offers FOR ALL USING (EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin'));
+
+CREATE POLICY "Anyone can view services" ON public.services_portfolio FOR SELECT USING (active = true);
+CREATE POLICY "Admins can manage services" ON public.services_portfolio FOR ALL USING (EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin'));
 
 -- Policies for Orders
 CREATE POLICY "Users can view their own orders" ON public.orders FOR SELECT USING (auth.uid() = user_id);

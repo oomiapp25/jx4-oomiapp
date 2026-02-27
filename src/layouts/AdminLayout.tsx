@@ -10,7 +10,9 @@ import {
   Newspaper, 
   LogOut,
   ChevronRight,
-  Bell
+  Bell,
+  Briefcase,
+  Wrench
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
@@ -26,6 +28,8 @@ export default function AdminLayout() {
     { icon: Tags, label: 'Categorías', path: '/admin/categorias' },
     { icon: Building2, label: 'Departamentos', path: '/admin/departamentos' },
     { icon: Truck, label: 'Transportes', path: '/admin/transportes' },
+    { icon: Briefcase, label: 'Empleos', path: '/admin/empleos' },
+    { icon: Wrench, label: 'Servicios', path: '/admin/servicios' },
     { icon: Users, label: 'Usuarios', path: '/admin/usuarios' },
     { icon: ImageIcon, label: 'Publicidad', path: '/admin/ads' },
     { icon: Newspaper, label: 'Noticias', path: '/admin/noticias' },
