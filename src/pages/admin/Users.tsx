@@ -16,6 +16,16 @@ export default function AdminUsers() {
     setLoading(false);
   }
 
+  async function updateRole(userId: string, newRole: string) {
+    const { error } = await supabase
+      .from('users')
+      .update({ role: newRole })
+      .eq('id', userId);
+
+    if (error) alert('Error: ' + error.message);
+    else fetchUsers();
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -50,12 +60,20 @@ export default function AdminUsers() {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
-                      user.role === 'admin' ? 'bg-purple-50 text-purple-600' : 
-                      user.role === 'customer' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'
-                    }`}>
-                      {user.role}
-                    </span>
+                    <select 
+                      value={user.role}
+                      onChange={(e) => updateRole(user.id, e.target.value)}
+                      className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase outline-none cursor-pointer ${
+                        user.role === 'admin' ? 'bg-purple-50 text-purple-600' : 
+                        user.role === 'customer' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'
+                      }`}
+                    >
+                      <option value="customer">Customer</option>
+                      <option value="admin">Admin</option>
+                      <option value="category_admin">Cat Admin</option>
+                      <option value="department_admin">Dept Admin</option>
+                      <option value="transport_admin">Trans Admin</option>
+                    </select>
                   </td>
                   <td className="px-6 py-4 text-stone-500 font-medium">
                     <div className="flex items-center gap-2">

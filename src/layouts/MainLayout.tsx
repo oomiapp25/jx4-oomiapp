@@ -11,6 +11,7 @@ export default function MainLayout() {
   const [ads, setAds] = useState<Ad[]>([]);
   const [news, setNews] = useState<News[]>([]);
   const [transportLines, setTransportLines] = useState<TransportLine[]>([]);
+  const [exchangeRate, setExchangeRate] = useState<string | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isFabOpen, setIsFabOpen] = useState(false);
 
@@ -18,6 +19,7 @@ export default function MainLayout() {
     fetchAds();
     fetchNews();
     fetchTransportLines();
+    fetchExchangeRate();
     
     const handleScroll = () => setShowScrollTop(window.scrollY > 400);
     window.addEventListener('scroll', handleScroll);
@@ -37,6 +39,11 @@ export default function MainLayout() {
   async function fetchTransportLines() {
     const { data } = await supabase.from('transport_lines').select('*').eq('active', true);
     if (data) setTransportLines(data);
+  }
+
+  async function fetchExchangeRate() {
+    const { data } = await supabase.from('settings').select('*').eq('key', 'exchange_rate').single();
+    if (data) setExchangeRate(data.value.rate);
   }
 
   return (
@@ -76,6 +83,13 @@ export default function MainLayout() {
           <Link to="/" className="text-2xl font-bold tracking-tighter text-stone-900">
             JX4<span className="text-emerald-600">PARACOTOS</span>
           </Link>
+
+          {exchangeRate && (
+            <div className="hidden lg:flex items-center gap-2 px-4 py-1.5 bg-stone-50 border border-stone-100 rounded-full">
+              <span className="text-[10px] font-black text-stone-400 uppercase tracking-widest">Tasa BCV:</span>
+              <span className="text-xs font-black text-stone-900">Bs. {exchangeRate}</span>
+            </div>
+          )}
 
           <div className="hidden md:flex flex-1 max-w-md mx-8">
             <div className="relative w-full">

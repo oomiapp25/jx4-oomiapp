@@ -152,6 +152,13 @@ CREATE TABLE IF NOT EXISTS public.admin_invites (
     created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 
+-- Global Settings (Exchange Rate, Tickers, etc.)
+CREATE TABLE IF NOT EXISTS public.settings (
+    key TEXT PRIMARY KEY,
+    value JSONB NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+
 -- 3. Row Level Security (RLS)
 
 ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
@@ -166,6 +173,7 @@ ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.ads ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.news ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.admin_invites ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.settings ENABLE ROW LEVEL SECURITY;
 
 -- Policies for Users
 CREATE POLICY "Users can view their own profile" ON public.users FOR SELECT USING (auth.uid() = id);
@@ -203,6 +211,10 @@ CREATE POLICY "Admins can manage ads" ON public.ads FOR ALL USING (EXISTS (SELEC
 
 CREATE POLICY "Anyone can view active news" ON public.news FOR SELECT USING (active = true);
 CREATE POLICY "Admins can manage news" ON public.news FOR ALL USING (EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin'));
+
+-- Policies for Settings
+CREATE POLICY "Anyone can view settings" ON public.settings FOR SELECT USING (true);
+CREATE POLICY "Admins can manage settings" ON public.settings FOR ALL USING (EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin'));
 
 -- 4. Functions & Triggers
 
