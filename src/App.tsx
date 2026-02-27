@@ -16,6 +16,10 @@ import ProductDetail from './pages/ProductDetail';
 import Checkout from './pages/Checkout';
 import MyOrders from './pages/MyOrders';
 import Login from './pages/Login';
+import Register from './pages/Register';
+import TransportLines from './pages/TransportLines';
+import JobOffers from './pages/JobOffers';
+import Services from './pages/Services';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/Dashboard';
@@ -48,6 +52,10 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/producto/:id" element={<ProductDetail />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/transporte" element={<TransportLines />} />
+          <Route path="/empleos" element={<JobOffers />} />
+          <Route path="/servicios" element={<Services />} />
           
           {/* Protected Customer Routes */}
           <Route 
