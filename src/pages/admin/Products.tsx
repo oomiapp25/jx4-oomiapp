@@ -129,11 +129,20 @@ export default function AdminProducts() {
     e.preventDefault();
     setLoading(true);
 
+    const price = parseFloat(formData.price);
+    const stock = parseInt(formData.stock);
+
+    if (isNaN(price)) {
+      alert('Por favor ingresa un precio válido');
+      setLoading(false);
+      return;
+    }
+
     const productData = {
       title: formData.title,
       description: formData.description,
-      price: parseFloat(formData.price),
-      stock: parseInt(formData.stock),
+      price: price,
+      stock: isNaN(stock) ? 0 : stock,
       category_id: formData.category_id || null,
       department_id: formData.department_id || null,
       images: formData.images,
