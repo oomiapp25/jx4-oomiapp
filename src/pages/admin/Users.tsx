@@ -61,7 +61,14 @@ export default function AdminUsers() {
         })
       });
 
-      const result = await response.json();
+      const text = await response.text();
+      let result;
+      try {
+        result = JSON.parse(text);
+      } catch (e) {
+        throw new Error('El servidor devolvió una respuesta no válida: ' + text.substring(0, 100));
+      }
+
       if (!response.ok) throw new Error(result.error || 'Error desconocido');
 
       alert('Usuario creado exitosamente');

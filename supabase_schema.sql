@@ -73,6 +73,8 @@ CREATE TABLE IF NOT EXISTS public.transport_lines (
     origin TEXT NOT NULL,
     destination TEXT NOT NULL,
     schedule TEXT,
+    departure_time TEXT,
+    arrival_time TEXT,
     price DECIMAL(10,2),
     news_update TEXT,
     whatsapp TEXT,

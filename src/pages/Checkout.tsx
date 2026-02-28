@@ -109,32 +109,36 @@ export default function Checkout() {
   const deliveryFee = method === 'delivery' ? (transports.find(t => t.id === selectedTransport)?.base_price || 0) : 0;
 
   return (
-    <div className="max-w-4xl mx-auto py-12">
-      <h1 className="text-4xl font-black text-stone-900 mb-12 tracking-tighter">Finalizar Compra</h1>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-        <div className="lg:col-span-2 space-y-12">
+    <div className="max-w-7xl mx-auto px-4 py-12">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-6">
           {/* Method Selection */}
-          <section>
-            <h2 className="text-xs font-black text-stone-400 uppercase tracking-[0.2em] mb-6">1. Método de Entrega</h2>
-            <div className="grid grid-cols-2 gap-4">
+          <section className="bg-white p-8 rounded shadow-sm border border-stone-100">
+            <h2 className="text-xl font-bold text-stone-900 mb-6">¿Cómo quieres recibir o retirar tu compra?</h2>
+            <div className="space-y-4">
               <button 
                 onClick={() => setMethod('delivery')}
-                className={`p-6 rounded-3xl border-2 transition-all flex flex-col items-center gap-4 ${method === 'delivery' ? 'border-emerald-600 bg-emerald-50' : 'border-stone-100 bg-white hover:border-stone-200'}`}
+                className={`w-full p-6 rounded-lg border-2 transition-all flex items-center gap-4 ${method === 'delivery' ? 'border-ml-blue bg-blue-50/30' : 'border-stone-100 bg-white hover:border-stone-200'}`}
               >
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${method === 'delivery' ? 'bg-emerald-600 text-white' : 'bg-stone-100 text-stone-400'}`}>
-                  <Truck className="w-6 h-6" />
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${method === 'delivery' ? 'bg-ml-blue text-white' : 'bg-stone-100 text-stone-400'}`}>
+                  <Truck className="w-5 h-5" />
                 </div>
-                <span className={`font-bold ${method === 'delivery' ? 'text-emerald-900' : 'text-stone-500'}`}>Delivery</span>
+                <div className="text-left">
+                  <span className={`block font-bold ${method === 'delivery' ? 'text-ml-blue' : 'text-stone-700'}`}>Enviar a mi domicilio</span>
+                  <span className="text-xs text-stone-400">Llega a Paracotos en 24-48h</span>
+                </div>
               </button>
               <button 
                 onClick={() => setMethod('pickup')}
-                className={`p-6 rounded-3xl border-2 transition-all flex flex-col items-center gap-4 ${method === 'pickup' ? 'border-emerald-600 bg-emerald-50' : 'border-stone-100 bg-white hover:border-stone-200'}`}
+                className={`w-full p-6 rounded-lg border-2 transition-all flex items-center gap-4 ${method === 'pickup' ? 'border-ml-blue bg-blue-50/30' : 'border-stone-100 bg-white hover:border-stone-200'}`}
               >
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${method === 'pickup' ? 'bg-emerald-600 text-white' : 'bg-stone-100 text-stone-400'}`}>
-                  <Store className="w-6 h-6" />
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${method === 'pickup' ? 'bg-ml-blue text-white' : 'bg-stone-100 text-stone-400'}`}>
+                  <Store className="w-5 h-5" />
                 </div>
-                <span className={`font-bold ${method === 'pickup' ? 'text-emerald-900' : 'text-stone-500'}`}>Retiro en Tienda</span>
+                <div className="text-left">
+                  <span className={`block font-bold ${method === 'pickup' ? 'text-ml-blue' : 'text-stone-700'}`}>Retiro en tienda</span>
+                  <span className="text-xs text-stone-400">Gratis - Disponible hoy mismo</span>
+                </div>
               </button>
             </div>
           </section>
@@ -142,35 +146,28 @@ export default function Checkout() {
           {/* Transport Selection */}
           {method === 'delivery' && (
             <motion.section 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="bg-white p-8 rounded shadow-sm border border-stone-100"
             >
-              <h2 className="text-xs font-black text-stone-400 uppercase tracking-[0.2em] mb-6">2. Seleccionar Transportista</h2>
-              <div className="space-y-4">
+              <h2 className="text-xl font-bold text-stone-900 mb-6">Selecciona un transportista</h2>
+              <div className="space-y-3">
                 {transports.map((t) => (
                   <button 
                     key={t.id}
                     onClick={() => setSelectedTransport(t.id)}
-                    className={`w-full p-6 rounded-3xl border-2 transition-all text-left flex items-center justify-between ${selectedTransport === t.id ? 'border-emerald-600 bg-emerald-50' : 'border-stone-100 bg-white hover:border-stone-200'}`}
+                    className={`w-full p-4 rounded-lg border transition-all text-left flex items-center justify-between ${selectedTransport === t.id ? 'border-ml-blue bg-blue-50/20' : 'border-stone-100 bg-white hover:border-stone-200'}`}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 bg-stone-100 rounded-xl flex items-center justify-center text-stone-400">
-                        <Truck className="w-5 h-5" />
+                      <div className="w-8 h-8 bg-stone-100 rounded-full flex items-center justify-center text-stone-400">
+                        <Truck className="w-4 h-4" />
                       </div>
                       <div>
-                        <p className="font-bold text-stone-900">{t.name}</p>
-                        <div className="flex items-center gap-2 text-xs text-stone-400 mt-1">
-                          <ShieldCheck className="w-3 h-3 text-emerald-500" />
-                          <span>Papeles en regla</span>
-                          <span className="opacity-50">•</span>
-                          <span>{t.vehicle_type}</span>
-                        </div>
+                        <p className="text-sm font-bold text-stone-900">{t.name}</p>
+                        <p className="text-[10px] text-stone-400 uppercase">{t.vehicle_type}</p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-lg font-black text-stone-900">${t.base_price}</p>
-                      <p className="text-[10px] font-bold text-stone-400 uppercase">Tarifa</p>
-                    </div>
+                    <p className="text-sm font-bold text-stone-900">${t.base_price}</p>
                   </button>
                 ))}
               </div>
@@ -178,38 +175,35 @@ export default function Checkout() {
           )}
 
           {/* Address Info */}
-          <section>
-            <h2 className="text-xs font-black text-stone-400 uppercase tracking-[0.2em] mb-6">3. Datos de Envío</h2>
-            <div className="bg-white p-8 rounded-3xl border border-stone-100 space-y-6">
+          <section className="bg-white p-8 rounded shadow-sm border border-stone-100">
+            <h2 className="text-xl font-bold text-stone-900 mb-6">Datos de contacto y entrega</h2>
+            <div className="space-y-4">
               <div>
-                <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2 px-1">Dirección Exacta</label>
-                <textarea 
-                  rows={3}
-                  value={formData.address}
-                  onChange={e => setFormData({...formData, address: e.target.value})}
-                  className="w-full px-6 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none resize-none"
-                  placeholder="Ej: Calle principal, casa #45, frente a la plaza..."
+                <label className="block text-xs font-bold text-stone-500 mb-1">Nombre de quien recibe</label>
+                <input 
+                  type="text"
+                  value={formData.receiver_name}
+                  onChange={e => setFormData({...formData, receiver_name: e.target.value})}
+                  className="w-full px-4 py-2 bg-white border border-stone-200 rounded text-sm focus:ring-1 focus:ring-ml-blue outline-none"
                 />
               </div>
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2 px-1">Teléfono</label>
+                  <label className="block text-xs font-bold text-stone-500 mb-1">Teléfono de contacto</label>
                   <input 
                     type="tel"
                     value={formData.phone}
                     onChange={e => setFormData({...formData, phone: e.target.value})}
-                    className="w-full px-6 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
-                    placeholder="+58 412..."
+                    className="w-full px-4 py-2 bg-white border border-stone-200 rounded text-sm focus:ring-1 focus:ring-ml-blue outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2 px-1">Nombre Receptor</label>
+                  <label className="block text-xs font-bold text-stone-500 mb-1">Dirección (Referencia)</label>
                   <input 
                     type="text"
-                    value={formData.receiver_name}
-                    onChange={e => setFormData({...formData, receiver_name: e.target.value})}
-                    className="w-full px-6 py-4 bg-stone-50 border border-stone-100 rounded-2xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
-                    placeholder="Nombre completo"
+                    value={formData.address}
+                    onChange={e => setFormData({...formData, address: e.target.value})}
+                    className="w-full px-4 py-2 bg-white border border-stone-200 rounded text-sm focus:ring-1 focus:ring-ml-blue outline-none"
                   />
                 </div>
               </div>
@@ -219,33 +213,37 @@ export default function Checkout() {
 
         {/* Summary */}
         <div className="lg:col-span-1">
-          <div className="bg-stone-900 text-white p-8 rounded-[2.5rem] sticky top-32 shadow-2xl">
-            <h3 className="text-lg font-black mb-8 tracking-tight">Resumen</h3>
-            <div className="space-y-4 mb-8">
-              <div className="flex justify-between text-sm text-stone-400">
-                <span>Subtotal</span>
-                <span className="text-white font-bold">${total.toFixed(2)}</span>
+          <div className="bg-white p-8 rounded shadow-sm border border-stone-100 sticky top-32">
+            <h3 className="text-lg font-bold mb-6 text-stone-900">Resumen de compra</h3>
+            <div className="space-y-4 mb-6">
+              <div className="flex justify-between text-sm text-stone-600">
+                <span>Productos ({cart.length})</span>
+                <span>${total.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-sm text-stone-400">
+              <div className="flex justify-between text-sm text-stone-600">
                 <span>Envío</span>
-                <span className="text-white font-bold">{method === 'pickup' ? 'Gratis' : `$${deliveryFee.toFixed(2)}`}</span>
+                <span className={method === 'pickup' ? 'text-emerald-600 font-bold' : ''}>
+                  {method === 'pickup' ? 'Gratis' : `$${deliveryFee.toFixed(2)}`}
+                </span>
               </div>
-              <div className="pt-4 border-t border-white/10 flex justify-between">
-                <span className="font-bold">Total</span>
-                <span className="text-2xl font-black text-emerald-400">${(total + deliveryFee).toFixed(2)}</span>
+              <div className="pt-4 border-t border-stone-100 flex justify-between">
+                <span className="text-lg font-bold text-stone-900">Total</span>
+                <span className="text-lg font-bold text-stone-900">${(total + deliveryFee).toFixed(2)}</span>
               </div>
             </div>
             <button 
               onClick={handleConfirmOrder}
               disabled={submitting}
-              className="w-full py-5 bg-emerald-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-emerald-500 transition-all active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50"
+              className="w-full py-3 bg-ml-blue text-white rounded font-bold hover:bg-blue-600 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Confirmar Pedido'}
-              {!submitting && <ArrowRight className="w-4 h-4" />}
+              {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Confirmar compra'}
             </button>
-            <p className="text-[10px] text-stone-500 text-center mt-6 italic">
-              Al confirmar, se abrirán los chats de WhatsApp de los encargados de cada departamento para coordinar el pago.
-            </p>
+            <div className="mt-6 p-4 bg-stone-50 rounded flex gap-3">
+              <ShieldCheck className="w-5 h-5 text-stone-400 flex-shrink-0" />
+              <p className="text-[10px] text-stone-500 leading-tight">
+                Tu compra está protegida. Si no recibes lo que esperabas, te devolvemos el dinero.
+              </p>
+            </div>
           </div>
         </div>
       </div>

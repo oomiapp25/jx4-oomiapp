@@ -26,6 +26,8 @@ export default function AdminTransports() {
     origin: '',
     destination: '',
     schedule: '',
+    departure_time: '',
+    arrival_time: '',
     price: '',
     news_update: '',
     whatsapp: ''
@@ -52,6 +54,8 @@ export default function AdminTransports() {
           origin: editingItem.origin,
           destination: editingItem.destination,
           schedule: editingItem.schedule || '',
+          departure_time: editingItem.departure_time || '',
+          arrival_time: editingItem.arrival_time || '',
           price: editingItem.price.toString(),
           news_update: editingItem.news_update || '',
           whatsapp: editingItem.whatsapp || ''
@@ -64,7 +68,7 @@ export default function AdminTransports() {
 
   function resetForms() {
     setDeliveryForm({ name: '', carrier_info: '', base_price: '', has_papers: false, vehicle_type: '', whatsapp: '' });
-    setLineForm({ name: '', origin: '', destination: '', schedule: '', price: '', news_update: '', whatsapp: '' });
+    setLineForm({ name: '', origin: '', destination: '', schedule: '', departure_time: '', arrival_time: '', price: '', news_update: '', whatsapp: '' });
   }
 
   async function fetchData() {
@@ -209,8 +213,18 @@ export default function AdminTransports() {
                         <input required type="number" step="0.01" value={lineForm.price} onChange={e => setLineForm({...lineForm, price: e.target.value})} className="w-full px-4 py-2.5 bg-stone-50 border border-stone-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500" />
                       </div>
                       <div>
-                        <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1 px-1">Horario</label>
+                        <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1 px-1">Horario General</label>
                         <input type="text" value={lineForm.schedule} onChange={e => setLineForm({...lineForm, schedule: e.target.value})} className="w-full px-4 py-2.5 bg-stone-50 border border-stone-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Ej. 6am - 8pm" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1 px-1">Hora Salida</label>
+                        <input type="text" value={lineForm.departure_time} onChange={e => setLineForm({...lineForm, departure_time: e.target.value})} className="w-full px-4 py-2.5 bg-stone-50 border border-stone-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Ej. 07:30 AM" />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1 px-1">Hora Llegada</label>
+                        <input type="text" value={lineForm.arrival_time} onChange={e => setLineForm({...lineForm, arrival_time: e.target.value})} className="w-full px-4 py-2.5 bg-stone-50 border border-stone-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Ej. 08:45 AM" />
                       </div>
                     </div>
                     <div>

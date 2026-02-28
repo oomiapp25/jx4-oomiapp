@@ -49,111 +49,102 @@ export default function MainLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50 flex flex-col font-sans">
-      {/* Ads Carousel (Simplified) */}
-      {ads.length > 0 && (
-        <div className="bg-stone-900 text-white py-2 overflow-hidden">
-          <div className="flex animate-marquee whitespace-nowrap">
-            {ads.map(ad => (
-              <a key={ad.id} href={ad.link} className="mx-8 hover:text-emerald-400 transition-colors">
-                {ad.image_url} {/* Placeholder text for now */}
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Transport News Ticker */}
-      {transportLines.length > 0 && (
-        <div className="bg-emerald-600 text-white py-1.5 overflow-hidden border-b border-emerald-700">
-          <div className="flex animate-marquee whitespace-nowrap items-center">
-            {transportLines.map(line => (
-              <div key={line.id} className="mx-12 flex items-center gap-3 text-[11px] font-bold uppercase tracking-wider">
-                <Bus className="w-3.5 h-3.5" />
-                <span>{line.origin} → {line.destination}</span>
-                <span className="opacity-60">|</span>
-                <span className="text-emerald-200">{line.news_update || 'Operando normal'}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
+    <div className="min-h-screen bg-ml-bg flex flex-col font-sans">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-bottom border-stone-200">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/" className="text-2xl font-bold tracking-tighter text-stone-900">
-            JX4<span className="text-emerald-600">PARACOTOS</span>
-          </Link>
-
-          {exchangeRate && (
-            <div className="hidden lg:flex items-center gap-2 px-4 py-1.5 bg-stone-50 border border-stone-100 rounded-full">
-              <span className="text-[10px] font-black text-stone-400 uppercase tracking-widest">Tasa BCV:</span>
-              <span className="text-xs font-black text-stone-900">Bs. {exchangeRate}</span>
-            </div>
-          )}
-
-          <div className="hidden md:flex flex-1 max-w-md mx-8">
-            <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400 w-4 h-4" />
-              <input 
-                type="text" 
-                placeholder="Buscar productos..." 
-                className="w-full pl-10 pr-4 py-2 bg-stone-100 border-none rounded-full text-sm focus:ring-2 focus:ring-emerald-500 transition-all"
-              />
-            </div>
-          </div>
-
-          <nav className="flex items-center gap-4">
-            {user && (user.role === 'admin' || user.role.includes('_admin') || user.email === 'jjtovar1510@gmail.com') && (
-              <Link to="/admin" className="hidden md:flex items-center gap-2 px-4 py-2 bg-stone-900 text-white rounded-full text-xs font-bold hover:bg-emerald-600 transition-all">
-                <Shield className="w-3.5 h-3.5" />
-                Admin
-              </Link>
-            )}
-            <Link to="/checkout" className="p-2 hover:bg-stone-100 rounded-full transition-colors relative">
-              <ShoppingCart className="w-5 h-5 text-stone-700" />
-              {itemCount > 0 && (
-                <span className="absolute top-0 right-0 bg-emerald-600 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
-                  {itemCount}
-                </span>
-              )}
+      <header className="bg-ml-yellow shadow-sm sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4">
+          {/* Top Bar */}
+          <div className="h-14 flex items-center justify-between gap-4 md:gap-8">
+            <Link to="/" className="flex-shrink-0">
+              <h1 className="text-xl md:text-2xl font-black tracking-tighter text-stone-900 leading-none">
+                JX4<span className="text-ml-blue">PARACOTOS</span>
+              </h1>
             </Link>
-            {user ? (
-              <div className="flex items-center gap-2">
-                <Link to="/mis-pedidos" className="p-2 hover:bg-stone-100 rounded-full transition-colors">
-                  <User className="w-5 h-5 text-stone-700" />
-                </Link>
-                <button 
-                  onClick={() => supabase.auth.signOut()}
-                  className="hidden sm:block text-[10px] font-black text-stone-400 uppercase tracking-widest hover:text-red-500 transition-colors"
-                >
-                  Salir
+
+            <div className="flex-grow max-w-2xl">
+              <div className="relative group">
+                <input 
+                  type="text" 
+                  placeholder="Buscar productos, marcas y más..." 
+                  className="w-full pl-4 pr-12 py-2 bg-white border-none rounded shadow-sm text-sm focus:ring-0 transition-all placeholder:text-stone-400"
+                />
+                <button className="absolute right-0 top-0 h-full px-4 text-stone-400 border-l border-stone-100 hover:text-ml-blue transition-colors">
+                  <Search className="w-4 h-4" />
                 </button>
               </div>
-            ) : (
-              <Link to="/login" className="p-2 hover:bg-stone-100 rounded-full transition-colors">
-                <User className="w-5 h-5 text-stone-700" />
-              </Link>
-            )}
-            <button className="md:hidden p-2 hover:bg-stone-100 rounded-full transition-colors">
-              <Menu className="w-5 h-5 text-stone-700" />
-            </button>
-          </nav>
-        </div>
+            </div>
 
-        {/* News Strip */}
-        {news.length > 0 && (
-          <div className="bg-emerald-50 border-y border-emerald-100 py-1.5 overflow-hidden">
-            <div className="max-w-7xl mx-auto px-4 flex items-center gap-2">
-              <span className="bg-emerald-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">Noticia</span>
-              <p className="text-xs text-emerald-900 font-medium truncate">{news[0].title}: {news[0].excerpt}</p>
+            <div className="hidden lg:flex items-center gap-2">
+              <img src="https://http2.mlstatic.com/D_NQ_925587-MLA77326203893_062024-OO.webp" alt="Promo" className="h-10 rounded" />
             </div>
           </div>
-        )}
+
+          {/* Bottom Bar */}
+          <div className="h-10 flex items-center justify-between text-xs md:text-sm text-stone-700/80">
+            <div className="flex items-center gap-6">
+              <div className="flex items-center gap-1 text-stone-900 cursor-pointer hover:text-stone-900 transition-colors">
+                <MapPin className="w-4 h-4" />
+                <div className="flex flex-col leading-none">
+                  <span className="text-[10px] opacity-60">Enviar a</span>
+                  <span className="font-medium">Paracotos</span>
+                </div>
+              </div>
+
+              <nav className="hidden md:flex items-center gap-6 font-normal">
+                <Link to="/categorias" className="hover:text-stone-900 transition-colors">Categorías</Link>
+                <Link to="/ofertas" className="hover:text-stone-900 transition-colors">Ofertas</Link>
+                <Link to="/historial" className="hover:text-stone-900 transition-colors">Historial</Link>
+                <Link to="/vender" className="hover:text-stone-900 transition-colors">Vender</Link>
+                <Link to="/ayuda" className="hover:text-stone-900 transition-colors">Ayuda</Link>
+              </nav>
+            </div>
+
+            <div className="flex items-center gap-6">
+              {user ? (
+                <div className="flex items-center gap-4">
+                  <Link to="/perfil" className="flex items-center gap-1 hover:text-stone-900 transition-colors">
+                    <User className="w-4 h-4" />
+                    <span className="hidden sm:inline">{user.email?.split('@')[0]}</span>
+                  </Link>
+                  <Link to="/mis-pedidos" className="hover:text-stone-900 transition-colors">Mis compras</Link>
+                  <button onClick={() => supabase.auth.signOut()} className="hover:text-red-600 transition-colors">Salir</button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-4">
+                  <Link to="/registro" className="hover:text-stone-900 transition-colors">Crea tu cuenta</Link>
+                  <Link to="/login" className="hover:text-stone-900 transition-colors">Ingresa</Link>
+                  <Link to="/mis-pedidos" className="hover:text-stone-900 transition-colors">Mis compras</Link>
+                </div>
+              )}
+              <Link to="/checkout" className="relative hover:text-stone-900 transition-colors">
+                <ShoppingCart className="w-5 h-5" />
+                {itemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-ml-blue text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+                    {itemCount}
+                  </span>
+                )}
+              </Link>
+            </div>
+          </div>
+        </div>
       </header>
 
-      <main className="flex-grow max-w-7xl mx-auto w-full px-4 py-8">
+      {/* Transport News Ticker (Optional, kept but styled) */}
+      {transportLines.length > 0 && (
+        <div className="bg-white border-b border-stone-200 py-1 overflow-hidden">
+          <div className="flex animate-marquee whitespace-nowrap items-center">
+            {transportLines.map(line => (
+              <div key={line.id} className="mx-12 flex items-center gap-2 text-[10px] font-bold uppercase text-stone-500">
+                <Bus className="w-3 h-3 text-ml-blue" />
+                <span>{line.origin} → {line.destination}</span>
+                <span className="text-ml-blue">{line.news_update || 'Operando normal'}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <main className="flex-grow w-full">
         <Outlet />
       </main>
 

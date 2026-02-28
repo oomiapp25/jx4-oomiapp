@@ -46,70 +46,63 @@ export default function Login() {
   }
 
   return (
-    <div className="max-w-md mx-auto mt-12">
+    <div className="max-w-md mx-auto mt-12 px-4">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="bg-white p-8 rounded-3xl border border-stone-200 shadow-xl shadow-stone-200/50"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="bg-white p-10 rounded shadow-sm border border-stone-100"
       >
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-black text-stone-900">Bienvenido de nuevo</h1>
-          <p className="text-stone-500 text-sm mt-2">Ingresa a tu cuenta de JX4 Paracotos</p>
+        <div className="mb-8">
+          <h1 className="text-2xl font-bold text-stone-900">¡Hola! Ingresa tu e-mail y contraseña</h1>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
-            <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2 px-1">Correo Electrónico</label>
-            <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
-              <input
-                type="text"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-stone-50 border border-stone-100 rounded-2xl text-sm focus:ring-2 focus:ring-emerald-500 transition-all outline-none"
-                placeholder="ejemplo@correo.com"
-              />
-            </div>
-            <p className="text-[10px] text-stone-400 mt-1 px-1 italic">Asegúrate de incluir el @ y el dominio (ej. @gmail.com)</p>
+            <label className="block text-xs font-bold text-stone-500 mb-1">E-mail</label>
+            <input
+              type="text"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-4 py-2 bg-white border border-stone-200 rounded text-sm focus:ring-1 focus:ring-ml-blue outline-none"
+              placeholder="ejemplo@correo.com"
+            />
           </div>
 
           <div>
-            <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2 px-1">Contraseña</label>
-            <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
-              <input
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-12 pr-4 py-3 bg-stone-50 border border-stone-100 rounded-2xl text-sm focus:ring-2 focus:ring-emerald-500 transition-all outline-none"
-                placeholder="••••••••"
-              />
-            </div>
+            <label className="block text-xs font-bold text-stone-500 mb-1">Contraseña</label>
+            <input
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full px-4 py-2 bg-white border border-stone-200 rounded text-sm focus:ring-1 focus:ring-ml-blue outline-none"
+              placeholder="••••••••"
+            />
           </div>
 
           {error && (
-            <div className="p-3 bg-red-50 border border-red-100 rounded-xl text-xs text-red-600 font-medium">
+            <div className="p-3 bg-red-50 border border-red-100 rounded text-xs text-red-600">
               {error}
             </div>
           )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-4 bg-stone-900 text-white rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-emerald-600 transition-all active:scale-95 disabled:opacity-50"
-          >
-            {loading ? 'Iniciando...' : 'Iniciar Sesión'}
-            {!loading && <ArrowRight className="w-4 h-4" />}
-          </button>
+          <div className="space-y-3 pt-4">
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 bg-ml-blue text-white rounded font-bold hover:bg-blue-600 transition-all disabled:opacity-50"
+            >
+              {loading ? 'Iniciando...' : 'Ingresar'}
+            </button>
+            <Link 
+              to="/registro" 
+              className="block w-full py-3 text-center text-ml-blue font-bold hover:bg-blue-50 rounded transition-all"
+            >
+              Crear cuenta
+            </Link>
+          </div>
         </form>
-
-        <div className="mt-8 pt-8 border-t border-stone-100 text-center">
-          <p className="text-stone-500 text-xs">
-            ¿No tienes cuenta? <Link to="/register" className="text-emerald-600 font-bold hover:underline">Regístrate aquí</Link>
-          </p>
-        </div>
       </motion.div>
     </div>
   );
