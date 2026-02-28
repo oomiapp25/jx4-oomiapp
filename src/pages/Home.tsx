@@ -3,6 +3,7 @@ import { supabase, Product } from '../lib/supabase';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Plus } from 'lucide-react';
+import HeroCarousel from '../components/HeroCarousel';
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -24,31 +25,37 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {[...Array(8)].map((_, i) => (
-          <div key={i} className="bg-white rounded-2xl border border-stone-200 p-4 animate-pulse">
-            <div className="aspect-square bg-stone-100 rounded-xl mb-4" />
-            <div className="h-4 bg-stone-100 rounded w-3/4 mb-2" />
-            <div className="h-4 bg-stone-100 rounded w-1/2" />
-          </div>
-        ))}
+      <div className="space-y-12">
+        <div className="w-full aspect-[21/9] bg-stone-100 rounded-[2rem] animate-pulse" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="bg-white rounded-2xl border border-stone-200 p-4 animate-pulse">
+              <div className="aspect-square bg-stone-100 rounded-xl mb-4" />
+              <div className="h-4 bg-stone-100 rounded w-3/4 mb-2" />
+              <div className="h-4 bg-stone-100 rounded w-1/2" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold tracking-tight text-stone-900">Productos Destacados</h1>
-        <div className="flex gap-2">
-          {/* Categorías Filter (Simplified) */}
-          <button className="px-4 py-1.5 bg-white border border-stone-200 rounded-full text-sm font-medium hover:border-emerald-500 transition-colors">Todos</button>
-          <button className="px-4 py-1.5 bg-white border border-stone-200 rounded-full text-sm font-medium hover:border-emerald-500 transition-colors">Electrónica</button>
-          <button className="px-4 py-1.5 bg-white border border-stone-200 rounded-full text-sm font-medium hover:border-emerald-500 transition-colors">Hogar</button>
-        </div>
-      </div>
+    <div className="space-y-12">
+      <HeroCarousel />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-bold tracking-tight text-stone-900">Productos Destacados</h1>
+          <div className="flex gap-2">
+            {/* Categorías Filter (Simplified) */}
+            <button className="px-4 py-1.5 bg-white border border-stone-200 rounded-full text-sm font-medium hover:border-emerald-500 transition-colors">Todos</button>
+            <button className="px-4 py-1.5 bg-white border border-stone-200 rounded-full text-sm font-medium hover:border-emerald-500 transition-colors">Electrónica</button>
+            <button className="px-4 py-1.5 bg-white border border-stone-200 rounded-full text-sm font-medium hover:border-emerald-500 transition-colors">Hogar</button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {products.map((product) => (
           <motion.div
             key={product.id}
@@ -91,5 +98,6 @@ export default function Home() {
         ))}
       </div>
     </div>
-  );
+  </div>
+);
 }

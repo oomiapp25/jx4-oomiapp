@@ -11,6 +11,8 @@ export default function AdminAds() {
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     image_url: '',
+    title: '',
+    description: '',
     link: '',
     priority: 0,
     ends_at: ''
@@ -49,6 +51,8 @@ export default function AdminAds() {
 
     const { error } = await supabase.from('ads').insert({
       image_url: formData.image_url,
+      title: formData.title,
+      description: formData.description,
       link: formData.link,
       priority: formData.priority,
       ends_at: formData.ends_at,
@@ -60,10 +64,23 @@ export default function AdminAds() {
       alert('Error: ' + error.message);
     } else {
       setIsModalOpen(false);
-      setFormData({ image_url: '', link: '', priority: 0, ends_at: '' });
+      setFormData({ image_url: '', title: '', description: '', link: '', priority: 0, ends_at: '' });
       fetchAds();
     }
     setLoading(false);
+  }
+
+  async function deleteAd(id: string) {
+    if (!confirm('¿Estás seguro de eliminar este banner?')) return;
+    const { error } = await supabase.from('ads').delete().eq('id', id);
+    if (error) alert('Error: ' + error.message);
+    else fetchAds();
+  }
+
+  async function toggleAd(id: string, currentStatus: boolean) {
+    const { error } = await supabase.from('ads').update({ active: !currentStatus }).eq('id', id);
+    if (error) alert('Error: ' + error.message);
+    else fetchAds();
   }
 
   return (
@@ -111,6 +128,29 @@ export default function AdminAds() {
                   )}
                 </div>
                 <input type="file" ref={fileInputRef} onChange={handleImageUpload} className="hidden" accept="image/*" />
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1 px-1">Título</label>
+                    <input 
+                      type="text" 
+                      value={formData.title}
+                      onChange={e => setFormData({...formData, title: e.target.value})}
+                      className="w-full px-4 py-2 bg-stone-50 border border-stone-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+                      placeholder="Título del banner"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1 px-1">Descripción</label>
+                    <input 
+                      type="text" 
+                      value={formData.description}
+                      onChange={e => setFormData({...formData, description: e.target.value})}
+                      className="w-full px-4 py-2 bg-stone-50 border border-stone-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+                      placeholder="Breve descripción"
+                    />
+                  </div>
+                </div>
 
                 <div>
                   <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1 px-1">Enlace (URL)</label>
@@ -162,18 +202,26 @@ export default function AdminAds() {
             <div className="aspect-[21/9] bg-stone-100 relative">
               <img src={ad.image_url} alt="" className="w-full h-full object-cover" />
               <div className="absolute top-4 right-4 flex gap-2">
-                <button className={`p-2 rounded-full shadow-lg transition-colors ${ad.active ? 'bg-emerald-500 text-white' : 'bg-stone-200 text-stone-500'}`}>
+                <button 
+                  onClick={() => toggleAd(ad.id, ad.active)}
+                  className={`p-2 rounded-full shadow-lg transition-colors ${ad.active ? 'bg-emerald-500 text-white' : 'bg-stone-200 text-stone-500'}`}
+                >
                   {ad.active ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5" />}
                 </button>
               </div>
             </div>
             <div className="p-6">
+              {ad.title && <h4 className="text-sm font-black text-stone-900 mb-1">{ad.title}</h4>}
+              {ad.description && <p className="text-xs text-stone-500 mb-4">{ad.description}</p>}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2 text-xs font-bold text-stone-400 uppercase tracking-widest">
                   <ImageIcon className="w-3 h-3" />
                   Prioridad: {ad.priority}
                 </div>
-                <button className="p-2 text-stone-400 hover:text-red-500 transition-colors">
+                <button 
+                  onClick={() => deleteAd(ad.id)}
+                  className="p-2 text-stone-400 hover:text-red-500 transition-colors"
+                >
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>

@@ -7,6 +7,11 @@ dotenv.config();
 
 const supabaseUrl = process.env.SUPABASE_URL || '';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+
+if (!supabaseUrl || !supabaseServiceKey) {
+  console.error("CRÍTICO: SUPABASE_URL o SUPABASE_SERVICE_ROLE_KEY no están configuradas.");
+}
+
 const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
 async function startServer() {
@@ -54,6 +59,84 @@ async function startServer() {
     console.log(`Invitación enviada a ${email} con token: ${token}`);
 
     res.json({ success: true, invite: data });
+  });
+
+  // POST /api/create-user (Direct creation by Super Admin)
+  app.post("/api/create-user", async (req, res) => {
+    const { email, password, fullName, role, departmentId, phoneNumber, invitedBy } = req.body;
+    
+    console.log(`Intentando crear usuario: ${email} por inviter: ${invitedBy}`);
+
+    try {
+      // 1. Validar que el que crea sea admin
+      // Primero intentamos en la tabla pública
+      let { data: inviter, error: inviterError } = await supabaseAdmin
+        .from('users')
+        .select('email, role')
+        .eq('id', invitedBy)
+        .single();
+
+      let isAuthorized = false;
+      
+      if (inviter) {
+        const isSuperAdmin = inviter.email === 'jjtovar1510@gmail.com';
+        if (isSuperAdmin || inviter.role === 'admin') {
+          isAuthorized = true;
+        }
+      } else {
+        // Si no está en la tabla pública, verificamos en Auth directamente (para el super admin inicial)
+        const { data: authInviter, error: authInviterError } = await supabaseAdmin.auth.admin.getUserById(invitedBy);
+        if (authInviter?.user?.email === 'jjtovar1510@gmail.com') {
+          isAuthorized = true;
+        }
+      }
+
+      if (!isAuthorized) {
+        console.error("Error de autorización: El usuario que invita no tiene permisos suficientes.");
+        return res.status(403).json({ error: "No autorizado para crear usuarios." });
+      }
+
+      // 2. Crear usuario en Auth
+      const { data: authUser, error: authError } = await supabaseAdmin.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: true,
+        user_metadata: { full_name: fullName }
+      });
+
+      if (authError) {
+        console.error("Error al crear usuario en Auth:", authError.message);
+        return res.status(500).json({ error: authError.message });
+      }
+
+      console.log(`Usuario creado en Auth: ${authUser.user.id}`);
+
+      // 3. Actualizar perfil en public.users
+      // El trigger handle_new_user ya debería haberlo creado, pero aseguramos los campos extra
+      const { error: profileError } = await supabaseAdmin
+        .from('users')
+        .upsert({
+          id: authUser.user.id,
+          email,
+          role,
+          department_id: departmentId || null,
+          phone_number: phoneNumber || null,
+          full_name: fullName,
+          updated_at: new Date().toISOString()
+        });
+
+      if (profileError) {
+        console.error("Error al actualizar perfil en DB:", profileError.message);
+        return res.status(500).json({ error: profileError.message });
+      }
+
+      console.log("Perfil de usuario actualizado exitosamente.");
+      res.json({ success: true, user: authUser.user });
+
+    } catch (err: any) {
+      console.error("Error inesperado en create-user:", err);
+      res.status(500).json({ error: err.message });
+    }
   });
 
   // POST /api/accept-invite
