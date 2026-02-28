@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS public.services_portfolio (
 
 CREATE TABLE IF NOT EXISTS public.orders (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    user_id UUID REFERENCES public.users(id) NOT NULL,
+    user_id UUID REFERENCES public.users(id),
     items JSONB NOT NULL,
     total DECIMAL(10,2) NOT NULL,
     status TEXT DEFAULT 'pending' NOT NULL,
@@ -274,10 +274,14 @@ CREATE POLICY "Anyone can view services" ON public.services_portfolio FOR SELECT
 CREATE POLICY "Admins can manage services" ON public.services_portfolio FOR ALL USING (public.is_admin());
 
 -- Orders
+ALTER TABLE public.orders ALTER COLUMN user_id DROP NOT NULL;
+
 DROP POLICY IF EXISTS "Users can view their own orders" ON public.orders;
-DROP POLICY IF EXISTS "Admins can view all orders" ON public.orders;
+DROP POLICY IF EXISTS "Admins can manage all orders" ON public.orders;
+DROP POLICY IF EXISTS "Anyone can insert orders" ON public.orders;
 CREATE POLICY "Users can view their own orders" ON public.orders FOR SELECT USING (auth.uid() = user_id);
-CREATE POLICY "Admins can view all orders" ON public.orders FOR SELECT USING (public.is_admin());
+CREATE POLICY "Admins can manage all orders" ON public.orders FOR ALL USING (public.is_admin());
+CREATE POLICY "Anyone can insert orders" ON public.orders FOR INSERT WITH CHECK (true);
 
 -- Ads
 DROP POLICY IF EXISTS "Anyone can view active ads" ON public.ads;
