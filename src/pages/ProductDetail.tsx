@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase, Product } from '../lib/supabase';
-import { ShoppingCart, ArrowLeft, ShieldCheck, Truck, RefreshCw } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, ShieldCheck, Truck, RefreshCw, Check } from 'lucide-react';
 import { motion } from 'motion/react';
+import { useCart } from '../hooks/useCart';
 
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { addToCart } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
+  const [added, setAdded] = useState(false);
 
   useEffect(() => {
     if (id) fetchProduct();
@@ -20,6 +23,14 @@ export default function ProductDetail() {
     if (data) setProduct(data);
     setLoading(false);
   }
+
+  const handleAddToCart = () => {
+    if (product) {
+      addToCart(product, quantity);
+      setAdded(true);
+      setTimeout(() => setAdded(false), 2000);
+    }
+  };
 
   if (loading) return <div className="animate-pulse h-96 bg-stone-100 rounded-3xl" />;
   if (!product) return <div className="text-center py-20">Producto no encontrado</div>;
@@ -87,9 +98,12 @@ export default function ProductDetail() {
                 className="px-4 py-3 hover:bg-stone-50 transition-colors font-bold"
               >+</button>
             </div>
-            <button className="flex-grow py-4 bg-stone-900 text-white rounded-xl font-bold flex items-center justify-center gap-3 hover:bg-emerald-600 transition-all active:scale-95">
-              <ShoppingCart className="w-5 h-5" />
-              Añadir al Carrito
+            <button 
+              onClick={handleAddToCart}
+              className={`flex-grow py-4 rounded-xl font-bold flex items-center justify-center gap-3 transition-all active:scale-95 ${added ? 'bg-emerald-600 text-white' : 'bg-stone-900 text-white hover:bg-emerald-600'}`}
+            >
+              {added ? <Check className="w-5 h-5" /> : <ShoppingCart className="w-5 h-5" />}
+              {added ? '¡Añadido!' : 'Añadir al Carrito'}
             </button>
           </div>
         </motion.div>

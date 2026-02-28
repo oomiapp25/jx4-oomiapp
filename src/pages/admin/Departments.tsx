@@ -12,7 +12,8 @@ export default function AdminDepartments() {
 
   const [formData, setFormData] = useState({
     name: '',
-    slug: ''
+    slug: '',
+    whatsapp: ''
   });
 
   useEffect(() => {
@@ -23,10 +24,11 @@ export default function AdminDepartments() {
     if (editingDepartment) {
       setFormData({
         name: editingDepartment.name,
-        slug: editingDepartment.slug
+        slug: editingDepartment.slug,
+        whatsapp: editingDepartment.whatsapp || ''
       });
     } else {
-      setFormData({ name: '', slug: '' });
+      setFormData({ name: '', slug: '', whatsapp: '' });
     }
   }, [editingDepartment]);
 
@@ -66,7 +68,11 @@ export default function AdminDepartments() {
     setSubmitting(true);
 
     const slug = formData.slug || generateSlug(formData.name);
-    const data = { name: formData.name, slug };
+    const data = { 
+      name: formData.name, 
+      slug,
+      whatsapp: formData.whatsapp 
+    };
 
     let error;
     if (editingDepartment) {
@@ -145,13 +151,13 @@ export default function AdminDepartments() {
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1.5 px-1">Slug (URL)</label>
+                  <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1.5 px-1">WhatsApp del Encargado</label>
                   <input 
                     type="text" 
-                    value={formData.slug}
-                    onChange={e => setFormData({...formData, slug: e.target.value})}
+                    value={formData.whatsapp}
+                    onChange={e => setFormData({...formData, whatsapp: e.target.value})}
                     className="w-full px-4 py-2.5 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
-                    placeholder="ej-tecnologia (opcional)"
+                    placeholder="+58 412... (opcional)"
                   />
                 </div>
 

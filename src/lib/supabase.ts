@@ -16,6 +16,8 @@ export interface UserProfile {
   email: string;
   full_name: string | null;
   role: UserRole;
+  department_id?: string | null;
+  phone_number?: string | null;
   created_at: string;
 }
 
@@ -44,6 +46,7 @@ export interface Department {
   id: string;
   name: string;
   slug: string;
+  whatsapp?: string | null;
   created_by: string;
   created_at: string;
 }

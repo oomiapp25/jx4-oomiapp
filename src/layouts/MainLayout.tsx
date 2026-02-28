@@ -4,9 +4,11 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase, Ad, News, TransportLine } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
+import { useCart } from '../hooks/useCart';
 
 export default function MainLayout() {
   const { user } = useAuth();
+  const { itemCount } = useCart();
   const navigate = useNavigate();
   const [ads, setAds] = useState<Ad[]>([]);
   const [news, setNews] = useState<News[]>([]);
@@ -109,9 +111,13 @@ export default function MainLayout() {
                 Admin
               </Link>
             )}
-            <Link to="/cart" className="p-2 hover:bg-stone-100 rounded-full transition-colors relative">
+            <Link to="/checkout" className="p-2 hover:bg-stone-100 rounded-full transition-colors relative">
               <ShoppingCart className="w-5 h-5 text-stone-700" />
-              <span className="absolute top-0 right-0 bg-emerald-600 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">0</span>
+              {itemCount > 0 && (
+                <span className="absolute top-0 right-0 bg-emerald-600 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+                  {itemCount}
+                </span>
+              )}
             </Link>
             {user ? (
               <div className="flex items-center gap-2">
