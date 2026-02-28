@@ -69,6 +69,8 @@ export interface TransportLine {
   origin: string;
   destination: string;
   schedule: string;
+  departure_time?: string | null;
+  arrival_time?: string | null;
   price: number;
   news_update: string;
   whatsapp: string;

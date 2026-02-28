@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -13,7 +14,9 @@ import {
   Bell,
   Briefcase,
   Wrench,
-  Settings
+  Settings,
+  Menu,
+  X
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
@@ -22,6 +25,7 @@ export default function AdminLayout() {
   const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const menuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/admin', roles: ['admin'] },
@@ -47,26 +51,44 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50 flex font-sans">
+    <div className="min-h-screen bg-stone-50 flex font-sans relative">
+      {/* Sidebar Overlay (Mobile) */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* Sidebar */}
-      <aside className="w-64 bg-stone-900 text-white flex flex-col sticky top-0 h-screen">
-        <div className="p-6">
-          <Link to="/" className="text-xl font-bold tracking-tighter">
-            JX4<span className="text-emerald-400">ADMIN</span>
-          </Link>
-          <p className="text-[10px] text-stone-500 uppercase tracking-widest mt-1">Panel de Control</p>
+      <aside className={`
+        fixed inset-y-0 left-0 z-50 w-64 bg-stone-900 text-white flex flex-col transition-transform duration-300 transform
+        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+        lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen
+      `}>
+        <div className="p-6 flex items-center justify-between">
+          <div>
+            <Link to="/" className="text-xl font-bold tracking-tighter">
+              JX4<span className="text-ml-blue">ADMIN</span>
+            </Link>
+            <p className="text-[10px] text-stone-500 uppercase tracking-widest mt-1">Panel de Control</p>
+          </div>
+          <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden p-2 hover:bg-stone-800 rounded-full">
+            <X className="w-5 h-5" />
+          </button>
         </div>
 
-        <nav className="flex-grow px-4 space-y-1">
+        <nav className="flex-grow px-4 space-y-1 overflow-y-auto">
           {filteredMenu.map((item) => {
             const isActive = location.pathname === item.path;
             return (
               <Link
                 key={item.path}
                 to={item.path}
+                onClick={() => setIsSidebarOpen(false)}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                   isActive 
-                    ? 'bg-emerald-600 text-white' 
+                    ? 'bg-ml-blue text-white' 
                     : 'text-stone-400 hover:bg-stone-800 hover:text-white'
                 }`}
               >
@@ -80,7 +102,7 @@ export default function AdminLayout() {
 
         <div className="p-4 border-t border-stone-800">
           <div className="flex items-center gap-3 px-4 py-3 mb-2">
-            <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center font-bold text-xs">
+            <div className="w-8 h-8 rounded-full bg-ml-blue flex items-center justify-center font-bold text-xs">
               {user?.full_name?.[0] || 'A'}
             </div>
             <div className="flex-grow min-w-0">
@@ -99,22 +121,30 @@ export default function AdminLayout() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-grow flex flex-col">
-        <header className="h-16 bg-white border-b border-stone-200 flex items-center justify-between px-8 sticky top-0 z-10">
-          <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wider">
-            {menuItems.find(i => i.path === location.pathname)?.label || 'Admin'}
-          </h2>
+      <main className="flex-grow flex flex-col min-w-0">
+        <header className="h-16 bg-white border-b border-stone-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-30">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => setIsSidebarOpen(true)}
+              className="lg:hidden p-2 hover:bg-stone-50 rounded-lg text-stone-500"
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+            <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wider hidden sm:block">
+              {menuItems.find(i => i.path === location.pathname)?.label || 'Admin'}
+            </h2>
+          </div>
           <div className="flex items-center gap-4">
             <button className="p-2 text-stone-400 hover:text-stone-900 transition-colors relative">
               <Bell className="w-5 h-5" />
               <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
             </button>
-            <div className="h-8 w-[1px] bg-stone-200 mx-2"></div>
-            <span className="text-xs font-medium text-stone-500">{new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
+            <div className="h-8 w-[1px] bg-stone-200 mx-2 hidden sm:block"></div>
+            <span className="text-xs font-medium text-stone-500 hidden sm:block">{new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
           </div>
         </header>
 
-        <div className="p-8 max-w-6xl w-full mx-auto">
+        <div className="p-4 lg:p-8 max-w-6xl w-full mx-auto">
           <Outlet />
         </div>
       </main>

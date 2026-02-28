@@ -168,8 +168,8 @@ export default function AdminAds() {
                     <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1 px-1">Prioridad</label>
                     <input 
                       type="number" 
-                      value={formData.priority}
-                      onChange={e => setFormData({...formData, priority: parseInt(e.target.value)})}
+                      value={isNaN(formData.priority) ? '' : formData.priority}
+                      onChange={e => setFormData({...formData, priority: parseInt(e.target.value) || 0})}
                       className="w-full px-4 py-2 bg-stone-50 border border-stone-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500"
                     />
                   </div>
