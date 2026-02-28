@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   },
   imagePlaceholder: {
     aspectRatio: 1,
-    backgroundColor: '#f5f5f4',
+    backgroundColor: '#55c99b',
     borderRadius: 12,
     marginBottom: 10,
   },
