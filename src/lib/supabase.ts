@@ -114,6 +114,8 @@ export interface Order {
 export interface Ad {
   id: string;
   image_url: string;
+  title?: string | null;
+  description?: string | null;
   link: string;
   active: boolean;
   starts_at: string;

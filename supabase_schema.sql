@@ -118,6 +118,8 @@ CREATE TABLE IF NOT EXISTS public.orders (
 CREATE TABLE IF NOT EXISTS public.ads (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
     image_url TEXT NOT NULL,
+    title TEXT,
+    description TEXT,
     link TEXT,
     active BOOLEAN DEFAULT true NOT NULL,
     starts_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
