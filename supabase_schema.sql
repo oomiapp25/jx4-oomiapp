@@ -251,6 +251,12 @@ DROP POLICY IF EXISTS "Admins can manage transport lines" ON public.transport_li
 CREATE POLICY "Anyone can view transport lines" ON public.transport_lines FOR SELECT USING (true);
 CREATE POLICY "Admins can manage transport lines" ON public.transport_lines FOR ALL USING (public.has_any_role(ARRAY['admin'::user_role, 'transport_admin'::user_role]));
 
+-- Transports (Delivery/Private)
+DROP POLICY IF EXISTS "Anyone can view transports" ON public.transports;
+DROP POLICY IF EXISTS "Admins can manage transports" ON public.transports;
+CREATE POLICY "Anyone can view transports" ON public.transports FOR SELECT USING (true);
+CREATE POLICY "Admins can manage transports" ON public.transports FOR ALL USING (public.has_any_role(ARRAY['admin'::user_role, 'transport_admin'::user_role]));
+
 -- Job offers
 DROP POLICY IF EXISTS "Anyone can view jobs" ON public.job_offers;
 DROP POLICY IF EXISTS "Admins can manage jobs" ON public.job_offers;

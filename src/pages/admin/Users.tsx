@@ -99,7 +99,7 @@ export default function AdminUsers() {
                       <Phone className="w-3 h-3 text-stone-400" />
                       <input 
                         type="text"
-                        value={user.phone_number || ''}
+                        defaultValue={user.phone_number || ''}
                         onBlur={(e) => updateUser(user.id, { phone_number: e.target.value })}
                         placeholder="Sin teléfono"
                         className="bg-transparent border-none p-0 text-xs focus:ring-0 w-24"
