@@ -33,7 +33,6 @@ export default function Checkout() {
   }
 
   const handleConfirmOrder = async () => {
-    if (!user) return;
     if (method === 'delivery' && !selectedTransport) {
       alert('Por favor selecciona un transportista');
       return;
@@ -47,7 +46,7 @@ export default function Checkout() {
     try {
       // 1. Save Order to DB
       const { data: order, error: orderError } = await supabase.from('orders').insert({
-        user_id: user.id,
+        user_id: user?.id || null,
         items: cart,
         total: total + (method === 'delivery' ? (transports.find(t => t.id === selectedTransport)?.base_price || 0) : 0),
         status: 'pending',
@@ -88,7 +87,11 @@ export default function Checkout() {
       // 3. Clear Cart and Redirect
       clearCart();
       alert('¡Pedido confirmado! Se han abierto los chats de WhatsApp para coordinar con cada departamento.');
-      navigate('/mis-pedidos');
+      if (user) {
+        navigate('/mis-pedidos');
+      } else {
+        navigate('/');
+      }
 
     } catch (error: any) {
       alert('Error al procesar el pedido: ' + error.message);

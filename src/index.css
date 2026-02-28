@@ -3,7 +3,8 @@
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --color-ml-yellow: #fff159;
+  --color-brand-primary: #1abc9c;
+  --color-ml-yellow: var(--color-brand-primary);
   --color-ml-blue: #3483fa;
   --color-ml-bg: #ebebeb;
 }

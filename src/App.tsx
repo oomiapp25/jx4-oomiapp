@@ -68,7 +68,7 @@ export default function App() {
           {/* Protected Customer Routes */}
           <Route 
             path="/checkout" 
-            element={user ? <Checkout /> : <Navigate to="/login" />} 
+            element={<Checkout />}
           />
           <Route 
             path="/mis-pedidos" 
