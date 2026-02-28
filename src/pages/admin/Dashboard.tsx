@@ -40,8 +40,9 @@ export default function AdminDashboard() {
   });
 
   useEffect(() => {
-    setMounted(true);
+    const timer = setTimeout(() => setMounted(true), 100);
     fetchStats();
+    return () => clearTimeout(timer);
   }, []);
 
   async function fetchStats() {
