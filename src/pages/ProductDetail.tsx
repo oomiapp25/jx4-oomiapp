@@ -40,7 +40,7 @@ export default function ProductDetail() {
       <div className="bg-white rounded shadow-sm border border-stone-100 overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-0">
           {/* Image Gallery */}
-          <div className="md:col-span-8 p-8 border-r border-stone-100">
+          <div className="md:col-span-8 p-8 border-r border-ml-white-cal">
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -54,9 +54,9 @@ export default function ProductDetail() {
               />
             </motion.div>
             
-            <div className="mt-12 border-t border-stone-100 pt-8">
-              <h2 className="text-2xl font-normal text-stone-800 mb-6">Descripción</h2>
-              <p className="text-stone-600 leading-relaxed whitespace-pre-wrap">
+            <div className="mt-12 border-t border-ml-white-cal pt-8">
+              <h2 className="text-2xl font-normal text-ml-monte-verde mb-6">Descripción</h2>
+              <p className="text-ml-hierro leading-relaxed whitespace-pre-wrap">
                 {product.description}
               </p>
             </div>
@@ -64,30 +64,30 @@ export default function ProductDetail() {
 
           {/* Buy Box */}
           <div className="md:col-span-4 p-8">
-            <div className="border border-stone-200 rounded-lg p-6 space-y-6">
+            <div className="border border-ml-white-cal rounded-lg p-6 space-y-6">
               <div>
-                <span className="text-xs text-stone-400">Nuevo | {product.stock} disponibles</span>
-                <h1 className="text-2xl font-bold text-stone-900 mt-1 leading-tight">{product.title}</h1>
+                <span className="text-xs text-ml-hierro">Nuevo | {product.stock} disponibles</span>
+                <h1 className="text-2xl font-bold text-ml-monte-verde mt-1 leading-tight">{product.title}</h1>
               </div>
 
               <div>
-                <p className="text-4xl font-light text-stone-900">${product.price}</p>
-                <p className="text-sm text-stone-500 mt-1">en 12x $ {(product.price / 12).toFixed(2)} sin interés</p>
+                <p className="text-4xl font-light text-ml-monte-verde">${product.price}</p>
+                <p className="text-sm text-ml-hierro mt-1">en 12x $ {(product.price / 12).toFixed(2)} sin interés</p>
               </div>
 
               <div className="space-y-4">
                 <div className="flex gap-3">
-                  <Truck className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+                  <Truck className="w-5 h-5 text-ml-quebrada flex-shrink-0" />
                   <div>
-                    <p className="text-sm text-emerald-600 font-bold">Envío gratis a todo el país</p>
-                    <p className="text-xs text-stone-400">Conoce los tiempos y las formas de envío.</p>
+                    <p className="text-sm text-ml-quebrada font-bold">Envío gratis a todo el país</p>
+                    <p className="text-xs text-ml-quebrada/60">Conoce los tiempos y las formas de envío.</p>
                   </div>
                 </div>
                 <div className="flex gap-3">
-                  <ShieldCheck className="w-5 h-5 text-stone-400 flex-shrink-0" />
+                  <ShieldCheck className="w-5 h-5 text-ml-quebrada/40 flex-shrink-0" />
                   <div>
-                    <p className="text-sm text-ml-blue">Compra Protegida</p>
-                    <p className="text-xs text-stone-400">Recibe el producto que esperabas o te devolvemos tu dinero.</p>
+                    <p className="text-sm text-ml-hierro">Compra Protegida</p>
+                    <p className="text-xs text-ml-quebrada/60">Recibe el producto que esperabas o te devolvemos tu dinero.</p>
                   </div>
                 </div>
               </div>
@@ -98,7 +98,7 @@ export default function ProductDetail() {
                   <select 
                     value={quantity}
                     onChange={(e) => setQuantity(parseInt(e.target.value))}
-                    className="bg-stone-50 border border-stone-200 rounded px-2 py-1 text-sm outline-none"
+                    className="bg-ml-white-cal border border-ml-white-cal rounded px-2 py-1 text-sm outline-none"
                   >
                     {[...Array(Math.min(10, product.stock || 1))].map((_, i) => (
                       <option key={i+1} value={i+1}>{i+1} unidad{i > 0 ? 'es' : ''}</option>
@@ -108,13 +108,13 @@ export default function ProductDetail() {
 
                 <button 
                   onClick={handleAddToCart}
-                  className="w-full py-3 bg-ml-blue text-white rounded font-bold hover:bg-blue-600 transition-colors"
+                  className="w-full py-3 bg-ml-teja text-white rounded font-bold hover:bg-ml-teja/90 transition-colors"
                 >
                   Comprar ahora
                 </button>
                 <button 
                   onClick={handleAddToCart}
-                  className={`w-full py-3 rounded font-bold transition-colors border border-transparent ${added ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-blue-50 text-ml-blue hover:bg-blue-100'}`}
+                  className={`w-full py-3 rounded font-bold transition-colors border border-transparent ${added ? 'bg-ml-white-cal text-ml-quebrada border-ml-quebrada/20' : 'bg-ml-white-cal text-ml-hierro hover:bg-ml-white-cal/80'}`}
                 >
                   {added ? '¡Agregado!' : 'Agregar al carrito'}
                 </button>

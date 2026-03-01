@@ -33,7 +33,6 @@ export default function Checkout() {
   }
 
   const handleConfirmOrder = async () => {
-    if (!user) return;
     if (method === 'delivery' && !selectedTransport) {
       alert('Por favor selecciona un transportista');
       return;
@@ -47,7 +46,7 @@ export default function Checkout() {
     try {
       // 1. Save Order to DB
       const { data: order, error: orderError } = await supabase.from('orders').insert({
-        user_id: user.id,
+        user_id: user?.id || null,
         items: cart,
         total: total + (method === 'delivery' ? (transports.find(t => t.id === selectedTransport)?.base_price || 0) : 0),
         status: 'pending',
@@ -88,7 +87,7 @@ export default function Checkout() {
       // 3. Clear Cart and Redirect
       clearCart();
       alert('¡Pedido confirmado! Se han abierto los chats de WhatsApp para coordinar con cada departamento.');
-      navigate('/mis-pedidos');
+      navigate(user ? '/mis-pedidos' : '/');
 
     } catch (error: any) {
       alert('Error al procesar el pedido: ' + error.message);
@@ -100,8 +99,8 @@ export default function Checkout() {
   if (cart.length === 0) {
     return (
       <div className="text-center py-20">
-        <h2 className="text-2xl font-bold text-stone-900 mb-4">Tu carrito está vacío</h2>
-        <button onClick={() => navigate('/')} className="text-emerald-600 font-bold hover:underline">Ir a comprar</button>
+        <h2 className="text-2xl font-bold text-ml-dark mb-4">Tu carrito está vacío</h2>
+        <button onClick={() => navigate('/')} className="text-ml-acento font-bold hover:underline">Ir a comprar</button>
       </div>
     );
   }
@@ -118,26 +117,26 @@ export default function Checkout() {
             <div className="space-y-4">
               <button 
                 onClick={() => setMethod('delivery')}
-                className={`w-full p-6 rounded-lg border-2 transition-all flex items-center gap-4 ${method === 'delivery' ? 'border-ml-blue bg-blue-50/30' : 'border-stone-100 bg-white hover:border-stone-200'}`}
+                className={`w-full p-6 rounded-lg border-2 transition-all flex items-center gap-4 ${method === 'delivery' ? 'border-ml-secundario bg-ml-neutral' : 'border-stone-100 bg-white hover:border-stone-200'}`}
               >
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${method === 'delivery' ? 'bg-ml-blue text-white' : 'bg-stone-100 text-stone-400'}`}>
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${method === 'delivery' ? 'bg-ml-secundario text-white' : 'bg-ml-neutral text-ml-principal'}`}>
                   <Truck className="w-5 h-5" />
                 </div>
                 <div className="text-left">
-                  <span className={`block font-bold ${method === 'delivery' ? 'text-ml-blue' : 'text-stone-700'}`}>Enviar a mi domicilio</span>
-                  <span className="text-xs text-stone-400">Llega a Paracotos en 24-48h</span>
+                  <span className={`block font-bold ${method === 'delivery' ? 'text-ml-secundario' : 'text-ml-dark'}`}>Enviar a mi domicilio</span>
+                  <span className="text-xs text-ml-principal/60">Llega a Paracotos en 24-48h</span>
                 </div>
               </button>
               <button 
                 onClick={() => setMethod('pickup')}
-                className={`w-full p-6 rounded-lg border-2 transition-all flex items-center gap-4 ${method === 'pickup' ? 'border-ml-blue bg-blue-50/30' : 'border-stone-100 bg-white hover:border-stone-200'}`}
+                className={`w-full p-6 rounded-lg border-2 transition-all flex items-center gap-4 ${method === 'pickup' ? 'border-ml-secundario bg-ml-neutral' : 'border-stone-100 bg-white hover:border-stone-200'}`}
               >
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${method === 'pickup' ? 'bg-ml-blue text-white' : 'bg-stone-100 text-stone-400'}`}>
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center ${method === 'pickup' ? 'bg-ml-secundario text-white' : 'bg-ml-neutral text-ml-principal'}`}>
                   <Store className="w-5 h-5" />
                 </div>
                 <div className="text-left">
-                  <span className={`block font-bold ${method === 'pickup' ? 'text-ml-blue' : 'text-stone-700'}`}>Retiro en tienda</span>
-                  <span className="text-xs text-stone-400">Gratis - Disponible hoy mismo</span>
+                  <span className={`block font-bold ${method === 'pickup' ? 'text-ml-secundario' : 'text-ml-dark'}`}>Retiro en tienda</span>
+                  <span className="text-xs text-ml-principal/60">Gratis - Disponible hoy mismo</span>
                 </div>
               </button>
             </div>
@@ -156,18 +155,18 @@ export default function Checkout() {
                   <button 
                     key={t.id}
                     onClick={() => setSelectedTransport(t.id)}
-                    className={`w-full p-4 rounded-lg border transition-all text-left flex items-center justify-between ${selectedTransport === t.id ? 'border-ml-blue bg-blue-50/20' : 'border-stone-100 bg-white hover:border-stone-200'}`}
+                    className={`w-full p-4 rounded-lg border transition-all text-left flex items-center justify-between ${selectedTransport === t.id ? 'border-ml-secundario bg-ml-neutral' : 'border-stone-100 bg-white hover:border-stone-200'}`}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-8 h-8 bg-stone-100 rounded-full flex items-center justify-center text-stone-400">
+                      <div className="w-8 h-8 bg-ml-neutral rounded-full flex items-center justify-center text-ml-principal">
                         <Truck className="w-4 h-4" />
                       </div>
                       <div>
-                        <p className="text-sm font-bold text-stone-900">{t.name}</p>
-                        <p className="text-[10px] text-stone-400 uppercase">{t.vehicle_type}</p>
+                        <p className="text-sm font-bold text-ml-dark">{t.name}</p>
+                        <p className="text-[10px] text-ml-principal/60 uppercase">{t.vehicle_type}</p>
                       </div>
                     </div>
-                    <p className="text-sm font-bold text-stone-900">${t.base_price}</p>
+                    <p className="text-sm font-bold text-ml-dark">${t.base_price}</p>
                   </button>
                 ))}
               </div>
@@ -184,7 +183,7 @@ export default function Checkout() {
                   type="text"
                   value={formData.receiver_name}
                   onChange={e => setFormData({...formData, receiver_name: e.target.value})}
-                  className="w-full px-4 py-2 bg-white border border-stone-200 rounded text-sm focus:ring-1 focus:ring-ml-blue outline-none"
+                  className="w-full px-4 py-2 bg-white border border-stone-200 rounded text-sm focus:ring-1 focus:ring-ml-secundario outline-none"
                 />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -194,7 +193,7 @@ export default function Checkout() {
                     type="tel"
                     value={formData.phone}
                     onChange={e => setFormData({...formData, phone: e.target.value})}
-                    className="w-full px-4 py-2 bg-white border border-stone-200 rounded text-sm focus:ring-1 focus:ring-ml-blue outline-none"
+                    className="w-full px-4 py-2 bg-white border border-stone-200 rounded text-sm focus:ring-1 focus:ring-ml-secundario outline-none"
                   />
                 </div>
                 <div>
@@ -203,7 +202,7 @@ export default function Checkout() {
                     type="text"
                     value={formData.address}
                     onChange={e => setFormData({...formData, address: e.target.value})}
-                    className="w-full px-4 py-2 bg-white border border-stone-200 rounded text-sm focus:ring-1 focus:ring-ml-blue outline-none"
+                    className="w-full px-4 py-2 bg-white border border-stone-200 rounded text-sm focus:ring-1 focus:ring-ml-secundario outline-none"
                   />
                 </div>
               </div>
@@ -216,25 +215,25 @@ export default function Checkout() {
           <div className="bg-white p-8 rounded shadow-sm border border-stone-100 sticky top-32">
             <h3 className="text-lg font-bold mb-6 text-stone-900">Resumen de compra</h3>
             <div className="space-y-4 mb-6">
-              <div className="flex justify-between text-sm text-stone-600">
+              <div className="flex justify-between text-sm text-ml-dark/70">
                 <span>Productos ({cart.length})</span>
                 <span>${total.toFixed(2)}</span>
               </div>
-              <div className="flex justify-between text-sm text-stone-600">
+              <div className="flex justify-between text-sm text-ml-dark/70">
                 <span>Envío</span>
-                <span className={method === 'pickup' ? 'text-emerald-600 font-bold' : ''}>
+                <span className={method === 'pickup' ? 'text-ml-acento font-bold' : ''}>
                   {method === 'pickup' ? 'Gratis' : `$${deliveryFee.toFixed(2)}`}
                 </span>
               </div>
               <div className="pt-4 border-t border-stone-100 flex justify-between">
-                <span className="text-lg font-bold text-stone-900">Total</span>
-                <span className="text-lg font-bold text-stone-900">${(total + deliveryFee).toFixed(2)}</span>
+                <span className="text-lg font-bold text-ml-dark">Total</span>
+                <span className="text-lg font-bold text-ml-dark">${(total + deliveryFee).toFixed(2)}</span>
               </div>
             </div>
             <button 
               onClick={handleConfirmOrder}
               disabled={submitting}
-              className="w-full py-3 bg-ml-blue text-white rounded font-bold hover:bg-blue-600 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full py-3 bg-ml-acento text-white rounded font-bold hover:bg-ml-acento/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Confirmar compra'}
             </button>

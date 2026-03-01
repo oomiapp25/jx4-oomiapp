@@ -53,30 +53,30 @@ export default function Login() {
         className="bg-white p-10 rounded shadow-sm border border-stone-100"
       >
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-stone-900">¡Hola! Ingresa tu e-mail y contraseña</h1>
+          <h1 className="text-2xl font-bold text-ml-dark">¡Hola! Ingresa tu e-mail y contraseña</h1>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
-            <label className="block text-xs font-bold text-stone-500 mb-1">E-mail</label>
+            <label className="block text-xs font-bold text-ml-principal mb-1">E-mail</label>
             <input
               type="text"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 bg-white border border-stone-200 rounded text-sm focus:ring-1 focus:ring-ml-blue outline-none"
+              className="w-full px-4 py-2 bg-white border border-stone-200 rounded text-sm focus:ring-1 focus:ring-ml-secundario outline-none"
               placeholder="ejemplo@correo.com"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-stone-500 mb-1">Contraseña</label>
+            <label className="block text-xs font-bold text-ml-principal mb-1">Contraseña</label>
             <input
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 bg-white border border-stone-200 rounded text-sm focus:ring-1 focus:ring-ml-blue outline-none"
+              className="w-full px-4 py-2 bg-white border border-stone-200 rounded text-sm focus:ring-1 focus:ring-ml-secundario outline-none"
               placeholder="••••••••"
             />
           </div>
@@ -91,13 +91,13 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-ml-blue text-white rounded font-bold hover:bg-blue-600 transition-all disabled:opacity-50"
+              className="w-full py-3 bg-ml-acento text-white rounded font-bold hover:bg-ml-acento/90 transition-all disabled:opacity-50"
             >
               {loading ? 'Iniciando...' : 'Ingresar'}
             </button>
             <Link 
               to="/registro" 
-              className="block w-full py-3 text-center text-ml-blue font-bold hover:bg-blue-50 rounded transition-all"
+              className="block w-full py-3 text-center text-ml-secundario font-bold hover:bg-ml-neutral rounded transition-all"
             >
               Crear cuenta
             </Link>

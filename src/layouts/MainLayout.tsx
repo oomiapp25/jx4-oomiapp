@@ -49,15 +49,15 @@ export default function MainLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-ml-bg flex flex-col font-sans">
+    <div className="min-h-screen bg-ml-white-cal flex flex-col font-sans">
       {/* Header */}
-      <header className="bg-ml-yellow shadow-sm sticky top-0 z-50">
+      <header className="bg-ml-monte-verde shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4">
           {/* Top Bar */}
           <div className="h-14 flex items-center justify-between gap-4 md:gap-8">
             <Link to="/" className="flex-shrink-0">
-              <h1 className="text-xl md:text-2xl font-black tracking-tighter text-stone-900 leading-none">
-                JX4<span className="text-ml-blue">PARACOTOS</span>
+              <h1 className="text-xl md:text-2xl font-black tracking-tighter text-white leading-none">
+                JX4<span className="text-ml-quebrada">PARACOTOS</span>
               </h1>
             </Link>
 
@@ -68,7 +68,7 @@ export default function MainLayout() {
                   placeholder="Buscar productos, marcas y más..." 
                   className="w-full pl-4 pr-12 py-2 bg-white border-none rounded shadow-sm text-sm focus:ring-0 transition-all placeholder:text-stone-400"
                 />
-                <button className="absolute right-0 top-0 h-full px-4 text-stone-400 border-l border-stone-100 hover:text-ml-blue transition-colors">
+                <button className="absolute right-0 top-0 h-full px-4 text-ml-hierro border-l border-stone-100 hover:text-ml-teja transition-colors">
                   <Search className="w-4 h-4" />
                 </button>
               </div>
@@ -80,9 +80,9 @@ export default function MainLayout() {
           </div>
 
           {/* Bottom Bar */}
-          <div className="h-10 flex items-center justify-between text-xs md:text-sm text-stone-700/80">
+          <div className="h-10 flex items-center justify-between text-xs md:text-sm text-white/80">
             <div className="flex items-center gap-6">
-              <div className="flex items-center gap-1 text-stone-900 cursor-pointer hover:text-stone-900 transition-colors">
+              <div className="flex items-center gap-1 text-white cursor-pointer hover:text-ml-quebrada transition-colors">
                 <MapPin className="w-4 h-4" />
                 <div className="flex flex-col leading-none">
                   <span className="text-[10px] opacity-60">Enviar a</span>
@@ -91,35 +91,35 @@ export default function MainLayout() {
               </div>
 
               <nav className="hidden md:flex items-center gap-6 font-normal">
-                <Link to="/categorias" className="hover:text-stone-900 transition-colors">Categorías</Link>
-                <Link to="/ofertas" className="hover:text-stone-900 transition-colors">Ofertas</Link>
-                <Link to="/historial" className="hover:text-stone-900 transition-colors">Historial</Link>
-                <Link to="/vender" className="hover:text-stone-900 transition-colors">Vender</Link>
-                <Link to="/ayuda" className="hover:text-stone-900 transition-colors">Ayuda</Link>
+                <Link to="/categorias" className="hover:text-white transition-colors">Categorías</Link>
+                <Link to="/ofertas" className="hover:text-white transition-colors">Ofertas</Link>
+                <Link to="/historial" className="hover:text-white transition-colors">Historial</Link>
+                <Link to="/vender" className="hover:text-white transition-colors">Vender</Link>
+                <Link to="/ayuda" className="hover:text-white transition-colors">Ayuda</Link>
               </nav>
             </div>
 
             <div className="flex items-center gap-6">
               {user ? (
                 <div className="flex items-center gap-4">
-                  <Link to="/perfil" className="flex items-center gap-1 hover:text-stone-900 transition-colors">
+                  <Link to="/perfil" className="flex items-center gap-1 hover:text-white transition-colors">
                     <User className="w-4 h-4" />
                     <span className="hidden sm:inline">{user.email?.split('@')[0]}</span>
                   </Link>
-                  <Link to="/mis-pedidos" className="hover:text-stone-900 transition-colors">Mis compras</Link>
-                  <button onClick={() => supabase.auth.signOut()} className="hover:text-red-600 transition-colors">Salir</button>
+                  <Link to="/mis-pedidos" className="hover:text-white transition-colors">Mis compras</Link>
+                  <button onClick={() => supabase.auth.signOut()} className="hover:text-ml-pared-floreada transition-colors">Salir</button>
                 </div>
               ) : (
                 <div className="flex items-center gap-4">
-                  <Link to="/registro" className="hover:text-stone-900 transition-colors">Crea tu cuenta</Link>
-                  <Link to="/login" className="hover:text-stone-900 transition-colors">Ingresa</Link>
-                  <Link to="/mis-pedidos" className="hover:text-stone-900 transition-colors">Mis compras</Link>
+                  <Link to="/registro" className="hover:text-white transition-colors">Crea tu cuenta</Link>
+                  <Link to="/login" className="hover:text-white transition-colors">Ingresa</Link>
+                  <Link to="/mis-pedidos" className="hover:text-white transition-colors">Mis compras</Link>
                 </div>
               )}
-              <Link to="/checkout" className="relative hover:text-stone-900 transition-colors">
+              <Link to="/checkout" className="relative hover:text-white transition-colors">
                 <ShoppingCart className="w-5 h-5" />
                 {itemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-ml-blue text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+                  <span className="absolute -top-1 -right-1 bg-ml-teja text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
                     {itemCount}
                   </span>
                 )}
@@ -131,13 +131,13 @@ export default function MainLayout() {
 
       {/* Transport News Ticker (Optional, kept but styled) */}
       {transportLines.length > 0 && (
-        <div className="bg-white border-b border-stone-200 py-1 overflow-hidden">
+        <div className="bg-ml-quebrada/10 border-b border-ml-quebrada/20 py-1 overflow-hidden">
           <div className="flex animate-marquee whitespace-nowrap items-center">
             {transportLines.map(line => (
-              <div key={line.id} className="mx-12 flex items-center gap-2 text-[10px] font-bold uppercase text-stone-500">
-                <Bus className="w-3 h-3 text-ml-blue" />
+              <div key={line.id} className="mx-12 flex items-center gap-2 text-[10px] font-bold uppercase text-ml-monte-verde">
+                <Bus className="w-3 h-3 text-ml-teja" />
                 <span>{line.origin} → {line.destination}</span>
-                <span className="text-ml-blue">{line.news_update || 'Operando normal'}</span>
+                <span className="text-ml-hierro">{line.news_update || 'Operando normal'}</span>
               </div>
             ))}
           </div>
@@ -161,10 +161,10 @@ export default function MainLayout() {
               <Link 
                 to="/" 
                 onClick={() => setIsFabOpen(false)}
-                className="flex items-center gap-3 bg-white px-4 py-3 rounded-2xl shadow-xl border border-stone-100 group hover:bg-emerald-50 transition-colors"
+                className="flex items-center gap-3 bg-white px-4 py-3 rounded-2xl shadow-xl border border-ml-white-cal group hover:bg-ml-white-cal transition-colors"
               >
-                <span className="text-xs font-black text-stone-900 uppercase tracking-widest">Inicio</span>
-                <div className="w-10 h-10 bg-stone-100 rounded-xl flex items-center justify-center text-stone-600 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                <span className="text-xs font-black text-ml-monte-verde uppercase tracking-widest">Inicio</span>
+                <div className="w-10 h-10 bg-ml-white-cal rounded-xl flex items-center justify-center text-ml-hierro group-hover:bg-ml-monte-verde group-hover:text-white transition-all">
                   <Home className="w-5 h-5" />
                 </div>
               </Link>
@@ -172,10 +172,10 @@ export default function MainLayout() {
               <Link 
                 to="/mis-pedidos" 
                 onClick={() => setIsFabOpen(false)}
-                className="flex items-center gap-3 bg-white px-4 py-3 rounded-2xl shadow-xl border border-stone-100 group hover:bg-emerald-50 transition-colors"
+                className="flex items-center gap-3 bg-white px-4 py-3 rounded-2xl shadow-xl border border-ml-white-cal group hover:bg-ml-white-cal transition-colors"
               >
-                <span className="text-xs font-black text-stone-900 uppercase tracking-widest">Mis Pedidos</span>
-                <div className="w-10 h-10 bg-stone-100 rounded-xl flex items-center justify-center text-stone-600 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                <span className="text-xs font-black text-ml-monte-verde uppercase tracking-widest">Mis Pedidos</span>
+                <div className="w-10 h-10 bg-ml-white-cal rounded-xl flex items-center justify-center text-ml-hierro group-hover:bg-ml-monte-verde group-hover:text-white transition-all">
                   <Package className="w-5 h-5" />
                 </div>
               </Link>
@@ -183,10 +183,10 @@ export default function MainLayout() {
               <Link 
                 to="/transporte" 
                 onClick={() => setIsFabOpen(false)}
-                className="flex items-center gap-3 bg-white px-4 py-3 rounded-2xl shadow-xl border border-stone-100 group hover:bg-emerald-50 transition-colors"
+                className="flex items-center gap-3 bg-white px-4 py-3 rounded-2xl shadow-xl border border-ml-white-cal group hover:bg-ml-white-cal transition-colors"
               >
-                <span className="text-xs font-black text-stone-900 uppercase tracking-widest">Transporte</span>
-                <div className="w-10 h-10 bg-stone-100 rounded-xl flex items-center justify-center text-stone-600 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                <span className="text-xs font-black text-ml-monte-verde uppercase tracking-widest">Transporte</span>
+                <div className="w-10 h-10 bg-ml-white-cal rounded-xl flex items-center justify-center text-ml-hierro group-hover:bg-ml-quebrada group-hover:text-white transition-all">
                   <Bus className="w-5 h-5" />
                 </div>
               </Link>
@@ -194,10 +194,10 @@ export default function MainLayout() {
               <Link 
                 to="/empleos" 
                 onClick={() => setIsFabOpen(false)}
-                className="flex items-center gap-3 bg-white px-4 py-3 rounded-2xl shadow-xl border border-stone-100 group hover:bg-emerald-50 transition-colors"
+                className="flex items-center gap-3 bg-white px-4 py-3 rounded-2xl shadow-xl border border-ml-white-cal group hover:bg-ml-white-cal transition-colors"
               >
-                <span className="text-xs font-black text-stone-900 uppercase tracking-widest">Empleos</span>
-                <div className="w-10 h-10 bg-stone-100 rounded-xl flex items-center justify-center text-stone-600 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                <span className="text-xs font-black text-ml-monte-verde uppercase tracking-widest">Empleos</span>
+                <div className="w-10 h-10 bg-ml-white-cal rounded-xl flex items-center justify-center text-ml-hierro group-hover:bg-ml-quebrada group-hover:text-white transition-all">
                   <Briefcase className="w-5 h-5" />
                 </div>
               </Link>
@@ -205,10 +205,10 @@ export default function MainLayout() {
               <Link 
                 to="/servicios" 
                 onClick={() => setIsFabOpen(false)}
-                className="flex items-center gap-3 bg-white px-4 py-3 rounded-2xl shadow-xl border border-stone-100 group hover:bg-emerald-50 transition-colors"
+                className="flex items-center gap-3 bg-white px-4 py-3 rounded-2xl shadow-xl border border-ml-white-cal group hover:bg-ml-white-cal transition-colors"
               >
-                <span className="text-xs font-black text-stone-900 uppercase tracking-widest">Servicios</span>
-                <div className="w-10 h-10 bg-stone-100 rounded-xl flex items-center justify-center text-stone-600 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                <span className="text-xs font-black text-ml-monte-verde uppercase tracking-widest">Servicios</span>
+                <div className="w-10 h-10 bg-ml-white-cal rounded-xl flex items-center justify-center text-ml-hierro group-hover:bg-ml-quebrada group-hover:text-white transition-all">
                   <Wrench className="w-5 h-5" />
                 </div>
               </Link>
@@ -217,10 +217,10 @@ export default function MainLayout() {
                 <Link 
                   to="/admin" 
                   onClick={() => setIsFabOpen(false)}
-                  className="flex items-center gap-3 bg-white px-4 py-3 rounded-2xl shadow-xl border border-stone-100 group hover:bg-emerald-50 transition-colors"
+                  className="flex items-center gap-3 bg-white px-4 py-3 rounded-2xl shadow-xl border border-ml-white-cal group hover:bg-ml-white-cal transition-colors"
                 >
-                  <span className="text-xs font-black text-stone-900 uppercase tracking-widest">Administración</span>
-                  <div className="w-10 h-10 bg-stone-100 rounded-xl flex items-center justify-center text-stone-600 group-hover:bg-emerald-600 group-hover:text-white transition-all">
+                  <span className="text-xs font-black text-ml-monte-verde uppercase tracking-widest">Administración</span>
+                  <div className="w-10 h-10 bg-ml-white-cal rounded-xl flex items-center justify-center text-ml-hierro group-hover:bg-ml-quebrada group-hover:text-white transition-all">
                     <Shield className="w-5 h-5" />
                   </div>
                 </Link>
@@ -237,7 +237,7 @@ export default function MainLayout() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.5 }}
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className="w-14 h-14 bg-white shadow-lg border border-stone-200 rounded-2xl flex items-center justify-center text-stone-600 hover:text-emerald-600 transition-colors"
+                className="w-14 h-14 bg-white shadow-lg border border-ml-white-cal rounded-2xl flex items-center justify-center text-ml-hierro hover:text-ml-quebrada transition-colors"
               >
                 <ArrowUp className="w-6 h-6" />
               </motion.button>
@@ -246,37 +246,37 @@ export default function MainLayout() {
           
           <button 
             onClick={() => setIsFabOpen(!isFabOpen)}
-            className={`w-14 h-14 shadow-2xl rounded-2xl flex items-center justify-center text-white transition-all hover:scale-110 active:scale-95 ${isFabOpen ? 'bg-stone-900 rotate-45' : 'bg-emerald-600'}`}
+            className={`w-14 h-14 shadow-2xl rounded-2xl flex items-center justify-center text-white transition-all hover:scale-110 active:scale-95 ${isFabOpen ? 'bg-ml-monte-verde rotate-45' : 'bg-ml-teja'}`}
           >
             <Plus className={`w-8 h-8 transition-transform ${isFabOpen ? 'rotate-0' : 'rotate-0'}`} />
           </button>
         </div>
       </div>
 
-      <footer className="bg-white border-t border-stone-200 py-12">
+      <footer className="bg-white border-t border-ml-white-cal py-12">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <h3 className="text-xl font-black text-stone-900 tracking-tighter mb-4">
-            JX4<span className="text-emerald-600">PARACOTOS</span>
+          <h3 className="text-xl font-black text-ml-monte-verde tracking-tighter mb-4">
+            JX4<span className="text-ml-quebrada">PARACOTOS</span>
           </h3>
-          <p className="text-stone-500 text-sm max-w-md mx-auto mb-8">
+          <p className="text-ml-hierro text-sm max-w-md mx-auto mb-8">
             Tu tienda de confianza en Paracotos. Calidad y servicio a tu alcance.
           </p>
           
           <div className="flex items-center justify-center gap-6 mb-8">
-            <Link to="/" className="text-xs font-bold text-stone-400 hover:text-emerald-600 uppercase tracking-widest transition-colors">Inicio</Link>
-            <Link to="/mis-pedidos" className="text-xs font-bold text-stone-400 hover:text-emerald-600 uppercase tracking-widest transition-colors">Mis Pedidos</Link>
+            <Link to="/" className="text-xs font-bold text-ml-hierro hover:text-ml-monte-verde uppercase tracking-widest transition-colors">Inicio</Link>
+            <Link to="/mis-pedidos" className="text-xs font-bold text-ml-hierro hover:text-ml-monte-verde uppercase tracking-widest transition-colors">Mis Pedidos</Link>
             <a 
               href="https://wa.me/584120000000" 
               target="_blank" 
               rel="noreferrer"
-              className="flex items-center gap-2 text-xs font-bold text-stone-400 hover:text-emerald-600 uppercase tracking-widest transition-colors"
+              className="flex items-center gap-2 text-xs font-bold text-ml-hierro hover:text-ml-monte-verde uppercase tracking-widest transition-colors"
             >
               <MessageCircle className="w-4 h-4" />
               WhatsApp
             </a>
           </div>
 
-          <div className="pt-8 border-t border-stone-100 text-[10px] font-bold text-stone-400 uppercase tracking-widest">
+          <div className="pt-8 border-t border-ml-white-cal text-[10px] font-bold text-stone-400 uppercase tracking-widest">
             © 2026 JX4 Paracotos. Todos los derechos reservados.
           </div>
         </div>

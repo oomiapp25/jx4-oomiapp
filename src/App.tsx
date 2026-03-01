@@ -66,10 +66,7 @@ export default function App() {
           <Route path="/servicios" element={<Services />} />
           
           {/* Protected Customer Routes */}
-          <Route 
-            path="/checkout" 
-            element={user ? <Checkout /> : <Navigate to="/login" />} 
-          />
+          <Route path="/checkout" element={<Checkout />} />
           <Route 
             path="/mis-pedidos" 
             element={user ? <MyOrders /> : <Navigate to="/login" />} 

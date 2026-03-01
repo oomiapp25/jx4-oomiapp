@@ -109,33 +109,33 @@ export default function AdminSettings() {
         {/* Exchange Rate Card */}
         <div className="bg-white p-8 rounded-[2rem] border border-stone-100 shadow-sm">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-ml-neutral text-ml-secundario rounded-2xl flex items-center justify-center">
               <DollarSign className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-lg font-black text-stone-900">Tasa Cambiaria</h3>
-              <p className="text-xs text-stone-400 font-medium uppercase tracking-widest">Configuración Global</p>
+              <h3 className="text-lg font-black text-ml-dark">Tasa Cambiaria</h3>
+              <p className="text-xs text-ml-principal font-medium uppercase tracking-widest">Configuración Global</p>
             </div>
           </div>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2 px-1">Tasa del día (1 USD = ? BS)</label>
+              <label className="block text-[10px] font-black text-ml-principal uppercase tracking-widest mb-2 px-1">Tasa del día (1 USD = ? BS)</label>
               <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-stone-400">Bs.</span>
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-ml-principal">Bs.</span>
                 <input 
                   type="number" 
                   step="0.01"
                   value={exchangeRate}
                   onChange={e => setExchangeRate(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 bg-stone-50 border border-stone-100 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-emerald-500 outline-none"
+                  className="w-full pl-12 pr-4 py-3 bg-ml-neutral border border-ml-principal/10 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-ml-secundario outline-none"
                 />
               </div>
             </div>
             <button 
               onClick={saveExchangeRate}
               disabled={saving}
-              className="w-full py-4 bg-stone-900 text-white rounded-2xl font-black text-sm hover:bg-emerald-600 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full py-4 bg-ml-acento text-white rounded-2xl font-black text-sm hover:bg-ml-acento/90 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
             >
               <Save className="w-4 h-4" />
               {saving ? 'Guardando...' : 'Actualizar Tasa'}
@@ -144,19 +144,19 @@ export default function AdminSettings() {
         </div>
 
         {/* Info Card */}
-        <div className="bg-emerald-900 p-8 rounded-[2rem] text-white flex flex-col justify-between">
+        <div className="bg-ml-special p-8 rounded-[2rem] text-white flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <Shield className="w-5 h-5 text-emerald-400" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400">Panel de Control Maestro</span>
+              <Shield className="w-5 h-5 text-ml-acento" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-ml-acento">Panel de Control Maestro</span>
             </div>
             <h2 className="text-2xl font-black mb-4">Gestión de la Plataforma</h2>
-            <p className="text-emerald-100/70 text-sm leading-relaxed">
+            <p className="text-white/70 text-sm leading-relaxed">
               Como Super Administrador, tienes control total sobre la tasa cambiaria, el personal administrativo y la configuración global de JX4 Paracotos.
             </p>
           </div>
-          <div className="mt-8 flex items-center gap-3 text-xs font-bold bg-emerald-800/50 p-4 rounded-2xl border border-emerald-700/50">
-            <AlertCircle className="w-4 h-4 text-emerald-400" />
+          <div className="mt-8 flex items-center gap-3 text-xs font-bold bg-white/10 p-4 rounded-2xl border border-white/10">
+            <AlertCircle className="w-4 h-4 text-ml-acento" />
             Los cambios en la tasa afectan a todos los productos en tiempo real.
           </div>
         </div>
@@ -166,17 +166,17 @@ export default function AdminSettings() {
       <div className="bg-white rounded-[2rem] border border-stone-100 shadow-sm overflow-hidden">
         <div className="p-8 border-b border-stone-50 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-stone-900 text-white rounded-2xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-ml-dark text-white rounded-2xl flex items-center justify-center">
               <Users className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-lg font-black text-stone-900">Personal Administrativo</h3>
-              <p className="text-xs text-stone-400 font-medium uppercase tracking-widest">Roles y Permisos</p>
+              <h3 className="text-lg font-black text-ml-dark">Personal Administrativo</h3>
+              <p className="text-xs text-ml-principal font-medium uppercase tracking-widest">Roles y Permisos</p>
             </div>
           </div>
           <button 
             onClick={() => setIsModalOpen(true)}
-            className="px-6 py-3 bg-stone-100 text-stone-900 rounded-xl text-xs font-black hover:bg-stone-200 transition-all flex items-center gap-2"
+            className="px-6 py-3 bg-ml-neutral text-ml-dark rounded-xl text-xs font-black hover:bg-ml-neutral/80 transition-all flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
             Nuevo Administrador
@@ -243,7 +243,7 @@ export default function AdminSettings() {
                           type="password" 
                           value={formData.password}
                           onChange={e => setFormData({...formData, password: e.target.value})}
-                          className="w-full pl-10 pr-4 py-2.5 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                          className="w-full pl-10 pr-4 py-2.5 bg-ml-neutral border border-ml-principal/10 rounded-xl text-sm focus:ring-2 focus:ring-ml-secundario outline-none"
                           placeholder="••••••••"
                         />
                       </div>
@@ -303,7 +303,7 @@ export default function AdminSettings() {
                     <button 
                       type="submit"
                       disabled={submitting}
-                      className="flex-1 py-3 bg-stone-900 text-white rounded-xl text-sm font-bold hover:bg-emerald-600 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                      className="flex-1 py-3 bg-ml-acento text-white rounded-xl text-sm font-bold hover:bg-ml-acento/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                     >
                       {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
                       {submitting ? 'Creando...' : 'Crear Administrador'}
@@ -332,7 +332,7 @@ export default function AdminSettings() {
                   <td className="px-8 py-4 text-stone-500">{admin.email}</td>
                   <td className="px-8 py-4">
                     <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest ${
-                      admin.role === 'admin' ? 'bg-emerald-100 text-emerald-700' : 'bg-stone-100 text-stone-600'
+                      admin.role === 'admin' ? 'bg-ml-neutral text-ml-secundario' : 'bg-ml-neutral text-ml-principal'
                     }`}>
                       {admin.role}
                     </span>

@@ -3,14 +3,17 @@
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --color-ml-yellow: #fff159;
-  --color-ml-blue: #3483fa;
-  --color-ml-bg: #ebebeb;
+  --color-ml-white-cal: #F9F6F0;
+  --color-ml-teja: #B85C3A;
+  --color-ml-monte-verde: #1F4D3E;
+  --color-ml-quebrada: #6FC5C0;
+  --color-ml-pared-floreada: #F4B393;
+  --color-ml-hierro: #5A6F7C;
 }
 
 @layer base {
   body {
-    @apply bg-ml-bg text-stone-900;
+    @apply bg-ml-white-cal text-ml-monte-verde;
   }
 }
 

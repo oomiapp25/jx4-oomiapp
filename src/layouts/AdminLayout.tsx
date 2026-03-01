@@ -51,29 +51,29 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-stone-50 flex font-sans relative">
+    <div className="min-h-screen bg-ml-white-cal flex flex-col font-sans relative lg:flex-row">
       {/* Sidebar Overlay (Mobile) */}
       {isSidebarOpen && (
         <div 
-          className="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-40 lg:hidden"
+          className="fixed inset-0 bg-ml-monte-verde/50 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <aside className={`
-        fixed inset-y-0 left-0 z-50 w-64 bg-stone-900 text-white flex flex-col transition-transform duration-300 transform
+        fixed inset-y-0 left-0 z-50 w-64 bg-ml-monte-verde text-white flex flex-col transition-transform duration-300 transform
         ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen
       `}>
         <div className="p-6 flex items-center justify-between">
           <div>
             <Link to="/" className="text-xl font-bold tracking-tighter">
-              JX4<span className="text-ml-blue">ADMIN</span>
+              JX4<span className="text-ml-quebrada">ADMIN</span>
             </Link>
-            <p className="text-[10px] text-stone-500 uppercase tracking-widest mt-1">Panel de Control</p>
+            <p className="text-[10px] text-ml-quebrada/60 uppercase tracking-widest mt-1">Panel de Control</p>
           </div>
-          <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden p-2 hover:bg-stone-800 rounded-full">
+          <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden p-2 hover:bg-ml-hierro rounded-full">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -88,8 +88,8 @@ export default function AdminLayout() {
                 onClick={() => setIsSidebarOpen(false)}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                   isActive 
-                    ? 'bg-ml-blue text-white' 
-                    : 'text-stone-400 hover:bg-stone-800 hover:text-white'
+                    ? 'bg-ml-teja text-white' 
+                    : 'text-ml-quebrada/70 hover:bg-ml-hierro hover:text-white'
                 }`}
               >
                 <item.icon className="w-4 h-4" />
@@ -100,19 +100,19 @@ export default function AdminLayout() {
           })}
         </nav>
 
-        <div className="p-4 border-t border-stone-800">
+        <div className="p-4 border-t border-ml-hierro/30">
           <div className="flex items-center gap-3 px-4 py-3 mb-2">
-            <div className="w-8 h-8 rounded-full bg-ml-blue flex items-center justify-center font-bold text-xs">
+            <div className="w-8 h-8 rounded-full bg-ml-teja flex items-center justify-center font-bold text-xs">
               {user?.full_name?.[0] || 'A'}
             </div>
             <div className="flex-grow min-w-0">
               <p className="text-xs font-bold truncate">{user?.full_name || 'Admin'}</p>
-              <p className="text-[10px] text-stone-500 truncate">{user?.role}</p>
+              <p className="text-[10px] text-ml-quebrada/60 truncate">{user?.role}</p>
             </div>
           </div>
           <button 
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-4 py-2 text-xs font-medium text-stone-400 hover:text-red-400 transition-colors"
+            className="w-full flex items-center gap-3 px-4 py-2 text-xs font-medium text-ml-quebrada/70 hover:text-ml-pared-floreada transition-colors"
           >
             <LogOut className="w-4 h-4" />
             Cerrar Sesión
@@ -122,25 +122,25 @@ export default function AdminLayout() {
 
       {/* Main Content */}
       <main className="flex-grow flex flex-col min-w-0">
-        <header className="h-16 bg-white border-b border-stone-200 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-30">
+        <header className="h-16 bg-white border-b border-ml-white-cal flex items-center justify-between px-4 lg:px-8 sticky top-0 z-30">
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setIsSidebarOpen(true)}
-              className="lg:hidden p-2 hover:bg-stone-50 rounded-lg text-stone-500"
+              className="lg:hidden p-2 hover:bg-ml-white-cal rounded-lg text-ml-hierro"
             >
               <Menu className="w-6 h-6" />
             </button>
-            <h2 className="text-sm font-bold text-stone-900 uppercase tracking-wider hidden sm:block">
+            <h2 className="text-sm font-bold text-ml-monte-verde uppercase tracking-wider hidden sm:block">
               {menuItems.find(i => i.path === location.pathname)?.label || 'Admin'}
             </h2>
           </div>
           <div className="flex items-center gap-4">
-            <button className="p-2 text-stone-400 hover:text-stone-900 transition-colors relative">
+            <button className="p-2 text-ml-quebrada hover:text-ml-monte-verde transition-colors relative">
               <Bell className="w-5 h-5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-ml-teja rounded-full border-2 border-white"></span>
             </button>
-            <div className="h-8 w-[1px] bg-stone-200 mx-2 hidden sm:block"></div>
-            <span className="text-xs font-medium text-stone-500 hidden sm:block">{new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
+            <div className="h-8 w-[1px] bg-ml-white-cal mx-2 hidden sm:block"></div>
+            <span className="text-xs font-medium text-ml-hierro hidden sm:block">{new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
           </div>
         </header>
 

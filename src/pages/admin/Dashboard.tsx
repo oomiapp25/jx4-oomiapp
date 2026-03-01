@@ -75,7 +75,7 @@ export default function AdminDashboard() {
               <div className="p-2 bg-stone-50 rounded-lg">
                 <stat.icon className="w-5 h-5 text-stone-600" />
               </div>
-              <span className={`text-xs font-bold flex items-center gap-1 ${stat.up ? 'text-emerald-600' : 'text-red-500'}`}>
+              <span className={`text-xs font-bold flex items-center gap-1 ${stat.up ? 'text-ml-secundario' : 'text-red-500'}`}>
                 {stat.up ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
                 {stat.trend}
               </span>
@@ -95,18 +95,18 @@ export default function AdminDashboard() {
                 <AreaChart data={data}>
                   <defs>
                     <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.1}/>
-                      <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="#5f7a6f" stopOpacity={0.1}/>
+                      <stop offset="95%" stopColor="#5f7a6f" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} />
                   <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} />
                   <Tooltip 
-                    contentStyle={{ backgroundColor: '#1c1917', border: 'none', borderRadius: '12px', color: '#fff' }}
-                    itemStyle={{ color: '#10b981' }}
+                    contentStyle={{ backgroundColor: '#2e3d37', border: 'none', borderRadius: '12px', color: '#fff' }}
+                    itemStyle={{ color: '#e0b0a0' }}
                   />
-                  <Area type="monotone" dataKey="sales" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorSales)" />
+                  <Area type="monotone" dataKey="sales" stroke="#5f7a6f" strokeWidth={3} fillOpacity={1} fill="url(#colorSales)" />
                 </AreaChart>
               </ResponsiveContainer>
             )}
@@ -124,9 +124,9 @@ export default function AdminDashboard() {
                   <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} />
                   <Tooltip 
                     cursor={{ fill: '#f8fafc' }}
-                    contentStyle={{ backgroundColor: '#1c1917', border: 'none', borderRadius: '12px', color: '#fff' }}
+                    contentStyle={{ backgroundColor: '#2e3d37', border: 'none', borderRadius: '12px', color: '#fff' }}
                   />
-                  <Bar dataKey="orders" fill="#0ea5e9" radius={[4, 4, 0, 0]} barSize={32} />
+                  <Bar dataKey="orders" fill="#e0b0a0" radius={[4, 4, 0, 0]} barSize={32} />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -137,7 +137,7 @@ export default function AdminDashboard() {
       <div className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
         <div className="p-6 border-b border-stone-100 flex items-center justify-between">
           <h3 className="text-sm font-bold text-stone-900 uppercase tracking-wider">Pedidos Recientes</h3>
-          <button className="text-xs font-bold text-emerald-600 hover:text-emerald-700">Ver todos</button>
+          <button className="text-xs font-bold text-ml-secundario hover:text-ml-dark">Ver todos</button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left">
@@ -156,7 +156,7 @@ export default function AdminDashboard() {
                   <td className="px-6 py-4 font-mono text-xs text-stone-500">#ORD-2026-00{i+1}</td>
                   <td className="px-6 py-4 font-medium text-stone-900">Cliente Ejemplo {i+1}</td>
                   <td className="px-6 py-4">
-                    <span className="px-2 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-bold rounded-full uppercase">Completado</span>
+                    <span className="px-2 py-1 bg-ml-neutral text-ml-secundario text-[10px] font-bold rounded-full uppercase">Completado</span>
                   </td>
                   <td className="px-6 py-4 font-bold">$120.00</td>
                   <td className="px-6 py-4 text-stone-500 text-xs">27 Feb 2026</td>

@@ -24,13 +24,13 @@ export default function Home() {
   }
 
   const dynamicAccess = [
-    { icon: Smartphone, label: 'Celulares', color: 'text-stone-600' },
-    { icon: Store, label: 'Tiendas', color: 'text-stone-600' },
-    { icon: Footprints, label: 'Zapatos', color: 'text-stone-600' },
-    { icon: Ticket, label: 'Cupones', color: 'text-stone-600' },
-    { icon: CreditCard, label: 'Pagar', color: 'text-stone-600' },
-    { icon: Truck, label: 'Envíos', color: 'text-stone-600' },
-    { icon: ShieldCheck, label: 'Seguro', color: 'text-stone-600' },
+    { icon: Smartphone, label: 'Celulares', color: 'text-ml-hierro' },
+    { icon: Store, label: 'Tiendas', color: 'text-ml-hierro' },
+    { icon: Footprints, label: 'Zapatos', color: 'text-ml-hierro' },
+    { icon: Ticket, label: 'Cupones', color: 'text-ml-hierro' },
+    { icon: CreditCard, label: 'Pagar', color: 'text-ml-hierro' },
+    { icon: Truck, label: 'Envíos', color: 'text-ml-hierro' },
+    { icon: ShieldCheck, label: 'Seguro', color: 'text-ml-hierro' },
   ];
 
   if (loading) {
@@ -59,10 +59,10 @@ export default function Home() {
         <div className="bg-white p-6 rounded shadow-sm flex items-center justify-between gap-4 overflow-x-auto no-scrollbar">
           {dynamicAccess.map((item, i) => (
             <div key={i} className="flex flex-col items-center gap-2 min-w-[80px] cursor-pointer group">
-              <div className="w-12 h-12 rounded-full bg-stone-50 flex items-center justify-center group-hover:bg-ml-yellow transition-colors">
-                <item.icon className={`w-6 h-6 ${item.color}`} />
+              <div className="w-12 h-12 rounded-full bg-ml-white-cal flex items-center justify-center group-hover:bg-ml-quebrada transition-colors">
+                <item.icon className={`w-6 h-6 ${item.color} group-hover:text-white transition-colors`} />
               </div>
-              <span className="text-[11px] font-medium text-stone-600">{item.label}</span>
+              <span className="text-[11px] font-medium text-ml-hierro">{item.label}</span>
             </div>
           ))}
         </div>
@@ -70,8 +70,8 @@ export default function Home() {
         {/* Product Section */}
         <div className="mt-12">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-light text-stone-700">Basado en tu última visita</h2>
-            <Link to="/categorias" className="text-sm text-ml-blue hover:underline">Ver historial</Link>
+            <h2 className="text-2xl font-light text-ml-monte-verde">Basado en tu última visita</h2>
+            <Link to="/categorias" className="text-sm text-ml-hierro hover:underline">Ver historial</Link>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -80,7 +80,7 @@ export default function Home() {
                 key={product.id}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="bg-white rounded overflow-hidden shadow-sm hover:shadow-md transition-shadow group border border-transparent hover:border-stone-100"
+                className="bg-white rounded overflow-hidden shadow-sm hover:shadow-md transition-shadow group border border-transparent hover:border-ml-white-cal"
               >
                 <Link to={`/producto/${product.id}`} className="block aspect-square overflow-hidden bg-white relative p-4">
                   <img 
@@ -90,11 +90,11 @@ export default function Home() {
                     referrerPolicy="no-referrer"
                   />
                 </Link>
-                <div className="p-4 border-t border-stone-50">
+                <div className="p-4 border-t border-ml-white-cal">
                   <div className="flex flex-col gap-1">
-                    <span className="text-xl font-normal text-stone-900">${product.price}</span>
-                    <p className="text-xs text-emerald-600 font-bold">Envío gratis</p>
-                    <Link to={`/producto/${product.id}`} className="text-sm text-stone-600 hover:text-ml-blue transition-colors line-clamp-2 mt-1 leading-tight">
+                    <span className="text-xl font-normal text-ml-monte-verde">${product.price}</span>
+                    <p className="text-xs text-ml-quebrada font-bold">Envío gratis</p>
+                    <Link to={`/producto/${product.id}`} className="text-sm text-ml-monte-verde hover:text-ml-hierro transition-colors line-clamp-2 mt-1 leading-tight">
                       {product.title}
                     </Link>
                   </div>
