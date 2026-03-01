@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, ChangeEvent, FormEvent } from 'react';
 import { supabase, Product } from '../../lib/supabase';
-import { Plus, Search, Edit2, Trash2, Package, X, Upload, Loader2 } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Package, X, Upload, Loader2, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { uploadToImgBB } from '../../services/imgbbService';
 
@@ -296,6 +296,13 @@ export default function AdminProducts() {
 
                   <div className="space-y-4">
                     <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1.5 px-1">Imágenes del Producto</label>
+                    
+                    {!process.env.IMGBB_API_KEY && (
+                      <div className="p-3 bg-amber-50 border border-amber-100 rounded-xl flex items-center gap-2 text-[10px] text-amber-700 font-bold">
+                        <AlertCircle className="w-3 h-3" />
+                        IMGBB_API_KEY no configurada. Usa URLs manuales.
+                      </div>
+                    )}
                     
                     {/* Manual URL Input */}
                     <div className="flex gap-2">

@@ -91,11 +91,11 @@ export default function MainLayout() {
               </div>
 
               <nav className="hidden md:flex items-center gap-6 font-normal">
-                <Link to="/categorias" className="hover:text-white transition-colors">Categorías</Link>
-                <Link to="/ofertas" className="hover:text-white transition-colors">Ofertas</Link>
-                <Link to="/historial" className="hover:text-white transition-colors">Historial</Link>
-                <Link to="/vender" className="hover:text-white transition-colors">Vender</Link>
-                <Link to="/ayuda" className="hover:text-white transition-colors">Ayuda</Link>
+                <Link to="/" className="hover:text-white transition-colors">Categorías</Link>
+                <Link to="/" className="hover:text-white transition-colors">Ofertas</Link>
+                <Link to="/" className="hover:text-white transition-colors">Historial</Link>
+                <Link to="/" className="hover:text-white transition-colors">Vender</Link>
+                <Link to="/" className="hover:text-white transition-colors">Ayuda</Link>
               </nav>
             </div>
 
@@ -111,7 +111,7 @@ export default function MainLayout() {
                 </div>
               ) : (
                 <div className="flex items-center gap-4">
-                  <Link to="/registro" className="hover:text-white transition-colors">Crea tu cuenta</Link>
+                  <Link to="/register" className="hover:text-white transition-colors">Crea tu cuenta</Link>
                   <Link to="/login" className="hover:text-white transition-colors">Ingresa</Link>
                   <Link to="/mis-pedidos" className="hover:text-white transition-colors">Mis compras</Link>
                 </div>

@@ -17,6 +17,7 @@ export interface UserProfile {
   full_name: string | null;
   role: UserRole;
   department_id?: string | null;
+  transport_line_id?: string | null;
   phone_number?: string | null;
   created_at: string;
 }
@@ -38,6 +39,7 @@ export interface Category {
   id: string;
   name: string;
   slug: string;
+  rating?: number;
   created_by: string;
   created_at: string;
 }

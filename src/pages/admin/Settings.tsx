@@ -9,6 +9,7 @@ export default function AdminSettings() {
   const [exchangeRate, setExchangeRate] = useState('1');
   const [admins, setAdmins] = useState<UserProfile[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
+  const [transportLines, setTransportLines] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -20,6 +21,7 @@ export default function AdminSettings() {
     fullName: '',
     role: 'admin',
     departmentId: '',
+    transportLineId: '',
     phoneNumber: ''
   });
 
@@ -27,6 +29,7 @@ export default function AdminSettings() {
     fetchSettings();
     fetchAdmins();
     fetchDepartments();
+    fetchTransportLines();
   }, []);
 
   async function fetchSettings() {
@@ -45,6 +48,11 @@ export default function AdminSettings() {
   async function fetchDepartments() {
     const { data } = await supabase.from('departments').select('*').order('name');
     if (data) setDepartments(data);
+  }
+
+  async function fetchTransportLines() {
+    const { data } = await supabase.from('transport_lines').select('*').order('name');
+    if (data) setTransportLines(data);
   }
 
   async function saveExchangeRate() {
@@ -93,6 +101,7 @@ export default function AdminSettings() {
         fullName: '',
         role: 'admin',
         departmentId: '',
+        transportLineId: '',
         phoneNumber: ''
       });
       fetchAdmins();
@@ -283,10 +292,28 @@ export default function AdminSettings() {
                         value={formData.departmentId}
                         onChange={e => setFormData({...formData, departmentId: e.target.value})}
                         className="w-full px-4 py-2.5 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                        disabled={formData.role !== 'department_admin'}
                       >
                         <option value="">Ninguno</option>
                         {departments.map(d => (
                           <option key={d.id} value={d.id}>{d.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1.5 px-1">Línea de Transporte</label>
+                      <select 
+                        value={formData.transportLineId}
+                        onChange={e => setFormData({...formData, transportLineId: e.target.value})}
+                        className="w-full px-4 py-2.5 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                        disabled={formData.role !== 'transport_admin'}
+                      >
+                        <option value="">Ninguna</option>
+                        {transportLines.map(t => (
+                          <option key={t.id} value={t.id}>{t.name}</option>
                         ))}
                       </select>
                     </div>

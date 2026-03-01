@@ -44,17 +44,28 @@ export default function Checkout() {
 
     setSubmitting(true);
     try {
-      // 1. Save Order to DB
-      const { data: order, error: orderError } = await supabase.from('orders').insert({
+      // 1. Save Order to DB via Backend API (to bypass RLS for Guest Checkout)
+      const orderPayload = {
         user_id: user?.id || null,
         items: cart,
         total: total + (method === 'delivery' ? (transports.find(t => t.id === selectedTransport)?.base_price || 0) : 0),
         status: 'pending',
         transport_id: method === 'delivery' ? selectedTransport : null,
-        address: formData.address
-      }).select().single();
+        address: formData.address,
+        customer_name: formData.receiver_name,
+        customer_phone: formData.phone
+      };
 
-      if (orderError) throw orderError;
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderPayload)
+      });
+
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Error al crear el pedido');
+
+      const order = result.order;
 
       // 2. Route WhatsApp Messages by Department
       const departmentIds = [...new Set(cart.map(item => item.department_id))];
@@ -233,14 +244,14 @@ export default function Checkout() {
             <button 
               onClick={handleConfirmOrder}
               disabled={submitting}
-              className="w-full py-3 bg-ml-acento text-white rounded font-bold hover:bg-ml-acento/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full py-3 bg-ml-teja text-white rounded font-bold hover:bg-ml-teja/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Confirmar compra'}
+              {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Finalizar compra'}
             </button>
-            <div className="mt-6 p-4 bg-stone-50 rounded flex gap-3">
-              <ShieldCheck className="w-5 h-5 text-stone-400 flex-shrink-0" />
-              <p className="text-[10px] text-stone-500 leading-tight">
-                Tu compra está protegida. Si no recibes lo que esperabas, te devolvemos el dinero.
+            <div className="mt-6 p-4 bg-ml-white-cal rounded flex gap-3">
+              <ShieldCheck className="w-5 h-5 text-ml-teja/60 flex-shrink-0" />
+              <p className="text-[10px] text-ml-hierro leading-tight">
+                Somos un catálogo digital. No nos responsabilizamos por transacciones económicas. La responsabilidad es directamente del vendedor.
               </p>
             </div>
           </div>

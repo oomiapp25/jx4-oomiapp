@@ -61,6 +61,15 @@ export default function AdminCategories() {
       .replace(/^-+|-+$/g, '');
   }
 
+  async function updateRating(id: string, delta: number) {
+    const cat = categories.find(c => c.id === id);
+    if (!cat) return;
+    const newRating = (cat.rating || 0) + delta;
+    const { error } = await supabase.from('categories').update({ rating: newRating }).eq('id', id);
+    if (error) alert('Error: ' + error.message);
+    else fetchCategories();
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setSubmitting(true);
@@ -202,6 +211,31 @@ export default function AdminCategories() {
             </div>
             <h3 className="text-lg font-bold text-stone-900">{cat.name}</h3>
             <p className="text-xs text-stone-400 font-mono mt-1">/{cat.slug}</p>
+            
+            <div className="mt-6 pt-4 border-t border-stone-50 flex items-center justify-between">
+              <div>
+                <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest">Reputación</p>
+                <p className={`text-lg font-black ${ (cat.rating || 0) >= 0 ? 'text-ml-quebrada' : 'text-ml-teja'}`}>
+                  {cat.rating || 0}
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => updateRating(cat.id, 5)}
+                  className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold hover:bg-emerald-100 transition-colors"
+                  title="Aumentar reputación (+5)"
+                >
+                  +5
+                </button>
+                <button 
+                  onClick={() => updateRating(cat.id, -5)}
+                  className="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center font-bold hover:bg-red-100 transition-colors"
+                  title="Disminuir reputación (-5)"
+                >
+                  -5
+                </button>
+              </div>
+            </div>
           </div>
         )) : (
           <div className="col-span-full py-20 bg-white rounded-2xl border border-dashed border-stone-200 flex flex-col items-center justify-center text-stone-400">

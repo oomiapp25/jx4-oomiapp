@@ -84,10 +84,12 @@ export default function ProductDetail() {
                   </div>
                 </div>
                 <div className="flex gap-3">
-                  <ShieldCheck className="w-5 h-5 text-ml-quebrada/40 flex-shrink-0" />
+                  <ShieldCheck className="w-5 h-5 text-ml-teja/60 flex-shrink-0" />
                   <div>
-                    <p className="text-sm text-ml-hierro">Compra Protegida</p>
-                    <p className="text-xs text-ml-quebrada/60">Recibe el producto que esperabas o te devolvemos tu dinero.</p>
+                    <p className="text-sm text-ml-hierro font-bold">Aviso Importante</p>
+                    <p className="text-[10px] text-ml-hierro/80 leading-tight">
+                      Somos un catálogo digital. No nos responsabilizamos por transacciones económicas. La responsabilidad es directamente del vendedor.
+                    </p>
                   </div>
                 </div>
               </div>

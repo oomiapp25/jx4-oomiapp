@@ -2,12 +2,14 @@ import { useState, useEffect, FormEvent } from 'react';
 import { supabase, Transport, TransportLine } from '../../lib/supabase';
 import { Plus, Edit2, Trash2, Truck, ShieldCheck, Phone, MapPin, Bus, Info, X, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useAuth } from '../../hooks/useAuth';
 
 export default function AdminTransports() {
+  const { user } = useAuth();
   const [transports, setTransports] = useState<Transport[]>([]);
   const [transportLines, setTransportLines] = useState<TransportLine[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'delivery' | 'public'>('delivery');
+  const [activeTab, setActiveTab] = useState<'delivery' | 'public'>(user?.role === 'transport_admin' ? 'public' : 'delivery');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -72,8 +74,16 @@ export default function AdminTransports() {
   }
 
   async function fetchData() {
-    const { data: tData } = await supabase.from('transports').select('*');
-    const { data: lData } = await supabase.from('transport_lines').select('*');
+    let tQuery = supabase.from('transports').select('*');
+    let lQuery = supabase.from('transport_lines').select('*');
+
+    if (user?.role === 'transport_admin' && user.transport_line_id) {
+      lQuery = lQuery.eq('id', user.transport_line_id);
+    }
+
+    const { data: tData } = await tQuery;
+    const { data: lData } = await lQuery;
+    
     if (tData) setTransports(tData);
     if (lData) setTransportLines(lData);
     setLoading(false);
@@ -123,20 +133,22 @@ export default function AdminTransports() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-black text-stone-900">Gestión de Transporte</h1>
-        <div className="flex bg-stone-100 p-1 rounded-xl">
-          <button 
-            onClick={() => setActiveTab('delivery')}
-            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'delivery' ? 'bg-white shadow-sm text-stone-900' : 'text-stone-500'}`}
-          >
-            Delivery / Privado
-          </button>
-          <button 
-            onClick={() => setActiveTab('public')}
-            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'public' ? 'bg-white shadow-sm text-stone-900' : 'text-stone-500'}`}
-          >
-            Líneas Públicas
-          </button>
-        </div>
+        {user?.role !== 'transport_admin' && (
+          <div className="flex bg-stone-100 p-1 rounded-xl">
+            <button 
+              onClick={() => setActiveTab('delivery')}
+              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'delivery' ? 'bg-white shadow-sm text-stone-900' : 'text-stone-500'}`}
+            >
+              Delivery / Privado
+            </button>
+            <button 
+              onClick={() => setActiveTab('public')}
+              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeTab === 'public' ? 'bg-white shadow-sm text-stone-900' : 'text-stone-500'}`}
+            >
+              Líneas Públicas
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Modal */}

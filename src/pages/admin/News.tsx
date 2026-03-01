@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, ChangeEvent, FormEvent } from 'react';
 import { supabase, News } from '../../lib/supabase';
-import { Plus, Newspaper, Calendar, Trash2, Edit2, X, Loader2, Upload, Image as ImageIcon } from 'lucide-react';
+import { Plus, Newspaper, Calendar, Trash2, Edit2, X, Loader2, Upload, Image as ImageIcon, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { uploadToImgBB } from '../../services/imgbbService';
 
@@ -135,6 +135,12 @@ export default function AdminNews() {
               </div>
 
               <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+                {!process.env.IMGBB_API_KEY && (
+                  <div className="p-3 bg-amber-50 border border-amber-100 rounded-xl flex items-center gap-2 text-[10px] text-amber-700 font-bold">
+                    <AlertCircle className="w-3 h-3" />
+                    IMGBB_API_KEY no configurada. Sube por URL manual o configura el servicio.
+                  </div>
+                )}
                 <div 
                   onClick={() => fileInputRef.current?.click()}
                   className="aspect-video rounded-2xl border-2 border-dashed border-stone-200 flex flex-col items-center justify-center text-stone-400 hover:border-emerald-500 hover:text-emerald-600 transition-all cursor-pointer overflow-hidden relative"

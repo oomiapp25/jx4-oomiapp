@@ -71,7 +71,7 @@ export default function Home() {
         <div className="mt-12">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-light text-ml-monte-verde">Basado en tu última visita</h2>
-            <Link to="/categorias" className="text-sm text-ml-hierro hover:underline">Ver historial</Link>
+            <Link to="/" className="text-sm text-ml-hierro hover:underline">Ver historial</Link>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">

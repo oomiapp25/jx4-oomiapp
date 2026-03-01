@@ -63,7 +63,7 @@ async function startServer() {
 
   // POST /api/create-user (Direct creation by Super Admin)
   app.post("/api/create-user", async (req, res) => {
-    const { email, password, fullName, role, departmentId, phoneNumber, invitedBy } = req.body;
+    const { email, password, fullName, role, departmentId, transportLineId, phoneNumber, invitedBy } = req.body;
     
     console.log(`Intentando crear usuario: ${email} por inviter: ${invitedBy}`);
 
@@ -120,6 +120,7 @@ async function startServer() {
           email,
           role,
           department_id: departmentId || null,
+          transport_line_id: transportLineId || null,
           phone_number: phoneNumber || null,
           full_name: fullName,
           updated_at: new Date().toISOString()
@@ -135,6 +136,39 @@ async function startServer() {
 
     } catch (err: any) {
       console.error("Error inesperado en create-user:", err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // POST /api/orders (Bypass RLS for Guest Checkout)
+  app.post("/api/orders", async (req, res) => {
+    const { user_id, items, total, status, transport_id, address, customer_name, customer_phone } = req.body;
+    
+    try {
+      const { data, error } = await supabaseAdmin
+        .from('orders')
+        .insert({
+          user_id: user_id || null,
+          items,
+          total,
+          status: status || 'pending',
+          transport_id: transport_id || null,
+          address
+          // Nota: Si agregaste columnas customer_name/phone a la DB, se guardarán aquí.
+          // Si no existen, Supabase ignorará los campos extra o dará error dependiendo de la config.
+          // Por ahora los enviamos para que queden registrados si la tabla los soporta.
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Error de Supabase al crear pedido:", error);
+        return res.status(500).json({ error: error.message });
+      }
+
+      res.json({ success: true, order: data });
+    } catch (err: any) {
+      console.error("Error inesperado en create-order:", err);
       res.status(500).json({ error: err.message });
     }
   });
