@@ -1,10 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.SUPABASE_URL || '';
-const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || '';
+const supabaseUrl = process.env.SUPABASE_URL || 'https://placeholder.supabase.co';
+const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || 'placeholder';
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Faltan variables de entorno de Supabase. Verifica SUPABASE_URL y SUPABASE_ANON_KEY.');
+if (supabaseUrl.includes('placeholder')) {
+  console.warn('⚠️ Configuración de Supabase incompleta. Verifica las variables de entorno.');
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
