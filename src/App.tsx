@@ -18,6 +18,7 @@ import Checkout from './pages/Checkout';
 import MyOrders from './pages/MyOrders';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import Profile from './pages/Profile';
 import TransportLines from './pages/TransportLines';
 import JobOffers from './pages/JobOffers';
 import Services from './pages/Services';
@@ -61,6 +62,7 @@ export default function App() {
           <Route path="/producto/:id" element={<ProductDetail />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/perfil" element={user ? <Profile /> : <Navigate to="/login" />} />
           <Route path="/transporte" element={<TransportLines />} />
           <Route path="/empleos" element={<JobOffers />} />
           <Route path="/servicios" element={<Services />} />

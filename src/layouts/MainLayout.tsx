@@ -80,25 +80,7 @@ export default function MainLayout() {
           </div>
 
           {/* Bottom Bar */}
-          <div className="h-10 flex items-center justify-between text-xs md:text-sm text-white/80">
-            <div className="flex items-center gap-6">
-              <div className="flex items-center gap-1 text-white cursor-pointer hover:text-ml-quebrada transition-colors">
-                <MapPin className="w-4 h-4" />
-                <div className="flex flex-col leading-none">
-                  <span className="text-[10px] opacity-60">Enviar a</span>
-                  <span className="font-medium">Paracotos</span>
-                </div>
-              </div>
-
-              <nav className="hidden md:flex items-center gap-6 font-normal">
-                <Link to="/" className="hover:text-white transition-colors">Categorías</Link>
-                <Link to="/" className="hover:text-white transition-colors">Ofertas</Link>
-                <Link to="/" className="hover:text-white transition-colors">Historial</Link>
-                <Link to="/" className="hover:text-white transition-colors">Vender</Link>
-                <Link to="/" className="hover:text-white transition-colors">Ayuda</Link>
-              </nav>
-            </div>
-
+          <div className="h-10 flex items-center justify-end text-xs md:text-sm text-white/80">
             <div className="flex items-center gap-6">
               {user ? (
                 <div className="flex items-center gap-4">
@@ -137,6 +119,17 @@ export default function MainLayout() {
               <div key={line.id} className="mx-12 flex items-center gap-2 text-[10px] font-bold uppercase text-ml-monte-verde">
                 <Bus className="w-3 h-3 text-ml-teja" />
                 <span>{line.origin} → {line.destination}</span>
+                <span className={`px-2 py-0.5 rounded-full text-[8px] ${
+                  line.status === 'normal' ? 'bg-ml-monte-verde/10 text-ml-monte-verde' :
+                  line.status === 'alerta' || line.status === 'accidente' ? 'bg-red-500 text-white' :
+                  'bg-amber-500 text-white'
+                }`}>
+                  {line.status === 'retraso' ? 'RETRASO' :
+                   line.status === 'cola' ? 'COLA EN VÍA' :
+                   line.status === 'salida' ? 'DESPACHANDO' :
+                   line.status === 'accidente' ? 'ACCIDENTE' :
+                   line.status === 'alerta' ? 'ALERTA' : 'NORMAL'}
+                </span>
                 <span className="text-ml-hierro">{line.news_update || 'Operando normal'}</span>
               </div>
             ))}
@@ -259,14 +252,14 @@ export default function MainLayout() {
             JX4<span className="text-ml-quebrada">PARACOTOS</span>
           </h3>
           <p className="text-ml-hierro text-sm max-w-md mx-auto mb-8">
-            Tu tienda de confianza en Paracotos. Calidad y servicio a tu alcance.
+            Tus tiendas de confianza en Paracotos. Calidad y servicio en un solo lugar
           </p>
           
           <div className="flex items-center justify-center gap-6 mb-8">
             <Link to="/" className="text-xs font-bold text-ml-hierro hover:text-ml-monte-verde uppercase tracking-widest transition-colors">Inicio</Link>
             <Link to="/mis-pedidos" className="text-xs font-bold text-ml-hierro hover:text-ml-monte-verde uppercase tracking-widest transition-colors">Mis Pedidos</Link>
             <a 
-              href="https://wa.me/584120000000" 
+              href="https://wa.me/584241208234" 
               target="_blank" 
               rel="noreferrer"
               className="flex items-center gap-2 text-xs font-bold text-ml-hierro hover:text-ml-monte-verde uppercase tracking-widest transition-colors"

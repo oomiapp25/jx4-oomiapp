@@ -75,6 +75,7 @@ export interface TransportLine {
   arrival_time?: string | null;
   price: number;
   news_update: string;
+  status?: 'normal' | 'retraso' | 'cola' | 'salida' | 'accidente' | 'alerta' | null;
   whatsapp: string;
   active: boolean;
   created_by: string;

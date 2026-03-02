@@ -52,12 +52,38 @@ export default function TransportLines() {
             </div>
 
             <div className="flex-grow max-w-md">
-              <div className="bg-ml-white-cal p-4 rounded border border-ml-quebrada/10">
-                <div className="flex items-center gap-2 text-[10px] font-bold text-ml-quebrada uppercase tracking-wider mb-1">
-                  <Info className="w-3.5 h-3.5" />
-                  Estado / Noticias
+              <div className={`p-4 rounded border ${
+                line.status === 'normal' ? 'bg-ml-white-cal border-ml-quebrada/10' :
+                line.status === 'alerta' || line.status === 'accidente' ? 'bg-red-50 border-red-200' :
+                'bg-amber-50 border-amber-200'
+              }`}>
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-wider">
+                    <Info className={`w-3.5 h-3.5 ${
+                      line.status === 'normal' ? 'text-ml-quebrada' :
+                      line.status === 'alerta' || line.status === 'accidente' ? 'text-red-600' :
+                      'text-amber-600'
+                    }`} />
+                    <span className={
+                      line.status === 'normal' ? 'text-ml-quebrada' :
+                      line.status === 'alerta' || line.status === 'accidente' ? 'text-red-600' :
+                      'text-amber-600'
+                    }>
+                      {line.status === 'retraso' ? 'Retraso' :
+                       line.status === 'cola' ? 'Cola en la vía' :
+                       line.status === 'salida' ? 'Salida / Despacho' :
+                       line.status === 'accidente' ? 'Accidente vial' :
+                       line.status === 'alerta' ? 'Alerta' : 'Estado / Noticias'}
+                    </span>
+                  </div>
                 </div>
-                <p className="text-sm text-ml-monte-verde font-medium">{line.news_update || 'Operando con normalidad'}</p>
+                <p className={`text-sm font-medium ${
+                  line.status === 'normal' ? 'text-ml-monte-verde' :
+                  line.status === 'alerta' || line.status === 'accidente' ? 'text-red-700' :
+                  'text-amber-700'
+                }`}>
+                  {line.news_update || 'Operando con normalidad'}
+                </p>
               </div>
             </div>
 

@@ -32,7 +32,8 @@ export default function AdminTransports() {
     arrival_time: '',
     price: '',
     news_update: '',
-    whatsapp: ''
+    whatsapp: '',
+    status: 'normal' as 'normal' | 'retraso' | 'cola' | 'salida' | 'accidente' | 'alerta'
   });
 
   useEffect(() => {
@@ -60,7 +61,8 @@ export default function AdminTransports() {
           arrival_time: editingItem.arrival_time || '',
           price: editingItem.price.toString(),
           news_update: editingItem.news_update || '',
-          whatsapp: editingItem.whatsapp || ''
+          whatsapp: editingItem.whatsapp || '',
+          status: editingItem.status || 'normal'
         });
       }
     } else {
@@ -70,7 +72,7 @@ export default function AdminTransports() {
 
   function resetForms() {
     setDeliveryForm({ name: '', carrier_info: '', base_price: '', has_papers: false, vehicle_type: '', whatsapp: '' });
-    setLineForm({ name: '', origin: '', destination: '', schedule: '', departure_time: '', arrival_time: '', price: '', news_update: '', whatsapp: '' });
+    setLineForm({ name: '', origin: '', destination: '', schedule: '', departure_time: '', arrival_time: '', price: '', news_update: '', whatsapp: '', status: 'normal' });
   }
 
   async function fetchData() {
@@ -240,7 +242,20 @@ export default function AdminTransports() {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1 px-1">Noticia / Estado Actual</label>
+                      <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1 px-1">Estado del Servicio</label>
+                      <select 
+                        value={lineForm.status} 
+                        onChange={e => setLineForm({...lineForm, status: e.target.value as any})}
+                        className="w-full px-4 py-2.5 bg-stone-50 border border-stone-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500 mb-3"
+                      >
+                        <option value="normal">Operando Normal</option>
+                        <option value="retraso">Retraso</option>
+                        <option value="cola">Cola en la vía</option>
+                        <option value="salida">Salida / Despacho</option>
+                        <option value="accidente">Accidente vial</option>
+                        <option value="alerta">Alerta / Emergencia</option>
+                      </select>
+                      <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1 px-1">Descripción del Estado</label>
                       <textarea value={lineForm.news_update} onChange={e => setLineForm({...lineForm, news_update: e.target.value})} className="w-full px-4 py-2.5 bg-stone-50 border border-stone-100 rounded-xl text-sm outline-none focus:ring-2 focus:ring-emerald-500 resize-none" rows={3} placeholder="Ej. Trabajando con normalidad..." />
                     </div>
                   </>

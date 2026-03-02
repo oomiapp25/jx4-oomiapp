@@ -89,9 +89,9 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm">
           <h3 className="text-sm font-bold text-stone-900 mb-6 uppercase tracking-wider">Ventas Semanales</h3>
-          <div className="h-80 w-full">
+          <div className="h-80 w-full min-h-[320px]">
             {mounted && (
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minHeight={300}>
                 <AreaChart data={data}>
                   <defs>
                     <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
@@ -115,9 +115,9 @@ export default function AdminDashboard() {
 
         <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm">
           <h3 className="text-sm font-bold text-stone-900 mb-6 uppercase tracking-wider">Pedidos por Día</h3>
-          <div className="h-80 w-full">
+          <div className="h-80 w-full min-h-[320px]">
             {mounted && (
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minHeight={300}>
                 <BarChart data={data}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} />
