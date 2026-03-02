@@ -35,7 +35,7 @@ export default function AdminLayout() {
     { icon: Truck, label: 'Transportes', path: '/admin/transportes', roles: ['admin', 'transport_admin'] },
     { icon: Briefcase, label: 'Empleos', path: '/admin/empleos', roles: ['admin'] },
     { icon: Wrench, label: 'Servicios', path: '/admin/servicios', roles: ['admin'] },
-    { icon: Users, label: 'Usuarios', path: '/admin/usuarios', roles: ['admin'] },
+    { icon: Users, label: 'Usuarios', path: '/admin/usuarios', roles: ['super_admin'] },
     { icon: ImageIcon, label: 'Publicidad', path: '/admin/ads', roles: ['admin'] },
     { icon: Newspaper, label: 'Noticias', path: '/admin/noticias', roles: ['admin'] },
     { icon: Settings, label: 'Configuración', path: '/admin/configuracion', roles: ['admin'] },

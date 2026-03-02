@@ -73,10 +73,6 @@ export default function MainLayout() {
                 </button>
               </div>
             </div>
-
-            <div className="hidden lg:flex items-center gap-2">
-              <img src="https://http2.mlstatic.com/D_NQ_925587-MLA77326203893_062024-OO.webp" alt="Promo" className="h-10 rounded" />
-            </div>
           </div>
 
           {/* Bottom Bar */}

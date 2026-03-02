@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, ChangeEvent, FormEvent } from 'react';
 import { supabase, Ad } from '../../lib/supabase';
-import { Plus, Image as ImageIcon, ExternalLink, Calendar, Trash2, ToggleLeft, ToggleRight, X, Loader2, Upload } from 'lucide-react';
+import { Plus, Image as ImageIcon, ExternalLink, Calendar, Trash2, ToggleLeft, ToggleRight, X, Loader2, Upload, Edit2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { uploadToImgBB } from '../../services/imgbbService';
 
@@ -8,6 +8,7 @@ export default function AdminAds() {
   const [ads, setAds] = useState<Ad[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingAd, setEditingAd] = useState<Ad | null>(null);
   const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     image_url: '',
@@ -24,10 +25,35 @@ export default function AdminAds() {
     fetchAds();
   }, []);
 
+  useEffect(() => {
+    if (editingAd) {
+      setFormData({
+        image_url: editingAd.image_url,
+        title: editingAd.title || '',
+        description: editingAd.description || '',
+        link: editingAd.link || '',
+        priority: editingAd.priority || 0,
+        ends_at: editingAd.ends_at ? new Date(editingAd.ends_at).toISOString().split('T')[0] : ''
+      });
+    } else {
+      setFormData({ image_url: '', title: '', description: '', link: '', priority: 0, ends_at: '' });
+    }
+  }, [editingAd]);
+
   async function fetchAds() {
     const { data } = await supabase.from('ads').select('*').order('priority', { ascending: false });
     if (data) setAds(data);
     setLoading(false);
+  }
+
+  function openCreateModal() {
+    setEditingAd(null);
+    setIsModalOpen(true);
+  }
+
+  function openEditModal(ad: Ad) {
+    setEditingAd(ad);
+    setIsModalOpen(true);
   }
 
   async function handleImageUpload(e: ChangeEvent<HTMLInputElement>) {
@@ -49,21 +75,36 @@ export default function AdminAds() {
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await supabase.from('ads').insert({
+    const data = {
       image_url: formData.image_url,
       title: formData.title,
       description: formData.description,
       link: formData.link,
       priority: formData.priority,
       ends_at: formData.ends_at,
-      active: true,
-      starts_at: new Date().toISOString()
-    });
+      active: editingAd ? editingAd.active : true,
+      starts_at: editingAd ? editingAd.starts_at : new Date().toISOString()
+    };
+
+    let error;
+    if (editingAd) {
+      const { error: updateError } = await supabase
+        .from('ads')
+        .update(data)
+        .eq('id', editingAd.id);
+      error = updateError;
+    } else {
+      const { error: insertError } = await supabase
+        .from('ads')
+        .insert(data);
+      error = insertError;
+    }
 
     if (error) {
       alert('Error: ' + error.message);
     } else {
       setIsModalOpen(false);
+      setEditingAd(null);
       setFormData({ image_url: '', title: '', description: '', link: '', priority: 0, ends_at: '' });
       fetchAds();
     }
@@ -88,7 +129,7 @@ export default function AdminAds() {
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-black text-stone-900">Banners Publicitarios</h1>
         <button 
-          onClick={() => setIsModalOpen(true)}
+          onClick={openCreateModal}
           className="bg-stone-900 text-white px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-emerald-600 transition-all active:scale-95"
         >
           <Plus className="w-4 h-4" />
@@ -112,7 +153,7 @@ export default function AdminAds() {
               exit={{ opacity: 0, scale: 0.95 }}
               className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl p-8"
             >
-              <h3 className="text-xl font-black mb-6">Nuevo Banner</h3>
+              <h3 className="text-xl font-black mb-6">{editingAd ? 'Editar Banner' : 'Nuevo Banner'}</h3>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div 
                   onClick={() => fileInputRef.current?.click()}
@@ -207,6 +248,12 @@ export default function AdminAds() {
                   className={`p-2 rounded-full shadow-lg transition-colors ${ad.active ? 'bg-emerald-500 text-white' : 'bg-stone-200 text-stone-500'}`}
                 >
                   {ad.active ? <ToggleRight className="w-5 h-5" /> : <ToggleLeft className="w-5 h-5" />}
+                </button>
+                <button 
+                  onClick={() => openEditModal(ad)}
+                  className="p-2 bg-white text-stone-600 rounded-full shadow-lg hover:text-stone-900 transition-colors"
+                >
+                  <Edit2 className="w-5 h-5" />
                 </button>
               </div>
             </div>

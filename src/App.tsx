@@ -64,6 +64,7 @@ export default function App() {
           <Route path="/producto/:id" element={<ProductDetail />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/registro" element={<Register />} />
           <Route path="/perfil" element={user ? <Profile /> : <Navigate to="/login" />} />
           <Route path="/transporte" element={<TransportLines />} />
           <Route path="/empleos" element={<JobOffers />} />

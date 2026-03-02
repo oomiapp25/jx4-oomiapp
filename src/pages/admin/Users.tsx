@@ -36,7 +36,13 @@ export default function AdminUsers() {
     setLoading(false);
   }
 
+  const isSuperAdmin = currentUser?.email === 'jjtovar1510@gmail.com';
+
   async function updateUser(userId: string, updates: any) {
+    if (!isSuperAdmin && updates.role) {
+      alert('Solo el Super Administrador puede cambiar roles.');
+      return;
+    }
     const { error } = await supabase
       .from('users')
       .update(updates)
@@ -93,13 +99,15 @@ export default function AdminUsers() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-black text-stone-900">Gestión de Usuarios</h1>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="bg-stone-900 text-white px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-emerald-600 transition-all active:scale-95"
-        >
-          <UserPlus className="w-4 h-4" />
-          Nuevo Usuario
-        </button>
+        {isSuperAdmin && (
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="bg-stone-900 text-white px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-emerald-600 transition-all active:scale-95"
+          >
+            <UserPlus className="w-4 h-4" />
+            Nuevo Usuario
+          </button>
+        )}
       </div>
 
       {/* Create User Modal */}
@@ -261,9 +269,10 @@ export default function AdminUsers() {
                   </td>
                   <td className="px-6 py-4">
                     <select 
+                      disabled={!isSuperAdmin}
                       value={user.role}
                       onChange={(e) => updateUser(user.id, { role: e.target.value })}
-                      className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase outline-none cursor-pointer ${
+                      className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase outline-none cursor-pointer disabled:cursor-not-allowed ${
                         user.role === 'admin' ? 'bg-purple-50 text-purple-600' : 
                         user.role === 'customer' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'
                       }`}

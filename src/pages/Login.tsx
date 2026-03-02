@@ -1,15 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { Mail, Lock, ArrowRight } from 'lucide-react';
+import { Mail, Lock, ArrowRight, CheckCircle } from 'lucide-react';
 
 export default function Login() {
+  const [searchParams] = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (searchParams.get('registered') === 'true') {
+      setSuccess('¡Registro exitoso! Ahora puedes iniciar sesión.');
+    }
+  }, [searchParams]);
 
   async function handleLogin(e: any) {
     e.preventDefault();
@@ -80,6 +88,13 @@ export default function Login() {
               placeholder="••••••••"
             />
           </div>
+
+          {success && (
+            <div className="p-3 bg-emerald-50 border border-emerald-100 rounded text-xs text-emerald-600 flex items-center gap-2">
+              <CheckCircle className="w-4 h-4" />
+              {success}
+            </div>
+          )}
 
           {error && (
             <div className="p-3 bg-red-50 border border-red-100 rounded text-xs text-red-600">

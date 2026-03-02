@@ -31,8 +31,7 @@ export default function Register() {
       setError(error.message);
       setLoading(false);
     } else {
-      alert('¡Registro exitoso! Ahora puedes iniciar sesión.');
-      navigate('/login');
+      navigate('/login?registered=true');
     }
   }
 
