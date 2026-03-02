@@ -33,6 +33,18 @@ export function useCart() {
 
   const addToCart = (product: any, quantity: number) => {
     const currentCart = JSON.parse(localStorage.getItem('jx4_cart') || '[]');
+    
+    // Check if cart already has items from a different department
+    if (currentCart.length > 0) {
+      const differentDept = currentCart.some((item: any) => item.department_id !== product.department_id);
+      if (differentDept) {
+        return { 
+          success: false, 
+          message: 'Carrito ocupado con productos de otro departamento. ¿Desea finalizar esa compra primero?' 
+        };
+      }
+    }
+
     const existingItemIndex = currentCart.findIndex((item: any) => item.id === product.id);
 
     if (existingItemIndex > -1) {
@@ -50,6 +62,7 @@ export function useCart() {
 
     localStorage.setItem('jx4_cart', JSON.stringify(currentCart));
     window.dispatchEvent(new Event('cart-updated'));
+    return { success: true };
   };
 
   const removeFromCart = (productId: string) => {

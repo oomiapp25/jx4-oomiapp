@@ -26,7 +26,18 @@ export default function ProductDetail() {
 
   const handleAddToCart = () => {
     if (product) {
-      addToCart(product, quantity);
+      const result = addToCart(product, quantity);
+      if (result?.success === false) {
+        const choice = confirm(
+          `${result.message}\n\n` +
+          `• Aceptar: Ir al carrito para finalizar la compra actual.\n` +
+          `• Cancelar: Seguir viendo este producto (puedes vaciar tu carrito manualmente).`
+        );
+        if (choice) {
+          navigate('/checkout');
+        }
+        return;
+      }
       setAdded(true);
       setTimeout(() => setAdded(false), 2000);
     }

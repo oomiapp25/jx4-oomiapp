@@ -16,15 +16,24 @@ export default function Checkout() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   
+  const [exchangeRate, setExchangeRate] = useState<number>(0);
+  
   const [formData, setFormData] = useState({
     address: '',
     phone: '',
-    receiver_name: ''
+    receiver_name: '',
+    notes: ''
   });
 
   useEffect(() => {
     fetchTransports();
+    fetchExchangeRate();
   }, []);
+
+  async function fetchExchangeRate() {
+    const { data } = await supabase.from('settings').select('*').eq('key', 'exchange_rate').single();
+    if (data) setExchangeRate(parseFloat(data.value.rate));
+  }
 
   async function fetchTransports() {
     const { data } = await supabase.from('transports').select('*');
@@ -81,14 +90,24 @@ export default function Checkout() {
 
         if (whatsapp) {
           const deptItems = cart.filter(item => item.department_id === deptId);
-          const itemsText = deptItems.map(item => `- ${item.title} (x${item.quantity})`).join('\n');
-          const message = `*Nuevo Pedido JX4 - Dept: ${dept?.name}*\n\n` +
-            `*Cliente:* ${formData.receiver_name}\n` +
-            `*Teléfono:* ${formData.phone}\n` +
-            `*Dirección:* ${formData.address}\n` +
-            `*Método:* ${method === 'delivery' ? 'Delivery' : 'Retiro'}\n\n` +
-            `*Productos:*\n${itemsText}\n\n` +
-            `*Total Dept:* $${deptItems.reduce((s, i) => s + (i.price * i.quantity), 0).toFixed(2)}`;
+          const itemsText = deptItems.map(item => `• ${item.title} x${item.quantity}`).join('\n');
+          const deptSubtotal = deptItems.reduce((s, i) => s + (i.price * i.quantity), 0);
+          const transportFee = method === 'delivery' ? (transports.find(t => t.id === selectedTransport)?.base_price || 0) : 0;
+          const deptTotal = deptSubtotal + transportFee;
+          const totalVES = deptTotal * exchangeRate;
+
+          const message = `🛒*NUEVO PEDIDO - JX4 PARACOTOS*\n` +
+            `📅 Fecha: ${new Date().toLocaleDateString('es-ES')}\n` +
+            `👤*CLIENTE:*\n` +
+            `• Nombre: ${formData.receiver_name.toUpperCase()}\n` +
+            `• WhatsApp: ${formData.phone}\n` +
+            `• Método: ${method === 'pickup' ? '🏪 Retiro en Tienda' : '🚚 Envío a Domicilio'}\n` +
+            `🛍️*PRODUCTOS:*\n${itemsText}\n\n` +
+            `Subtotal: USD ${deptSubtotal.toFixed(2)}\n` +
+            `💵*TOTAL USD: USD ${deptTotal.toFixed(2)}*\n` +
+            `💰*VES total:Bs.S ${totalVES.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 3 }) }*\n` +
+            `(Tasa: ${exchangeRate.toFixed(2)})\n` +
+            `📝*NOTAS:*_ ${formData.notes || 'Sin notas adicionales'} _`;
 
           const encodedMsg = encodeURIComponent(message);
           window.open(`https://wa.me/${whatsapp.replace(/\D/g, '')}?text=${encodedMsg}`, '_blank');
@@ -217,6 +236,16 @@ export default function Checkout() {
                   />
                 </div>
               </div>
+              <div>
+                <label className="block text-xs font-bold text-stone-500 mb-1">Notas adicionales (Opcional)</label>
+                <textarea 
+                  value={formData.notes}
+                  onChange={e => setFormData({...formData, notes: e.target.value})}
+                  className="w-full px-4 py-2 bg-white border border-stone-200 rounded text-sm focus:ring-1 focus:ring-ml-secundario outline-none resize-none"
+                  rows={2}
+                  placeholder="Ej. Entregar en la puerta azul, llamar al llegar..."
+                />
+              </div>
             </div>
           </section>
         </div>
@@ -241,13 +270,21 @@ export default function Checkout() {
                 <span className="text-lg font-bold text-ml-dark">${(total + deliveryFee).toFixed(2)}</span>
               </div>
             </div>
-            <button 
-              onClick={handleConfirmOrder}
-              disabled={submitting}
-              className="w-full py-3 bg-ml-teja text-white rounded font-bold hover:bg-ml-teja/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
-            >
-              {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Finalizar compra'}
-            </button>
+            <div className="space-y-3">
+              <button 
+                onClick={handleConfirmOrder}
+                disabled={submitting}
+                className="w-full py-3 bg-ml-teja text-white rounded font-bold hover:bg-ml-teja/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {submitting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Finalizar compra'}
+              </button>
+              <button 
+                onClick={() => { if(confirm('¿Vaciar el carrito?')) { clearCart(); navigate('/'); } }}
+                className="w-full py-2 text-xs font-bold text-stone-400 hover:text-red-500 transition-colors"
+              >
+                Vaciar carrito
+              </button>
+            </div>
             <div className="mt-6 p-4 bg-ml-white-cal rounded flex gap-3">
               <ShieldCheck className="w-5 h-5 text-ml-teja/60 flex-shrink-0" />
               <p className="text-[10px] text-ml-hierro leading-tight">
