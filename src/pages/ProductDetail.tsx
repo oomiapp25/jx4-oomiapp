@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { supabase, Product } from '../lib/supabase';
-import { ShoppingCart, ArrowLeft, ShieldCheck, Truck, RefreshCw, Check } from 'lucide-react';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { supabase, Product, Category, Department } from '../lib/supabase';
+import { ShoppingCart, ArrowLeft, ShieldCheck, Truck, RefreshCw, Check, Tag, Building2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useCart } from '../hooks/useCart';
 
@@ -10,6 +10,8 @@ export default function ProductDetail() {
   const navigate = useNavigate();
   const { addToCart } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
+  const [category, setCategory] = useState<Category | null>(null);
+  const [department, setDepartment] = useState<Department | null>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
@@ -20,7 +22,16 @@ export default function ProductDetail() {
 
   async function fetchProduct() {
     const { data } = await supabase.from('products').select('*').eq('id', id).single();
-    if (data) setProduct(data);
+    if (data) {
+      setProduct(data);
+      // Fetch category and department
+      const [catRes, deptRes] = await Promise.all([
+        supabase.from('categories').select('*').eq('id', data.category_id).single(),
+        supabase.from('departments').select('*').eq('id', data.department_id).single()
+      ]);
+      if (catRes.data) setCategory(catRes.data);
+      if (deptRes.data) setDepartment(deptRes.data);
+    }
     setLoading(false);
   }
 
@@ -79,6 +90,27 @@ export default function ProductDetail() {
               <div>
                 <span className="text-xs text-ml-hierro">Nuevo | {product.stock} disponibles</span>
                 <h1 className="text-2xl font-bold text-ml-monte-verde mt-1 leading-tight">{product.title}</h1>
+                
+                <div className="flex flex-wrap gap-2 mt-3">
+                  {department && (
+                    <Link 
+                      to={`/departamento/${department.slug}`}
+                      className="inline-flex items-center gap-1.5 px-3 py-1 bg-stone-50 border border-stone-100 rounded-full text-[10px] font-bold text-ml-hierro hover:bg-stone-100 transition-colors"
+                    >
+                      <Building2 className="w-3 h-3" />
+                      {department.name}
+                    </Link>
+                  )}
+                  {category && (
+                    <Link 
+                      to={`/categoria/${category.slug}`}
+                      className="inline-flex items-center gap-1.5 px-3 py-1 bg-stone-50 border border-stone-100 rounded-full text-[10px] font-bold text-ml-hierro hover:bg-stone-100 transition-colors"
+                    >
+                      <Tag className="w-3 h-3" />
+                      {category.name}
+                    </Link>
+                  )}
+                </div>
               </div>
 
               <div>

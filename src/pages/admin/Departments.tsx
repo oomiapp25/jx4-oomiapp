@@ -1,7 +1,8 @@
 import { useState, useEffect, FormEvent } from 'react';
 import { supabase, Department } from '../../lib/supabase';
-import { Plus, Edit2, Trash2, Building2, X, Loader2 } from 'lucide-react';
+import { Plus, Edit2, Trash2, Building2, X, Loader2, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { AVAILABLE_ICONS, getIconById } from '../../lib/icons';
 
 export default function AdminDepartments() {
   const [departments, setDepartments] = useState<Department[]>([]);
@@ -13,7 +14,8 @@ export default function AdminDepartments() {
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
-    whatsapp: ''
+    whatsapp: '',
+    icon: ''
   });
 
   useEffect(() => {
@@ -25,10 +27,11 @@ export default function AdminDepartments() {
       setFormData({
         name: editingDepartment.name,
         slug: editingDepartment.slug,
-        whatsapp: editingDepartment.whatsapp || ''
+        whatsapp: editingDepartment.whatsapp || '',
+        icon: editingDepartment.icon || ''
       });
     } else {
-      setFormData({ name: '', slug: '', whatsapp: '' });
+      setFormData({ name: '', slug: '', whatsapp: '', icon: '' });
     }
   }, [editingDepartment]);
 
@@ -67,36 +70,43 @@ export default function AdminDepartments() {
     e.preventDefault();
     setSubmitting(true);
 
-    const slug = formData.slug || generateSlug(formData.name);
-    const data = { 
-      name: formData.name, 
-      slug,
-      whatsapp: formData.whatsapp 
-    };
+    try {
+      const slug = formData.slug || generateSlug(formData.name);
+      const data = { 
+        name: formData.name, 
+        slug,
+        whatsapp: formData.whatsapp,
+        icon: formData.icon
+      };
 
-    let error;
-    if (editingDepartment) {
-      const { error: updateError } = await supabase
-        .from('departments')
-        .update(data)
-        .eq('id', editingDepartment.id);
-      error = updateError;
-    } else {
-      const { error: insertError } = await supabase
-        .from('departments')
-        .insert(data);
-      error = insertError;
-    }
+      let error;
+      if (editingDepartment) {
+        const { error: updateError } = await supabase
+          .from('departments')
+          .update(data)
+          .eq('id', editingDepartment.id);
+        error = updateError;
+      } else {
+        const { error: insertError } = await supabase
+          .from('departments')
+          .insert(data);
+        error = insertError;
+      }
 
-    if (error) {
-      alert('Error: ' + error.message);
-    } else {
-      setIsModalOpen(false);
-      setEditingDepartment(null);
-      setFormData({ name: '', slug: '' });
-      fetchDepartments();
+      if (error) {
+        alert('Error: ' + error.message);
+      } else {
+        setIsModalOpen(false);
+        setEditingDepartment(null);
+        setFormData({ name: '', slug: '', whatsapp: '', icon: '' });
+        await fetchDepartments();
+      }
+    } catch (err: any) {
+      console.error('Error in handleSubmit:', err);
+      alert('Ocurrió un error inesperado: ' + err.message);
+    } finally {
+      setSubmitting(false);
     }
-    setSubmitting(false);
   }
 
   return (
@@ -161,6 +171,30 @@ export default function AdminDepartments() {
                   />
                 </div>
 
+                <div>
+                  <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1.5 px-1">Icono</label>
+                  <div className="grid grid-cols-5 gap-2 max-h-40 overflow-y-auto p-2 border border-stone-100 rounded-xl">
+                    {AVAILABLE_ICONS.map((item) => {
+                      const IconComp = item.icon;
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, icon: item.id })}
+                          className={`p-3 rounded-lg flex items-center justify-center transition-all ${
+                            formData.icon === item.id 
+                              ? 'bg-emerald-500 text-white' 
+                              : 'bg-stone-50 text-stone-400 hover:bg-stone-100'
+                          }`}
+                          title={item.label}
+                        >
+                          <IconComp className="w-5 h-5" />
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 <div className="pt-4 flex gap-3">
                   <button 
                     type="button"
@@ -185,31 +219,34 @@ export default function AdminDepartments() {
       </AnimatePresence>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {departments.length > 0 ? departments.map((dept) => (
-          <div key={dept.id} className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm hover:border-emerald-500 transition-all group">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-stone-50 rounded-xl group-hover:bg-emerald-50 transition-colors">
-                <Building2 className="w-6 h-6 text-stone-400 group-hover:text-emerald-600" />
+        {departments.length > 0 ? departments.map((dept) => {
+          const DeptIcon = getIconById(dept.icon);
+          return (
+            <div key={dept.id} className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm hover:border-emerald-500 transition-all group">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 bg-stone-50 rounded-xl group-hover:bg-emerald-50 transition-colors">
+                  <DeptIcon className="w-6 h-6 text-stone-400 group-hover:text-emerald-600" />
+                </div>
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button 
+                    onClick={() => openEditModal(dept)}
+                    className="p-2 text-stone-400 hover:text-stone-900 transition-colors"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </button>
+                  <button 
+                    onClick={() => deleteDepartment(dept.id)}
+                    className="p-2 text-stone-400 hover:text-red-500 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button 
-                  onClick={() => openEditModal(dept)}
-                  className="p-2 text-stone-400 hover:text-stone-900 transition-colors"
-                >
-                  <Edit2 className="w-4 h-4" />
-                </button>
-                <button 
-                  onClick={() => deleteDepartment(dept.id)}
-                  className="p-2 text-stone-400 hover:text-red-500 transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
+              <h3 className="text-lg font-bold text-stone-900">{dept.name}</h3>
+              <p className="text-xs text-stone-400 font-mono mt-1">/{dept.slug}</p>
             </div>
-            <h3 className="text-lg font-bold text-stone-900">{dept.name}</h3>
-            <p className="text-xs text-stone-400 font-mono mt-1">/{dept.slug}</p>
-          </div>
-        )) : (
+          );
+        }) : (
           <div className="col-span-full py-20 bg-white rounded-2xl border border-dashed border-stone-200 flex flex-col items-center justify-center text-stone-400">
             <Building2 className="w-12 h-12 mb-4 opacity-20" />
             <p className="text-sm font-medium">No hay departamentos registrados</p>

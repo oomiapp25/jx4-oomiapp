@@ -102,33 +102,39 @@ export default function AdminTransports() {
     e.preventDefault();
     setSubmitting(true);
 
-    const table = activeTab === 'delivery' ? 'transports' : 'transport_lines';
-    const data = activeTab === 'delivery' ? {
-      ...deliveryForm,
-      base_price: parseFloat(deliveryForm.base_price)
-    } : {
-      ...lineForm,
-      price: parseFloat(lineForm.price)
-    };
+    try {
+      const table = activeTab === 'delivery' ? 'transports' : 'transport_lines';
+      const data = activeTab === 'delivery' ? {
+        ...deliveryForm,
+        base_price: parseFloat(deliveryForm.base_price)
+      } : {
+        ...lineForm,
+        price: parseFloat(lineForm.price)
+      };
 
-    let error;
-    if (editingItem) {
-      const { error: updateError } = await supabase.from(table).update(data).eq('id', editingItem.id);
-      error = updateError;
-    } else {
-      const { error: insertError } = await supabase.from(table).insert(data);
-      error = insertError;
-    }
+      let error;
+      if (editingItem) {
+        const { error: updateError } = await supabase.from(table).update(data).eq('id', editingItem.id);
+        error = updateError;
+      } else {
+        const { error: insertError } = await supabase.from(table).insert(data);
+        error = insertError;
+      }
 
-    if (error) {
-      alert('Error: ' + error.message);
-    } else {
-      setIsModalOpen(false);
-      setEditingItem(null);
-      resetForms();
-      fetchData();
+      if (error) {
+        alert('Error: ' + error.message);
+      } else {
+        setIsModalOpen(false);
+        setEditingItem(null);
+        resetForms();
+        await fetchData();
+      }
+    } catch (err: any) {
+      console.error('Error in handleSubmit:', err);
+      alert('Ocurrió un error inesperado: ' + err.message);
+    } finally {
+      setSubmitting(false);
     }
-    setSubmitting(false);
   }
 
   return (

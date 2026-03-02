@@ -1,37 +1,30 @@
 import { useState, useEffect } from 'react';
-import { supabase, Product } from '../lib/supabase';
+import { supabase, Product, Department } from '../lib/supabase';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, CreditCard, Truck, ShieldCheck, Ticket, Smartphone, Store, Footprints } from 'lucide-react';
+import { ShoppingCart, CreditCard, Truck, ShieldCheck, Ticket, Smartphone, Store, Footprints, Package } from 'lucide-react';
 import HeroCarousel from '../components/HeroCarousel';
+import { getIconById } from '../lib/icons';
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchProducts();
+    fetchData();
   }, []);
 
-  async function fetchProducts() {
-    const { data } = await supabase
-      .from('products')
-      .select('*')
-      .order('created_at', { ascending: false });
+  async function fetchData() {
+    const [productsRes, deptsRes] = await Promise.all([
+      supabase.from('products').select('*').order('created_at', { ascending: false }),
+      supabase.from('departments').select('*').order('name')
+    ]);
     
-    if (data) setProducts(data);
+    if (productsRes.data) setProducts(productsRes.data);
+    if (deptsRes.data) setDepartments(deptsRes.data);
     setLoading(false);
   }
-
-  const dynamicAccess = [
-    { icon: Smartphone, label: 'Celulares', color: 'text-ml-hierro' },
-    { icon: Store, label: 'Tiendas', color: 'text-ml-hierro' },
-    { icon: Footprints, label: 'Zapatos', color: 'text-ml-hierro' },
-    { icon: Ticket, label: 'Cupones', color: 'text-ml-hierro' },
-    { icon: CreditCard, label: 'Pagar', color: 'text-ml-hierro' },
-    { icon: Truck, label: 'Envíos', color: 'text-ml-hierro' },
-    { icon: ShieldCheck, label: 'Seguro', color: 'text-ml-hierro' },
-  ];
 
   if (loading) {
     return (
@@ -57,14 +50,21 @@ export default function Home() {
       <div className="max-w-7xl mx-auto px-4">
         {/* Dynamic Access Bar */}
         <div className="bg-white p-6 rounded shadow-sm flex items-center justify-between gap-4 overflow-x-auto no-scrollbar">
-          {dynamicAccess.map((item, i) => (
-            <div key={i} className="flex flex-col items-center gap-2 min-w-[80px] cursor-pointer group">
-              <div className="w-12 h-12 rounded-full bg-ml-white-cal flex items-center justify-center group-hover:bg-ml-quebrada transition-colors">
-                <item.icon className={`w-6 h-6 ${item.color} group-hover:text-white transition-colors`} />
-              </div>
-              <span className="text-[11px] font-medium text-ml-hierro">{item.label}</span>
-            </div>
-          ))}
+          {departments.map((dept) => {
+            const DeptIcon = getIconById(dept.icon);
+            return (
+              <Link 
+                key={dept.id} 
+                to={`/departamento/${dept.slug}`}
+                className="flex flex-col items-center gap-2 min-w-[80px] cursor-pointer group"
+              >
+                <div className="w-12 h-12 rounded-full bg-ml-white-cal flex items-center justify-center group-hover:bg-ml-quebrada transition-colors">
+                  <DeptIcon className="w-6 h-6 text-ml-hierro group-hover:text-white transition-colors" />
+                </div>
+                <span className="text-[11px] font-medium text-ml-hierro text-center">{dept.name}</span>
+              </Link>
+            );
+          })}
         </div>
 
         {/* Product Section */}

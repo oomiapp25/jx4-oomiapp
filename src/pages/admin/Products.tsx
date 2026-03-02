@@ -129,48 +129,62 @@ export default function AdminProducts() {
     e.preventDefault();
     setLoading(true);
 
-    const price = parseFloat(formData.price);
-    const stock = parseInt(formData.stock);
+    try {
+      const price = parseFloat(formData.price);
+      const stock = parseInt(formData.stock);
 
-    if (isNaN(price)) {
-      alert('Por favor ingresa un precio válido');
+      if (isNaN(price)) {
+        alert('Por favor ingresa un precio válido');
+        setLoading(false);
+        return;
+      }
+
+      const productData = {
+        title: formData.title,
+        description: formData.description,
+        price: price,
+        stock: isNaN(stock) ? 0 : stock,
+        category_id: formData.category_id || null,
+        department_id: formData.department_id || null,
+        images: formData.images,
+      };
+
+      let error;
+      if (editingProduct) {
+        const { error: updateError } = await supabase
+          .from('products')
+          .update(productData)
+          .eq('id', editingProduct.id);
+        error = updateError;
+      } else {
+        const { error: insertError } = await supabase
+          .from('products')
+          .insert(productData);
+        error = insertError;
+      }
+
+      if (error) {
+        alert('Error: ' + error.message);
+      } else {
+        setIsModalOpen(false);
+        setEditingProduct(null);
+        setFormData({ 
+          title: '', 
+          description: '', 
+          price: '', 
+          stock: '', 
+          category_id: '', 
+          department_id: '', 
+          images: [] 
+        });
+        await fetchProducts();
+      }
+    } catch (err: any) {
+      console.error('Error in handleSubmit:', err);
+      alert('Ocurrió un error inesperado: ' + err.message);
+    } finally {
       setLoading(false);
-      return;
     }
-
-    const productData = {
-      title: formData.title,
-      description: formData.description,
-      price: price,
-      stock: isNaN(stock) ? 0 : stock,
-      category_id: formData.category_id || null,
-      department_id: formData.department_id || null,
-      images: formData.images,
-    };
-
-    let error;
-    if (editingProduct) {
-      const { error: updateError } = await supabase
-        .from('products')
-        .update(productData)
-        .eq('id', editingProduct.id);
-      error = updateError;
-    } else {
-      const { error: insertError } = await supabase
-        .from('products')
-        .insert(productData);
-      error = insertError;
-    }
-
-    if (error) {
-      alert('Error: ' + error.message);
-    } else {
-      setIsModalOpen(false);
-      setEditingProduct(null);
-      setFormData({ title: '', description: '', price: '', stock: '', images: [] });
-      fetchProducts();
-    }
-    setLoading(false);
   }
 
   return (

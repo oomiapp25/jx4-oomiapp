@@ -1,0 +1,50 @@
+import { 
+  Smartphone, 
+  Store, 
+  ShoppingBag, 
+  Ticket, 
+  CreditCard, 
+  Truck, 
+  ShieldCheck,
+  Package,
+  Utensils,
+  Heart,
+  Camera,
+  Music,
+  Gamepad2,
+  Car,
+  Home,
+  Briefcase,
+  Zap,
+  Star,
+  Coffee,
+  Gift
+} from 'lucide-react';
+
+export const AVAILABLE_ICONS = [
+  { id: 'Smartphone', icon: Smartphone, label: 'Celulares' },
+  { id: 'Store', icon: Store, label: 'Tiendas' },
+  { id: 'ShoppingBag', icon: ShoppingBag, label: 'Zapatos/Compras' },
+  { id: 'Ticket', icon: Ticket, label: 'Cupones' },
+  { id: 'CreditCard', icon: CreditCard, label: 'Pagar/Pagos' },
+  { id: 'Truck', icon: Truck, label: 'Envíos' },
+  { id: 'ShieldCheck', icon: ShieldCheck, label: 'Seguro' },
+  { id: 'Package', icon: Package, label: 'Paquetes' },
+  { id: 'Utensils', icon: Utensils, label: 'Comida' },
+  { id: 'Heart', icon: Heart, label: 'Salud' },
+  { id: 'Camera', icon: Camera, label: 'Fotos' },
+  { id: 'Music', icon: Music, label: 'Música' },
+  { id: 'Gamepad2', icon: Gamepad2, label: 'Juegos' },
+  { id: 'Car', icon: Car, label: 'Vehículos' },
+  { id: 'Home', icon: Home, label: 'Hogar' },
+  { id: 'Briefcase', icon: Briefcase, label: 'Trabajo' },
+  { id: 'Zap', icon: Zap, label: 'Energía' },
+  { id: 'Star', icon: Star, label: 'Favoritos' },
+  { id: 'Coffee', icon: Coffee, label: 'Café' },
+  { id: 'Gift', icon: Gift, label: 'Regalos' }
+];
+
+export function getIconById(id: string | null | undefined) {
+  const found = AVAILABLE_ICONS.find(i => i.id === id);
+  return found ? found.icon : Package;
+}

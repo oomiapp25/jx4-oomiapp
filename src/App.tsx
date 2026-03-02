@@ -22,6 +22,8 @@ import Profile from './pages/Profile';
 import TransportLines from './pages/TransportLines';
 import JobOffers from './pages/JobOffers';
 import Services from './pages/Services';
+import DepartmentDetail from './pages/DepartmentDetail';
+import CategoryDetail from './pages/CategoryDetail';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/Dashboard';
@@ -66,6 +68,8 @@ export default function App() {
           <Route path="/transporte" element={<TransportLines />} />
           <Route path="/empleos" element={<JobOffers />} />
           <Route path="/servicios" element={<Services />} />
+          <Route path="/departamento/:slug" element={<DepartmentDetail />} />
+          <Route path="/categoria/:slug" element={<CategoryDetail />} />
           
           {/* Protected Customer Routes */}
           <Route path="/checkout" element={<Checkout />} />

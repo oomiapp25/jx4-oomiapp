@@ -2,6 +2,7 @@ import { useState, useEffect, FormEvent } from 'react';
 import { supabase, Category } from '../../lib/supabase';
 import { Plus, Edit2, Trash2, Folder, X, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { AVAILABLE_ICONS, getIconById } from '../../lib/icons';
 
 export default function AdminCategories() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -12,7 +13,8 @@ export default function AdminCategories() {
 
   const [formData, setFormData] = useState({
     name: '',
-    slug: ''
+    slug: '',
+    icon: ''
   });
 
   useEffect(() => {
@@ -23,10 +25,11 @@ export default function AdminCategories() {
     if (editingCategory) {
       setFormData({
         name: editingCategory.name,
-        slug: editingCategory.slug
+        slug: editingCategory.slug,
+        icon: editingCategory.icon || ''
       });
     } else {
-      setFormData({ name: '', slug: '' });
+      setFormData({ name: '', slug: '', icon: '' });
     }
   }, [editingCategory]);
 
@@ -74,32 +77,38 @@ export default function AdminCategories() {
     e.preventDefault();
     setSubmitting(true);
 
-    const slug = formData.slug || generateSlug(formData.name);
-    const data = { name: formData.name, slug };
+    try {
+      const slug = formData.slug || generateSlug(formData.name);
+      const data = { name: formData.name, slug, icon: formData.icon };
 
-    let error;
-    if (editingCategory) {
-      const { error: updateError } = await supabase
-        .from('categories')
-        .update(data)
-        .eq('id', editingCategory.id);
-      error = updateError;
-    } else {
-      const { error: insertError } = await supabase
-        .from('categories')
-        .insert(data);
-      error = insertError;
-    }
+      let error;
+      if (editingCategory) {
+        const { error: updateError } = await supabase
+          .from('categories')
+          .update(data)
+          .eq('id', editingCategory.id);
+        error = updateError;
+      } else {
+        const { error: insertError } = await supabase
+          .from('categories')
+          .insert(data);
+        error = insertError;
+      }
 
-    if (error) {
-      alert('Error: ' + error.message);
-    } else {
-      setIsModalOpen(false);
-      setEditingCategory(null);
-      setFormData({ name: '', slug: '' });
-      fetchCategories();
+      if (error) {
+        alert('Error: ' + error.message);
+      } else {
+        setIsModalOpen(false);
+        setEditingCategory(null);
+        setFormData({ name: '', slug: '', icon: '' });
+        await fetchCategories();
+      }
+    } catch (err: any) {
+      console.error('Error in handleSubmit:', err);
+      alert('Ocurrió un error inesperado: ' + err.message);
+    } finally {
+      setSubmitting(false);
     }
-    setSubmitting(false);
   }
 
   return (
@@ -164,6 +173,30 @@ export default function AdminCategories() {
                   />
                 </div>
 
+                <div>
+                  <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1.5 px-1">Icono</label>
+                  <div className="grid grid-cols-5 gap-2 max-h-40 overflow-y-auto p-2 border border-stone-100 rounded-xl">
+                    {AVAILABLE_ICONS.map((item) => {
+                      const IconComp = item.icon;
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => setFormData({ ...formData, icon: item.id })}
+                          className={`p-3 rounded-lg flex items-center justify-center transition-all ${
+                            formData.icon === item.id 
+                              ? 'bg-emerald-500 text-white' 
+                              : 'bg-stone-50 text-stone-400 hover:bg-stone-100'
+                          }`}
+                          title={item.label}
+                        >
+                          <IconComp className="w-5 h-5" />
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
                 <div className="pt-4 flex gap-3">
                   <button 
                     type="button"
@@ -188,56 +221,59 @@ export default function AdminCategories() {
       </AnimatePresence>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {categories.length > 0 ? categories.map((cat) => (
-          <div key={cat.id} className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm hover:border-emerald-500 transition-all group">
-            <div className="flex items-center justify-between mb-4">
-              <div className="p-3 bg-stone-50 rounded-xl group-hover:bg-emerald-50 transition-colors">
-                <Folder className="w-6 h-6 text-stone-400 group-hover:text-emerald-600" />
+        {categories.length > 0 ? categories.map((cat) => {
+          const CatIcon = getIconById(cat.icon);
+          return (
+            <div key={cat.id} className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm hover:border-emerald-500 transition-all group">
+              <div className="flex items-center justify-between mb-4">
+                <div className="p-3 bg-stone-50 rounded-xl group-hover:bg-emerald-50 transition-colors">
+                  <CatIcon className="w-6 h-6 text-stone-400 group-hover:text-emerald-600" />
+                </div>
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button 
+                    onClick={() => openEditModal(cat)}
+                    className="p-2 text-stone-400 hover:text-stone-900 transition-colors"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </button>
+                  <button 
+                    onClick={() => deleteCategory(cat.id)}
+                    className="p-2 text-stone-400 hover:text-red-500 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button 
-                  onClick={() => openEditModal(cat)}
-                  className="p-2 text-stone-400 hover:text-stone-900 transition-colors"
-                >
-                  <Edit2 className="w-4 h-4" />
-                </button>
-                <button 
-                  onClick={() => deleteCategory(cat.id)}
-                  className="p-2 text-stone-400 hover:text-red-500 transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+              <h3 className="text-lg font-bold text-stone-900">{cat.name}</h3>
+              <p className="text-xs text-stone-400 font-mono mt-1">/{cat.slug}</p>
+              
+              <div className="mt-6 pt-4 border-t border-stone-50 flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest">Reputación</p>
+                  <p className={`text-lg font-black ${ (cat.rating || 0) >= 0 ? 'text-ml-quebrada' : 'text-ml-teja'}`}>
+                    {cat.rating || 0}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => updateRating(cat.id, 5)}
+                    className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold hover:bg-emerald-100 transition-colors"
+                    title="Aumentar reputación (+5)"
+                  >
+                    +5
+                  </button>
+                  <button 
+                    onClick={() => updateRating(cat.id, -5)}
+                    className="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center font-bold hover:bg-red-100 transition-colors"
+                    title="Disminuir reputación (-5)"
+                  >
+                    -5
+                  </button>
+                </div>
               </div>
             </div>
-            <h3 className="text-lg font-bold text-stone-900">{cat.name}</h3>
-            <p className="text-xs text-stone-400 font-mono mt-1">/{cat.slug}</p>
-            
-            <div className="mt-6 pt-4 border-t border-stone-50 flex items-center justify-between">
-              <div>
-                <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest">Reputación</p>
-                <p className={`text-lg font-black ${ (cat.rating || 0) >= 0 ? 'text-ml-quebrada' : 'text-ml-teja'}`}>
-                  {cat.rating || 0}
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <button 
-                  onClick={() => updateRating(cat.id, 5)}
-                  className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold hover:bg-emerald-100 transition-colors"
-                  title="Aumentar reputación (+5)"
-                >
-                  +5
-                </button>
-                <button 
-                  onClick={() => updateRating(cat.id, -5)}
-                  className="w-8 h-8 rounded-lg bg-red-50 text-red-600 flex items-center justify-center font-bold hover:bg-red-100 transition-colors"
-                  title="Disminuir reputación (-5)"
-                >
-                  -5
-                </button>
-              </div>
-            </div>
-          </div>
-        )) : (
+          );
+        }) : (
           <div className="col-span-full py-20 bg-white rounded-2xl border border-dashed border-stone-200 flex flex-col items-center justify-center text-stone-400">
             <Folder className="w-12 h-12 mb-4 opacity-20" />
             <p className="text-sm font-medium">No hay categorías registradas</p>

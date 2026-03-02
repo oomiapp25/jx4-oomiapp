@@ -39,6 +39,7 @@ export interface Category {
   id: string;
   name: string;
   slug: string;
+  icon?: string | null;
   rating?: number;
   created_by: string;
   created_at: string;
@@ -48,6 +49,7 @@ export interface Department {
   id: string;
   name: string;
   slug: string;
+  icon?: string | null;
   whatsapp?: string | null;
   created_by: string;
   created_at: string;
