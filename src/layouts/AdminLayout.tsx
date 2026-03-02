@@ -37,7 +37,7 @@ export default function AdminLayout() {
     { icon: Wrench, label: 'Servicios', path: '/admin/servicios', roles: ['admin'] },
     { icon: Users, label: 'Usuarios', path: '/admin/usuarios', roles: ['super_admin'] },
     { icon: ImageIcon, label: 'Publicidad', path: '/admin/ads', roles: ['admin'] },
-    { icon: Newspaper, label: 'Noticias', path: '/admin/noticias', roles: ['admin'] },
+    { icon: Newspaper, label: 'Noticias', path: '/admin/noticias', roles: ['admin', 'journalist'] },
     { icon: Settings, label: 'Configuración', path: '/admin/configuracion', roles: ['admin'] },
   ];
 

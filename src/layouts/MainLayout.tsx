@@ -1,5 +1,5 @@
 import { Link, Outlet, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Search, User, Menu, MessageCircle, ArrowUp, Home, Package, Shield, MapPin, Bus, Plus, Briefcase, Wrench } from 'lucide-react';
+import { ShoppingCart, Search, User, Menu, MessageCircle, ArrowUp, Home, Package, Shield, MapPin, Bus, Plus, Briefcase, Wrench, Newspaper } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase, Ad, News, TransportLine } from '../lib/supabase';
@@ -170,6 +170,17 @@ export default function MainLayout() {
               </Link>
 
               <Link 
+                to="/noticias" 
+                onClick={() => setIsFabOpen(false)}
+                className="flex items-center gap-3 bg-white px-4 py-3 rounded-2xl shadow-xl border border-ml-white-cal group hover:bg-ml-white-cal transition-colors"
+              >
+                <span className="text-xs font-black text-ml-monte-verde uppercase tracking-widest">Noticias</span>
+                <div className="w-10 h-10 bg-ml-white-cal rounded-xl flex items-center justify-center text-ml-hierro group-hover:bg-ml-quebrada group-hover:text-white transition-all">
+                  <Newspaper className="w-5 h-5" />
+                </div>
+              </Link>
+
+              <Link 
                 to="/transporte" 
                 onClick={() => setIsFabOpen(false)}
                 className="flex items-center gap-3 bg-white px-4 py-3 rounded-2xl shadow-xl border border-ml-white-cal group hover:bg-ml-white-cal transition-colors"
@@ -253,6 +264,7 @@ export default function MainLayout() {
           
           <div className="flex items-center justify-center gap-6 mb-8">
             <Link to="/" className="text-xs font-bold text-ml-hierro hover:text-ml-monte-verde uppercase tracking-widest transition-colors">Inicio</Link>
+            <Link to="/noticias" className="text-xs font-bold text-ml-hierro hover:text-ml-monte-verde uppercase tracking-widest transition-colors">Noticias</Link>
             <Link to="/mis-pedidos" className="text-xs font-bold text-ml-hierro hover:text-ml-monte-verde uppercase tracking-widest transition-colors">Mis Pedidos</Link>
             <a 
               href="https://wa.me/584241208234" 

@@ -24,6 +24,7 @@ import JobOffers from './pages/JobOffers';
 import Services from './pages/Services';
 import DepartmentDetail from './pages/DepartmentDetail';
 import CategoryDetail from './pages/CategoryDetail';
+import NewsPage from './pages/News';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/Dashboard';
@@ -67,6 +68,7 @@ export default function App() {
           <Route path="/registro" element={<Register />} />
           <Route path="/perfil" element={user ? <Profile /> : <Navigate to="/login" />} />
           <Route path="/transporte" element={<TransportLines />} />
+          <Route path="/noticias" element={<NewsPage />} />
           <Route path="/empleos" element={<JobOffers />} />
           <Route path="/servicios" element={<Services />} />
           <Route path="/departamento/:slug" element={<DepartmentDetail />} />
