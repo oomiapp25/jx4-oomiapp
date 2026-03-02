@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, ChangeEvent, FormEvent } from 'react';
 import { supabase, News } from '../../lib/supabase';
-import { Plus, Newspaper, Calendar, Trash2, Edit2, X, Loader2, Upload, Image as ImageIcon, AlertCircle } from 'lucide-react';
+import { Plus, Newspaper, Calendar, Trash2, Edit2, X, Loader2, Upload, Image as ImageIcon, AlertCircle, ShieldCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { uploadToImgBB } from '../../services/imgbbService';
 
@@ -142,11 +142,20 @@ export default function AdminNews() {
                   </div>
                 )}
                 <div 
-                  onClick={() => fileInputRef.current?.click()}
-                  className="aspect-video rounded-2xl border-2 border-dashed border-stone-200 flex flex-col items-center justify-center text-stone-400 hover:border-emerald-500 hover:text-emerald-600 transition-all cursor-pointer overflow-hidden relative"
+                  onClick={() => !formData.image_url && fileInputRef.current?.click()}
+                  className={`aspect-video rounded-2xl border-2 border-dashed border-stone-200 flex flex-col items-center justify-center text-stone-400 transition-all overflow-hidden relative ${!formData.image_url ? 'hover:border-emerald-500 hover:text-emerald-600 cursor-pointer' : ''}`}
                 >
                   {formData.image_url ? (
-                    <img src={formData.image_url} alt="" className="w-full h-full object-cover" />
+                    <>
+                      <img src={formData.image_url} alt="" className="w-full h-full object-cover" />
+                      <button 
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setFormData({ ...formData, image_url: '' }); }}
+                        className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 transition-colors"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </>
                   ) : (
                     <>
                       {uploading ? <Loader2 className="w-8 h-8 animate-spin" /> : <Upload className="w-8 h-8" />}
@@ -154,6 +163,22 @@ export default function AdminNews() {
                     </>
                   )}
                 </div>
+                
+                <div className="flex gap-2">
+                  <input 
+                    type="text" 
+                    placeholder="O pega una URL de imagen externa..."
+                    value={formData.image_url}
+                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                    className="flex-grow px-4 py-2 bg-stone-50 border border-stone-100 rounded-xl text-xs outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                  {formData.image_url && (
+                    <div className="px-3 py-2 bg-emerald-50 text-emerald-600 rounded-xl flex items-center">
+                      <ShieldCheck className="w-4 h-4" />
+                    </div>
+                  )}
+                </div>
+                
                 <input type="file" ref={fileInputRef} onChange={handleImageUpload} className="hidden" accept="image/*" />
 
                 <div>
