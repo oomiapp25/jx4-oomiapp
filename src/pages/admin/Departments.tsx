@@ -54,8 +54,15 @@ export default function AdminDepartments() {
   async function deleteDepartment(id: string) {
     if (!confirm('¿Estás seguro de eliminar este departamento?')) return;
     const { error } = await supabase.from('departments').delete().eq('id', id);
-    if (error) alert('Error: ' + error.message);
-    else fetchDepartments();
+    if (error) {
+      if (error.code === '23503') {
+        alert('No se puede eliminar: Este departamento tiene productos asociados. Debes eliminar o cambiar de departamento los productos primero.');
+      } else {
+        alert('Error: ' + error.message);
+      }
+    } else {
+      fetchDepartments();
+    }
   }
 
   function generateSlug(name: string) {

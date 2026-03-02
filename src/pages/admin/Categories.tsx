@@ -52,8 +52,15 @@ export default function AdminCategories() {
   async function deleteCategory(id: string) {
     if (!confirm('¿Estás seguro de eliminar esta categoría?')) return;
     const { error } = await supabase.from('categories').delete().eq('id', id);
-    if (error) alert('Error: ' + error.message);
-    else fetchCategories();
+    if (error) {
+      if (error.code === '23503') {
+        alert('No se puede eliminar: Esta categoría tiene productos asociados. Debes eliminar o cambiar de categoría los productos primero.');
+      } else {
+        alert('Error: ' + error.message);
+      }
+    } else {
+      fetchCategories();
+    }
   }
 
   function generateSlug(name: string) {

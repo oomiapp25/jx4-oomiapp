@@ -50,6 +50,16 @@ export default function Home() {
       <div className="max-w-7xl mx-auto px-4">
         {/* Dynamic Access Bar */}
         <div className="bg-white p-6 rounded shadow-sm flex items-center justify-between gap-4 overflow-x-auto no-scrollbar">
+          <Link 
+            to="/transporte?tab=private" 
+            className="flex flex-col items-center gap-2 min-w-[80px] cursor-pointer group"
+          >
+            <div className="w-12 h-12 rounded-full bg-ml-white-cal flex items-center justify-center group-hover:bg-ml-teja transition-colors">
+              <Truck className="w-6 h-6 text-ml-hierro group-hover:text-white transition-colors" />
+            </div>
+            <span className="text-[11px] font-medium text-ml-hierro text-center">Delivery</span>
+          </Link>
+
           {departments.map((dept) => {
             const DeptIcon = getIconById(dept.icon);
             return (
