@@ -1,14 +1,18 @@
-import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { supabase, Product, Category } from '../lib/supabase';
 import { motion } from 'motion/react';
-import { Package, ArrowLeft, Star } from 'lucide-react';
+import { Package, ArrowLeft, Star, Plus } from 'lucide-react';
 import { getIconById } from '../lib/icons';
+import { useCart } from '../hooks/useCart';
 
 export default function CategoryDetail() {
   const { slug } = useParams();
+  const navigate = useNavigate();
+  const { addToCart } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
   const [category, setCategory] = useState<Category | null>(null);
+  const [exchangeRate, setExchangeRate] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,17 +30,37 @@ export default function CategoryDetail() {
 
     if (catData) {
       setCategory(catData);
-      // 2. Fetch Products for this category
-      const { data: prodData } = await supabase
-        .from('products')
-        .select('*')
-        .eq('category_id', catData.id)
-        .order('created_at', { ascending: false });
+      // 2. Fetch Products and Exchange Rate
+      const [prodRes, rateRes] = await Promise.all([
+        supabase
+          .from('products')
+          .select('*')
+          .eq('category_id', catData.id)
+          .order('created_at', { ascending: false }),
+        supabase.from('settings').select('*').eq('key', 'exchange_rate').single()
+      ]);
       
-      if (prodData) setProducts(prodData);
+      if (prodRes.data) setProducts(prodRes.data);
+      if (rateRes.data) setExchangeRate(rateRes.data.value.rate);
     }
     setLoading(false);
   }
+
+  const handleQuickAdd = (e: React.MouseEvent, product: Product) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const result = addToCart(product, 1);
+    if (result?.success === false) {
+      const choice = confirm(
+        `${result.message}\n\n` +
+        `• Aceptar: Ir al carrito para finalizar la compra actual.\n` +
+        `• Cancelar: Seguir viendo productos.`
+      );
+      if (choice) {
+        navigate('/checkout');
+      }
+    }
+  };
 
   if (loading) {
     return (
@@ -94,11 +118,26 @@ export default function CategoryDetail() {
                   className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
                   referrerPolicy="no-referrer"
                 />
+                {/* Quick Add Button */}
+                <button
+                  onClick={(e) => handleQuickAdd(e, product)}
+                  className="absolute bottom-2 right-2 w-8 h-8 bg-ml-teja text-white rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform z-10"
+                  title="Agregar al carrito"
+                >
+                  <Plus className="w-5 h-5" />
+                </button>
               </Link>
               <div className="p-4 border-t border-ml-white-cal">
                 <div className="flex flex-col gap-1">
-                  <span className="text-xl font-normal text-ml-monte-verde">${product.price}</span>
-                  <p className="text-xs text-ml-quebrada font-bold">Envío gratis</p>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-xl font-normal text-ml-monte-verde">${product.price}</span>
+                    {exchangeRate && (
+                      <span className="text-[10px] font-bold text-stone-400">
+                        Bs. {(product.price * parseFloat(exchangeRate)).toLocaleString('es-VE', { minimumFractionDigits: 2 })}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-ml-hierro font-bold">Envío Parroquial</p>
                   <Link to={`/producto/${product.id}`} className="text-sm text-ml-monte-verde hover:text-ml-hierro transition-colors line-clamp-2 mt-1 leading-tight">
                     {product.title}
                   </Link>

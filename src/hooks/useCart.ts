@@ -32,6 +32,8 @@ export function useCart() {
   }, []);
 
   const addToCart = (product: any, quantity: number) => {
+    if (!product || !product.id) return { success: false, message: 'Producto inválido' };
+    
     const currentCart = JSON.parse(localStorage.getItem('jx4_cart') || '[]');
     
     // Check if cart already has items from a different department
@@ -55,12 +57,13 @@ export function useCart() {
         title: product.title,
         price: product.price,
         quantity,
-        image: product.images[0],
+        image: product.images?.[0] || 'https://picsum.photos/seed/product/400/400',
         department_id: product.department_id
       });
     }
 
     localStorage.setItem('jx4_cart', JSON.stringify(currentCart));
+    setCart(currentCart);
     window.dispatchEvent(new Event('cart-updated'));
     return { success: true };
   };
@@ -69,6 +72,7 @@ export function useCart() {
     const currentCart = JSON.parse(localStorage.getItem('jx4_cart') || '[]');
     const updatedCart = currentCart.filter((item: any) => item.id !== productId);
     localStorage.setItem('jx4_cart', JSON.stringify(updatedCart));
+    setCart(updatedCart);
     window.dispatchEvent(new Event('cart-updated'));
   };
 
@@ -82,12 +86,14 @@ export function useCart() {
     if (itemIndex > -1) {
       currentCart[itemIndex].quantity = newQuantity;
       localStorage.setItem('jx4_cart', JSON.stringify(currentCart));
+      setCart(currentCart);
       window.dispatchEvent(new Event('cart-updated'));
     }
   };
 
   const clearCart = () => {
     localStorage.removeItem('jx4_cart');
+    setCart([]);
     window.dispatchEvent(new Event('cart-updated'));
   };
 

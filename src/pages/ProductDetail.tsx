@@ -42,22 +42,28 @@ export default function ProductDetail() {
     setLoading(false);
   }
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (goToCheckout: boolean = false) => {
     if (product) {
       const result = addToCart(product, quantity);
+      
       if (result?.success === false) {
         const choice = confirm(
           `${result.message}\n\n` +
           `• Aceptar: Ir al carrito para finalizar la compra actual.\n` +
-          `• Cancelar: Seguir viendo este producto (puedes vaciar tu carrito manualmente).`
+          `• Cancelar: Seguir viendo este producto.`
         );
         if (choice) {
           navigate('/checkout');
         }
         return;
       }
-      setAdded(true);
-      setTimeout(() => setAdded(false), 2000);
+
+      if (goToCheckout) {
+        navigate('/checkout');
+      } else {
+        setAdded(true);
+        setTimeout(() => setAdded(false), 2000);
+      }
     }
   };
 
@@ -132,10 +138,10 @@ export default function ProductDetail() {
 
               <div className="space-y-4">
                 <div className="flex gap-3">
-                  <Truck className="w-5 h-5 text-ml-quebrada flex-shrink-0" />
+                  <Truck className="w-5 h-5 text-ml-hierro flex-shrink-0" />
                   <div>
-                    <p className="text-sm text-ml-quebrada font-bold">Envío gratis a todo el país</p>
-                    <p className="text-xs text-ml-quebrada/60">Conoce los tiempos y las formas de envío.</p>
+                    <p className="text-sm text-ml-hierro font-bold">Envío Parroquial</p>
+                    <p className="text-xs text-ml-hierro/60">Consulta disponibilidad y costo de entrega.</p>
                   </div>
                 </div>
                 <div className="flex gap-3">
@@ -164,13 +170,13 @@ export default function ProductDetail() {
                 </div>
 
                 <button 
-                  onClick={handleAddToCart}
+                  onClick={() => handleAddToCart(true)}
                   className="w-full py-3 bg-ml-teja text-white rounded font-bold hover:bg-ml-teja/90 transition-colors"
                 >
                   Comprar ahora
                 </button>
                 <button 
-                  onClick={handleAddToCart}
+                  onClick={() => handleAddToCart(false)}
                   className={`w-full py-3 rounded font-bold transition-colors border border-transparent ${added ? 'bg-ml-white-cal text-ml-quebrada border-ml-quebrada/20' : 'bg-ml-white-cal text-ml-hierro hover:bg-ml-white-cal/80'}`}
                 >
                   {added ? '¡Agregado!' : 'Agregar al carrito'}
