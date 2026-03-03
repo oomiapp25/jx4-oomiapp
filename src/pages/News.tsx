@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'motion/react';
 export default function NewsPage() {
   const [news, setNews] = useState<News[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedNews, setSelectedNews] = useState<News | null>(null);
 
   useEffect(() => {
@@ -13,14 +14,21 @@ export default function NewsPage() {
   }, []);
 
   async function fetchNews() {
-    const { data } = await supabase
-      .from('news')
-      .select('*')
-      .eq('active', true)
-      .order('published_at', { ascending: false });
-    
-    if (data) setNews(data);
-    setLoading(false);
+    try {
+      const { data, error: fetchError } = await supabase
+        .from('news')
+        .select('*')
+        .eq('active', true)
+        .order('published_at', { ascending: false });
+      
+      if (fetchError) throw fetchError;
+      if (data) setNews(data);
+    } catch (err: any) {
+      console.error('Error fetching news:', err);
+      setError('No se pudieron cargar las noticias. Verifica tu conexión.');
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (loading) {
@@ -37,6 +45,12 @@ export default function NewsPage() {
         <h1 className="text-3xl font-black text-ml-monte-verde tracking-tighter uppercase">Noticias y Avisos</h1>
         <p className="text-ml-hierro text-sm mt-1">Mantente informado sobre lo que sucede en Paracotos.</p>
       </div>
+
+      {error && (
+        <div className="mb-8 p-4 bg-red-50 border border-red-100 text-red-600 rounded-2xl text-sm font-medium">
+          {error}
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {news.length > 0 ? news.map((item) => (

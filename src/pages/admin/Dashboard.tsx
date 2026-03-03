@@ -38,25 +38,42 @@ export default function AdminDashboard() {
     totalUsers: 0,
     activeProducts: 0
   });
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => setMounted(true), 100);
+    const timer = setTimeout(() => setMounted(true), 200);
     fetchStats();
     return () => clearTimeout(timer);
   }, []);
 
   async function fetchStats() {
-    // In a real app, these would be real queries
-    const { count: productsCount } = await supabase.from('products').select('*', { count: 'exact', head: true });
-    const { count: usersCount } = await supabase.from('users').select('*', { count: 'exact', head: true });
-    const { count: ordersCount } = await supabase.from('orders').select('*', { count: 'exact', head: true });
-    
-    setStats({
-      totalSales: 12450.50, // Mock
-      totalOrders: ordersCount || 0,
-      totalUsers: usersCount || 0,
-      activeProducts: productsCount || 0
-    });
+    try {
+      // Check if Supabase is configured
+      if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+        setError('Supabase no está configurado. Por favor, configura las variables de entorno.');
+        return;
+      }
+
+      const [productsRes, usersRes, ordersRes] = await Promise.all([
+        supabase.from('products').select('*', { count: 'exact', head: true }),
+        supabase.from('users').select('*', { count: 'exact', head: true }),
+        supabase.from('orders').select('*', { count: 'exact', head: true })
+      ]);
+      
+      if (productsRes.error || usersRes.error || ordersRes.error) {
+        console.error('Error fetching stats:', productsRes.error || usersRes.error || ordersRes.error);
+      }
+
+      setStats({
+        totalSales: 12450.50, // Mock for now
+        totalOrders: ordersRes.count || 0,
+        totalUsers: usersRes.count || 0,
+        activeProducts: productsRes.count || 0
+      });
+    } catch (err: any) {
+      console.error('Fetch error:', err);
+      setError('Error de conexión con el servidor. Verifica tu configuración de Supabase.');
+    }
   }
 
   const statCards = [
@@ -68,6 +85,13 @@ export default function AdminDashboard() {
 
   return (
     <div className="space-y-8">
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-2xl flex items-center gap-3">
+          <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+          <p className="text-sm font-bold">{error}</p>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((stat, i) => (
           <div key={i} className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm">
@@ -89,9 +113,9 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm">
           <h3 className="text-sm font-bold text-stone-900 mb-6 uppercase tracking-wider">Ventas Semanales</h3>
-          <div className="h-80 w-full min-h-[320px]">
-            {mounted && (
-              <ResponsiveContainer width="100%" height="100%" minHeight={300}>
+          <div className="h-80 w-full relative">
+            {mounted ? (
+              <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={data}>
                   <defs>
                     <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
@@ -109,15 +133,15 @@ export default function AdminDashboard() {
                   <Area type="monotone" dataKey="sales" stroke="#5f7a6f" strokeWidth={3} fillOpacity={1} fill="url(#colorSales)" />
                 </AreaChart>
               </ResponsiveContainer>
-            )}
+            ) : null}
           </div>
         </div>
 
         <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm">
           <h3 className="text-sm font-bold text-stone-900 mb-6 uppercase tracking-wider">Pedidos por Día</h3>
-          <div className="h-80 w-full min-h-[320px]">
-            {mounted && (
-              <ResponsiveContainer width="100%" height="100%" minHeight={300}>
+          <div className="h-80 w-full relative">
+            {mounted ? (
+              <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                   <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} />
@@ -129,7 +153,7 @@ export default function AdminDashboard() {
                   <Bar dataKey="orders" fill="#e0b0a0" radius={[4, 4, 0, 0]} barSize={32} />
                 </BarChart>
               </ResponsiveContainer>
-            )}
+            ) : null}
           </div>
         </div>
       </div>
