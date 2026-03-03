@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { supabase, News } from '../lib/supabase';
-import { Newspaper, Calendar, ArrowRight } from 'lucide-react';
-import { motion } from 'motion/react';
+import { Newspaper, Calendar, ArrowRight, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 export default function NewsPage() {
   const [news, setNews] = useState<News[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedNews, setSelectedNews] = useState<News | null>(null);
 
   useEffect(() => {
     fetchNews();
@@ -47,7 +48,7 @@ export default function NewsPage() {
             className="bg-white rounded-3xl border border-ml-white-cal overflow-hidden shadow-sm hover:shadow-xl transition-all group flex flex-col"
           >
             {item.image_url && (
-              <div className="aspect-video overflow-hidden">
+              <div className="aspect-video overflow-hidden cursor-pointer" onClick={() => setSelectedNews(item)}>
                 <img 
                   src={item.image_url} 
                   alt={item.title} 
@@ -61,11 +62,14 @@ export default function NewsPage() {
                 <Calendar className="w-3 h-3" />
                 {new Date(item.published_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}
               </div>
-              <h3 className="text-xl font-black text-ml-monte-verde tracking-tight mb-3 line-clamp-2">{item.title}</h3>
+              <h3 className="text-xl font-black text-ml-monte-verde tracking-tight mb-3 line-clamp-2 cursor-pointer hover:text-ml-teja transition-colors" onClick={() => setSelectedNews(item)}>{item.title}</h3>
               <p className="text-sm text-ml-hierro line-clamp-3 mb-6 flex-grow">{item.excerpt}</p>
               
               <div className="pt-6 border-t border-stone-50">
-                <button className="flex items-center gap-2 text-xs font-black text-ml-teja uppercase tracking-widest hover:gap-3 transition-all">
+                <button 
+                  onClick={() => setSelectedNews(item)}
+                  className="flex items-center gap-2 text-xs font-black text-ml-teja uppercase tracking-widest hover:gap-3 transition-all"
+                >
                   Leer más
                   <ArrowRight className="w-4 h-4" />
                 </button>
@@ -79,6 +83,61 @@ export default function NewsPage() {
           </div>
         )}
       </div>
+
+      {/* News Detail Modal */}
+      <AnimatePresence>
+        {selectedNews && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-8">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedNews(null)}
+              className="absolute inset-0 bg-ml-monte-verde/60 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative bg-white w-full max-w-4xl max-h-[90vh] rounded-3xl shadow-2xl overflow-hidden flex flex-col"
+            >
+              <button 
+                onClick={() => setSelectedNews(null)}
+                className="absolute top-4 right-4 z-10 p-2 bg-white/80 backdrop-blur-md rounded-full text-ml-monte-verde hover:bg-white transition-all shadow-lg"
+              >
+                <X className="w-6 h-6" />
+              </button>
+
+              <div className="overflow-y-auto">
+                {selectedNews.image_url && (
+                  <div className="w-full aspect-video md:aspect-[21/9]">
+                    <img 
+                      src={selectedNews.image_url} 
+                      alt={selectedNews.title} 
+                      className="w-full h-full object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
+                )}
+                <div className="p-6 md:p-12">
+                  <div className="flex items-center gap-2 text-xs font-black text-stone-400 uppercase tracking-widest mb-6">
+                    <Calendar className="w-4 h-4" />
+                    {new Date(selectedNews.published_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}
+                  </div>
+                  <h2 className="text-3xl md:text-4xl font-black text-ml-monte-verde tracking-tighter uppercase mb-8 leading-none">
+                    {selectedNews.title}
+                  </h2>
+                  <div className="prose prose-stone max-w-none">
+                    <p className="text-lg text-ml-hierro leading-relaxed whitespace-pre-wrap">
+                      {selectedNews.content}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

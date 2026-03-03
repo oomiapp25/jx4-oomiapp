@@ -28,7 +28,41 @@ export default function Checkout() {
   useEffect(() => {
     fetchTransports();
     fetchExchangeRate();
-  }, []);
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        receiver_name: user.full_name || '',
+        phone: user.phone_number || ''
+      }));
+    }
+  }, [user]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!user && formData.phone.length >= 10) {
+        lookupPhone(formData.phone);
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [formData.phone, user]);
+
+  async function lookupPhone(phone: string) {
+    // Try to find an existing profile by phone to help guest users
+    const { data } = await supabase
+      .from('users')
+      .select('full_name, address')
+      .eq('phone_number', phone)
+      .limit(1)
+      .single();
+    
+    if (data) {
+      setFormData(prev => ({
+        ...prev,
+        receiver_name: data.full_name || prev.receiver_name,
+        address: data.address || prev.address
+      }));
+    }
+  }
 
   async function fetchExchangeRate() {
     const { data } = await supabase.from('settings').select('*').eq('key', 'exchange_rate').single();
@@ -46,8 +80,12 @@ export default function Checkout() {
       alert('Por favor selecciona un transportista');
       return;
     }
-    if (!formData.address || !formData.phone || !formData.receiver_name) {
-      alert('Por favor completa los datos de envío');
+    if (!formData.phone || !formData.receiver_name) {
+      alert('Por favor completa los datos de contacto');
+      return;
+    }
+    if (method === 'delivery' && !formData.address) {
+      alert('Por favor indica la dirección de entrega');
       return;
     }
 
@@ -275,17 +313,24 @@ export default function Checkout() {
                     value={formData.phone}
                     onChange={e => setFormData({...formData, phone: e.target.value})}
                     className="w-full px-4 py-2 bg-white border border-stone-200 rounded text-sm focus:ring-1 focus:ring-ml-secundario outline-none"
+                    placeholder="Ej. 04241234567"
                   />
                 </div>
-                <div>
-                  <label className="block text-xs font-bold text-stone-500 mb-1">Dirección (Referencia)</label>
-                  <input 
-                    type="text"
-                    value={formData.address}
-                    onChange={e => setFormData({...formData, address: e.target.value})}
-                    className="w-full px-4 py-2 bg-white border border-stone-200 rounded text-sm focus:ring-1 focus:ring-ml-secundario outline-none"
-                  />
-                </div>
+                {method === 'delivery' && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                  >
+                    <label className="block text-xs font-bold text-stone-500 mb-1">Dirección (Referencia)</label>
+                    <input 
+                      type="text"
+                      value={formData.address}
+                      onChange={e => setFormData({...formData, address: e.target.value})}
+                      className="w-full px-4 py-2 bg-white border border-stone-200 rounded text-sm focus:ring-1 focus:ring-ml-secundario outline-none"
+                      placeholder="Ej. Calle principal, casa #5"
+                    />
+                  </motion.div>
+                )}
               </div>
               <div>
                 <label className="block text-xs font-bold text-stone-500 mb-1">Notas adicionales (Opcional)</label>
