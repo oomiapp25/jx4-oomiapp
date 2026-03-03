@@ -19,6 +19,7 @@ import {
   AreaChart,
   Area
 } from 'recharts';
+import SeedData from '../../components/SeedData';
 
 const data = [
   { name: 'Lun', sales: 4000, orders: 24 },
@@ -110,79 +111,78 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm">
-          <h3 className="text-sm font-bold text-stone-900 mb-6 uppercase tracking-wider">Ventas Semanales</h3>
-          <div className="h-80 w-full relative">
-            {mounted ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={data}>
-                  <defs>
-                    <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#5f7a6f" stopOpacity={0.1}/>
-                      <stop offset="95%" stopColor="#5f7a6f" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: '#2e3d37', border: 'none', borderRadius: '12px', color: '#fff' }}
-                    itemStyle={{ color: '#e0b0a0' }}
-                  />
-                  <Area type="monotone" dataKey="sales" stroke="#5f7a6f" strokeWidth={3} fillOpacity={1} fill="url(#colorSales)" />
-                </AreaChart>
-              </ResponsiveContainer>
-            ) : null}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-8">
+          <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm">
+            <h3 className="text-sm font-bold text-stone-900 mb-6 uppercase tracking-wider">Ventas Semanales</h3>
+            <div className="h-80 w-full relative">
+              {mounted ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={data}>
+                    <defs>
+                      <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#5f7a6f" stopOpacity={0.1}/>
+                        <stop offset="95%" stopColor="#5f7a6f" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#2e3d37', border: 'none', borderRadius: '12px', color: '#fff' }}
+                      itemStyle={{ color: '#e0b0a0' }}
+                    />
+                    <Area type="monotone" dataKey="sales" stroke="#5f7a6f" strokeWidth={3} fillOpacity={1} fill="url(#colorSales)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm">
+            <h3 className="text-sm font-bold text-stone-900 mb-6 uppercase tracking-wider">Pedidos por Día</h3>
+            <div className="h-80 w-full relative">
+              {mounted ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={data}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} />
+                    <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} />
+                    <Tooltip 
+                      cursor={{ fill: '#f8fafc' }}
+                      contentStyle={{ backgroundColor: '#2e3d37', border: 'none', borderRadius: '12px', color: '#fff' }}
+                    />
+                    <Bar dataKey="orders" fill="#e0b0a0" radius={[4, 4, 0, 0]} barSize={32} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : null}
+            </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm">
-          <h3 className="text-sm font-bold text-stone-900 mb-6 uppercase tracking-wider">Pedidos por Día</h3>
-          <div className="h-80 w-full relative">
-            {mounted ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} />
-                  <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#94a3b8' }} />
-                  <Tooltip 
-                    cursor={{ fill: '#f8fafc' }}
-                    contentStyle={{ backgroundColor: '#2e3d37', border: 'none', borderRadius: '12px', color: '#fff' }}
-                  />
-                  <Bar dataKey="orders" fill="#e0b0a0" radius={[4, 4, 0, 0]} barSize={32} />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : null}
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-ml-white-cal p-8 rounded-[2rem] border border-ml-monte-verde/10 shadow-sm">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 bg-ml-monte-verde text-white rounded-2xl flex items-center justify-center">
-            <ShoppingBag className="w-6 h-6" />
-          </div>
-          <div>
-            <h3 className="text-lg font-black text-ml-monte-verde">Manual de Tamaños de Imágenes</h3>
-            <p className="text-xs text-ml-hierro font-medium uppercase tracking-widest">Guía para Administradores</p>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white p-4 rounded-2xl border border-stone-100">
-            <p className="text-xs font-black text-ml-teja uppercase mb-2">Productos</p>
-            <p className="text-xl font-black text-ml-monte-verde">800 x 800 px</p>
-            <p className="text-[10px] text-ml-hierro mt-1">Relación 1:1 (Cuadrado). Ideal para que el catálogo se vea uniforme.</p>
-          </div>
-          <div className="bg-white p-4 rounded-2xl border border-stone-100">
-            <p className="text-xs font-black text-ml-teja uppercase mb-2">Noticias y Anuncios</p>
-            <p className="text-xl font-black text-ml-monte-verde">1200 x 630 px</p>
-            <p className="text-[10px] text-ml-hierro mt-1">Relación 1.91:1. Formato horizontal para banners y noticias.</p>
-          </div>
-          <div className="bg-white p-4 rounded-2xl border border-stone-100">
-            <p className="text-xs font-black text-ml-teja uppercase mb-2">Iconos y Logos</p>
-            <p className="text-xl font-black text-ml-monte-verde">512 x 512 px</p>
-            <p className="text-[10px] text-ml-hierro mt-1">Fondo transparente (PNG) preferiblemente.</p>
+        <div className="space-y-8">
+          <SeedData />
+          
+          <div className="bg-ml-white-cal p-8 rounded-[2rem] border border-ml-monte-verde/10 shadow-sm">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 bg-ml-monte-verde text-white rounded-2xl flex items-center justify-center">
+                <ShoppingBag className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="text-lg font-black text-ml-monte-verde">Manual de Tamaños</h3>
+                <p className="text-xs text-ml-hierro font-medium uppercase tracking-widest">Guía para Admins</p>
+              </div>
+            </div>
+            <div className="space-y-4">
+              <div className="bg-white p-4 rounded-2xl border border-stone-100">
+                <p className="text-xs font-black text-ml-teja uppercase mb-1">Productos</p>
+                <p className="text-lg font-black text-ml-monte-verde">800 x 800 px</p>
+              </div>
+              <div className="bg-white p-4 rounded-2xl border border-stone-100">
+                <p className="text-xs font-black text-ml-teja uppercase mb-1">Noticias</p>
+                <p className="text-lg font-black text-ml-monte-verde">1200 x 630 px</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
