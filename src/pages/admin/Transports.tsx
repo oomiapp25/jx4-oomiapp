@@ -108,8 +108,16 @@ export default function AdminTransports() {
         ...deliveryForm,
         base_price: parseFloat(deliveryForm.base_price)
       } : {
-        ...lineForm,
-        price: parseFloat(lineForm.price)
+        name: lineForm.name,
+        origin: lineForm.origin,
+        destination: lineForm.destination,
+        schedule: lineForm.schedule,
+        departure_time: lineForm.departure_time,
+        arrival_time: lineForm.arrival_time,
+        price: parseFloat(lineForm.price),
+        news_update: lineForm.news_update,
+        whatsapp: lineForm.whatsapp,
+        // status: lineForm.status // Comentado para evitar error si la columna no existe en BD
       };
 
       let error;

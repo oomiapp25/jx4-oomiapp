@@ -77,6 +77,7 @@ CREATE TABLE IF NOT EXISTS public.transport_lines (
     arrival_time TEXT,
     price DECIMAL(10,2),
     news_update TEXT,
+    status TEXT DEFAULT 'normal',
     whatsapp TEXT,
     active BOOLEAN DEFAULT true NOT NULL,
     created_by UUID REFERENCES public.users(id),
