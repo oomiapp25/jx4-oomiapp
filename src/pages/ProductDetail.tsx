@@ -12,13 +12,20 @@ export default function ProductDetail() {
   const [product, setProduct] = useState<Product | null>(null);
   const [category, setCategory] = useState<Category | null>(null);
   const [department, setDepartment] = useState<Department | null>(null);
+  const [exchangeRate, setExchangeRate] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
 
   useEffect(() => {
     if (id) fetchProduct();
+    fetchExchangeRate();
   }, [id]);
+
+  async function fetchExchangeRate() {
+    const { data } = await supabase.from('settings').select('*').eq('key', 'exchange_rate').single();
+    if (data) setExchangeRate(parseFloat(data.value.rate));
+  }
 
   async function fetchProduct() {
     const { data } = await supabase.from('products').select('*').eq('id', id).single();
@@ -113,9 +120,14 @@ export default function ProductDetail() {
                 </div>
               </div>
 
-              <div>
+              <div className="flex flex-col">
                 <p className="text-4xl font-light text-ml-monte-verde">${product.price}</p>
-                <p className="text-sm text-ml-hierro mt-1">en 12x $ {(product.price / 12).toFixed(2)} sin interés</p>
+                {exchangeRate > 0 && (
+                  <p className="text-sm font-bold text-stone-400 mt-1">
+                    Bs. {(product.price * exchangeRate).toLocaleString('es-VE', { minimumFractionDigits: 2 })}
+                  </p>
+                )}
+                <p className="text-sm text-ml-hierro mt-2">en 12x $ {(product.price / 12).toFixed(2)} sin interés</p>
               </div>
 
               <div className="space-y-4">

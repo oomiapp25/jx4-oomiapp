@@ -1,5 +1,5 @@
 import { Link, Outlet, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Search, User, Menu, MessageCircle, ArrowUp, Home, Package, Shield, MapPin, Bus, Plus, Briefcase, Wrench, Newspaper } from 'lucide-react';
+import { ShoppingCart, Search, User, Menu, MessageCircle, ArrowUp, Home, Package, Shield, MapPin, Bus, Plus, Briefcase, Wrench, Newspaper, CreditCard } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase, Ad, News, TransportLine } from '../lib/supabase';
@@ -106,32 +106,51 @@ export default function MainLayout() {
           </div>
         </div>
       </header>
+      
+      {/* Sticky Ticker Bar */}
+      <div className="bg-ml-quebrada/10 border-b border-ml-quebrada/20 py-1.5 overflow-hidden sticky top-[96px] z-40 backdrop-blur-md">
+        <div className="flex animate-marquee whitespace-nowrap items-center">
+          {/* Exchange Rates */}
+          {exchangeRate && (
+            <div className="mx-12 flex items-center gap-3 text-[10px] font-black uppercase text-ml-monte-verde">
+              <CreditCard className="w-3 h-3 text-ml-teja" />
+              <span>Tasa USD: <span className="text-ml-teja">Bs. {exchangeRate}</span></span>
+              <div className="w-1 h-1 rounded-full bg-stone-300 mx-2" />
+              <span>Tasa EUR: <span className="text-ml-teja">Bs. {(parseFloat(exchangeRate) * 1.08).toFixed(2)}</span></span>
+            </div>
+          )}
 
-      {/* Transport News Ticker (Optional, kept but styled) */}
-      {transportLines.length > 0 && (
-        <div className="bg-ml-quebrada/10 border-b border-ml-quebrada/20 py-1 overflow-hidden">
-          <div className="flex animate-marquee whitespace-nowrap items-center">
-            {transportLines.map(line => (
-              <div key={line.id} className="mx-12 flex items-center gap-2 text-[10px] font-bold uppercase text-ml-monte-verde">
-                <Bus className="w-3 h-3 text-ml-teja" />
-                <span>{line.origin} → {line.destination}</span>
-                <span className={`px-2 py-0.5 rounded-full text-[8px] ${
-                  line.status === 'normal' ? 'bg-ml-monte-verde/10 text-ml-monte-verde' :
-                  line.status === 'alerta' || line.status === 'accidente' ? 'bg-red-500 text-white' :
-                  'bg-amber-500 text-white'
-                }`}>
-                  {line.status === 'retraso' ? 'RETRASO' :
-                   line.status === 'cola' ? 'COLA EN VÍA' :
-                   line.status === 'salida' ? 'DESPACHANDO' :
-                   line.status === 'accidente' ? 'ACCIDENTE' :
-                   line.status === 'alerta' ? 'ALERTA' : 'NORMAL'}
-                </span>
-                <span className="text-ml-hierro">{line.news_update || 'Operando normal'}</span>
-              </div>
-            ))}
-          </div>
+          {/* Transport Lines */}
+          {transportLines.map(line => (
+            <div key={line.id} className="mx-12 flex items-center gap-2 text-[10px] font-bold uppercase text-ml-monte-verde">
+              <Bus className="w-3 h-3 text-ml-teja" />
+              <span className="font-black">{line.origin} → {line.destination}</span>
+              <span className={`px-2 py-0.5 rounded-full text-[8px] font-black ${
+                line.status === 'normal' ? 'bg-ml-monte-verde/10 text-ml-monte-verde' :
+                line.status === 'alerta' || line.status === 'accidente' ? 'bg-red-500 text-white' :
+                'bg-amber-500 text-white'
+              }`}>
+                {line.status === 'retraso' ? 'RETRASO' :
+                 line.status === 'cola' ? 'COLA EN VÍA' :
+                 line.status === 'salida' ? 'DESPACHANDO' :
+                 line.status === 'accidente' ? 'ACCIDENTE' :
+                 line.status === 'alerta' ? 'ALERTA' : 'NORMAL'}
+              </span>
+              <span className="text-ml-hierro">{line.news_update || 'Operando normal'}</span>
+            </div>
+          ))}
+
+          {/* Duplicate for seamless loop */}
+          {exchangeRate && (
+            <div className="mx-12 flex items-center gap-3 text-[10px] font-black uppercase text-ml-monte-verde">
+              <CreditCard className="w-3 h-3 text-ml-teja" />
+              <span>Tasa USD: <span className="text-ml-teja">Bs. {exchangeRate}</span></span>
+              <div className="w-1 h-1 rounded-full bg-stone-300 mx-2" />
+              <span>Tasa EUR: <span className="text-ml-teja">Bs. {(parseFloat(exchangeRate) * 1.08).toFixed(2)}</span></span>
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       <main className="flex-grow w-full">
         <Outlet />

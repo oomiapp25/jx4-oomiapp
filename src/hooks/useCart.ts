@@ -72,6 +72,20 @@ export function useCart() {
     window.dispatchEvent(new Event('cart-updated'));
   };
 
+  const updateQuantity = (productId: string, newQuantity: number) => {
+    if (newQuantity < 1) {
+      removeFromCart(productId);
+      return;
+    }
+    const currentCart = JSON.parse(localStorage.getItem('jx4_cart') || '[]');
+    const itemIndex = currentCart.findIndex((item: any) => item.id === productId);
+    if (itemIndex > -1) {
+      currentCart[itemIndex].quantity = newQuantity;
+      localStorage.setItem('jx4_cart', JSON.stringify(currentCart));
+      window.dispatchEvent(new Event('cart-updated'));
+    }
+  };
+
   const clearCart = () => {
     localStorage.removeItem('jx4_cart');
     window.dispatchEvent(new Event('cart-updated'));
@@ -80,5 +94,5 @@ export function useCart() {
   const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-  return { cart, addToCart, removeFromCart, clearCart, total, itemCount };
+  return { cart, addToCart, removeFromCart, updateQuantity, clearCart, total, itemCount };
 }

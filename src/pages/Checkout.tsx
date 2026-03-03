@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { supabase, Transport, Department, UserProfile } from '../lib/supabase';
-import { Truck, Store, CheckCircle2, MapPin, Phone, ShieldCheck, ArrowRight, Loader2 } from 'lucide-react';
+import { Truck, Store, CheckCircle2, MapPin, Phone, ShieldCheck, ArrowRight, Loader2, Minus, Plus as PlusIcon, Trash2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 
 export default function Checkout() {
-  const { cart, total, clearCart } = useCart();
+  const { cart, total, clearCart, updateQuantity, removeFromCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [method, setMethod] = useState<'delivery' | 'pickup'>('delivery');
@@ -141,6 +141,57 @@ export default function Checkout() {
     <div className="max-w-7xl mx-auto px-4 py-12">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
+          {/* Cart Items */}
+          <section className="bg-white p-8 rounded shadow-sm border border-stone-100">
+            <h2 className="text-xl font-bold text-stone-900 mb-6">Revisa tus productos</h2>
+            <div className="divide-y divide-stone-100">
+              {cart.map((item) => (
+                <div key={item.id} className="py-4 flex items-center gap-4">
+                  <img 
+                    src={item.image} 
+                    alt={item.title} 
+                    className="w-16 h-16 object-cover rounded-lg border border-stone-100"
+                    referrerPolicy="no-referrer"
+                  />
+                  <div className="flex-grow">
+                    <h3 className="text-sm font-bold text-ml-dark line-clamp-1">{item.title}</h3>
+                    <div className="flex items-center gap-2">
+                      <p className="text-xs text-ml-teja font-bold">${item.price.toFixed(2)}</p>
+                      {exchangeRate > 0 && (
+                        <p className="text-[10px] text-stone-400 font-bold">
+                          Bs. {(item.price * exchangeRate).toLocaleString('es-VE', { minimumFractionDigits: 2 })}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center border border-stone-200 rounded-lg overflow-hidden">
+                      <button 
+                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        className="p-2 hover:bg-stone-50 text-stone-500 transition-colors"
+                      >
+                        <Minus className="w-3 h-3" />
+                      </button>
+                      <span className="w-8 text-center text-xs font-bold text-ml-dark">{item.quantity}</span>
+                      <button 
+                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        className="p-2 hover:bg-stone-50 text-stone-500 transition-colors"
+                      >
+                        <PlusIcon className="w-3 h-3" />
+                      </button>
+                    </div>
+                    <button 
+                      onClick={() => removeFromCart(item.id)}
+                      className="p-2 text-stone-300 hover:text-red-500 transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
           {/* Method Selection */}
           <section className="bg-white p-8 rounded shadow-sm border border-stone-100">
             <h2 className="text-xl font-bold text-stone-900 mb-6">¿Cómo quieres recibir o retirar tu compra?</h2>
@@ -265,9 +316,16 @@ export default function Checkout() {
                   {method === 'pickup' ? 'Gratis' : `$${deliveryFee.toFixed(2)}`}
                 </span>
               </div>
-              <div className="pt-4 border-t border-stone-100 flex justify-between">
-                <span className="text-lg font-bold text-ml-dark">Total</span>
-                <span className="text-lg font-bold text-ml-dark">${(total + deliveryFee).toFixed(2)}</span>
+              <div className="pt-4 border-t border-stone-100 flex flex-col items-end">
+                <div className="flex justify-between w-full">
+                  <span className="text-lg font-bold text-ml-dark">Total</span>
+                  <span className="text-lg font-bold text-ml-dark">${(total + deliveryFee).toFixed(2)}</span>
+                </div>
+                {exchangeRate > 0 && (
+                  <span className="text-sm font-bold text-ml-teja">
+                    Bs. {((total + deliveryFee) * exchangeRate).toLocaleString('es-VE', { minimumFractionDigits: 2 })}
+                  </span>
+                )}
               </div>
             </div>
             <div className="space-y-3">

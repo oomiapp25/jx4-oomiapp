@@ -9,6 +9,7 @@ import { getIconById } from '../lib/icons';
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
+  const [exchangeRate, setExchangeRate] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -16,13 +17,15 @@ export default function Home() {
   }, []);
 
   async function fetchData() {
-    const [productsRes, deptsRes] = await Promise.all([
+    const [productsRes, deptsRes, rateRes] = await Promise.all([
       supabase.from('products').select('*').order('created_at', { ascending: false }),
-      supabase.from('departments').select('*').order('name')
+      supabase.from('departments').select('*').order('name'),
+      supabase.from('settings').select('*').eq('key', 'exchange_rate').single()
     ]);
     
     if (productsRes.data) setProducts(productsRes.data);
     if (deptsRes.data) setDepartments(deptsRes.data);
+    if (rateRes.data) setExchangeRate(rateRes.data.value.rate);
     setLoading(false);
   }
 
@@ -102,7 +105,14 @@ export default function Home() {
                 </Link>
                 <div className="p-4 border-t border-ml-white-cal">
                   <div className="flex flex-col gap-1">
-                    <span className="text-xl font-normal text-ml-monte-verde">${product.price}</span>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-xl font-normal text-ml-monte-verde">${product.price}</span>
+                      {exchangeRate && (
+                        <span className="text-[10px] font-bold text-stone-400">
+                          Bs. {(product.price * parseFloat(exchangeRate)).toLocaleString('es-VE', { minimumFractionDigits: 2 })}
+                        </span>
+                      )}
+                    </div>
                     <p className="text-xs text-ml-quebrada font-bold">Envío gratis</p>
                     <Link to={`/producto/${product.id}`} className="text-sm text-ml-monte-verde hover:text-ml-hierro transition-colors line-clamp-2 mt-1 leading-tight">
                       {product.title}
