@@ -48,7 +48,7 @@ export default function App() {
 
   useEffect(() => {
     if (user) {
-      console.log('Current User:', user.email, 'Role:', user.role);
+      console.log('Current User:', user.email, 'Roles:', user.roles);
     }
   }, [user]);
 
@@ -93,8 +93,8 @@ export default function App() {
           path="/admin" 
           element={
             user && (
-              user.role === 'admin' || 
-              user.role.includes('_admin') || 
+              user.roles.includes('admin') || 
+              user.roles.some(r => r.includes('_admin')) || 
               user.email === 'jjtovar1510@gmail.com'
             ) ? <AdminLayout /> : <Navigate to="/" />
           }

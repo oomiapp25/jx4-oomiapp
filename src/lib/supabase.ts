@@ -15,7 +15,7 @@ export interface UserProfile {
   id: string;
   email: string;
   full_name: string | null;
-  role: UserRole;
+  roles: UserRole[];
   department_id?: string | null;
   transport_line_id?: string | null;
   phone_number?: string | null;

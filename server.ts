@@ -32,11 +32,11 @@ async function startServer() {
     // Validar que el que invita sea admin
     const { data: inviter, error: inviterError } = await supabaseAdmin
       .from('users')
-      .select('role')
+      .select('roles')
       .eq('id', invitedBy)
       .single();
 
-    if (inviterError || inviter?.role !== 'admin') {
+    if (inviterError || !inviter?.roles.includes('admin')) {
       return res.status(403).json({ error: "No autorizado" });
     }
 
@@ -63,7 +63,7 @@ async function startServer() {
 
   // POST /api/create-user (Direct creation by Super Admin)
   app.post("/api/create-user", async (req, res) => {
-    const { email, password, fullName, role, departmentId, transportLineId, phoneNumber, invitedBy } = req.body;
+    const { email, password, fullName, roles, departmentId, transportLineId, phoneNumber, invitedBy } = req.body;
     
     console.log(`Intentando crear usuario: ${email} por inviter: ${invitedBy}`);
 
@@ -72,7 +72,7 @@ async function startServer() {
       // Primero intentamos en la tabla pública
       let { data: inviter, error: inviterError } = await supabaseAdmin
         .from('users')
-        .select('email, role')
+        .select('email, roles')
         .eq('id', invitedBy)
         .single();
 
@@ -80,7 +80,7 @@ async function startServer() {
       
       if (inviter) {
         const isSuperAdmin = inviter.email === 'jjtovar1510@gmail.com';
-        if (isSuperAdmin || inviter.role === 'admin') {
+        if (isSuperAdmin || inviter.roles.includes('admin')) {
           isAuthorized = true;
         }
       } else {
@@ -118,7 +118,7 @@ async function startServer() {
         .upsert({
           id: authUser.user.id,
           email,
-          role,
+          roles: roles || ['customer'],
           department_id: departmentId || null,
           transport_line_id: transportLineId || null,
           phone_number: phoneNumber || null,
@@ -189,9 +189,19 @@ async function startServer() {
     }
 
     // Actualizar rol del usuario
+    const { data: user, error: userError } = await supabaseAdmin
+      .from('users')
+      .select('roles')
+      .eq('id', userId)
+      .single();
+
+    if (userError) return res.status(500).json({ error: userError.message });
+
+    const newRoles = Array.from(new Set([...user.roles, invite.role_to_grant]));
+
     const { error: updateError } = await supabaseAdmin
       .from('users')
-      .update({ role: invite.role_to_grant })
+      .update({ roles: newRoles })
       .eq('id', userId);
 
     if (updateError) return res.status(500).json({ error: updateError.message });

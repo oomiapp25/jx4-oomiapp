@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS public.users (
     id UUID REFERENCES auth.users ON DELETE CASCADE PRIMARY KEY,
     email TEXT UNIQUE NOT NULL,
     full_name TEXT,
-    role user_role DEFAULT 'customer' NOT NULL,
+    roles user_role[] DEFAULT '{customer}' NOT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
     updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
@@ -222,12 +222,12 @@ BEGIN
 
   RETURN EXISTS (
     SELECT 1 FROM public.users
-    WHERE id = auth.uid() AND role = 'admin'
+    WHERE id = auth.uid() AND roles && ARRAY['admin'::user_role]
   );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
-CREATE OR REPLACE FUNCTION public.has_any_role(roles user_role[])
+CREATE OR REPLACE FUNCTION public.has_any_role(roles_to_check user_role[])
 RETURNS boolean AS $$
 BEGIN
   -- Super admin bypass
@@ -237,7 +237,7 @@ BEGIN
 
   RETURN EXISTS (
     SELECT 1 FROM public.users
-    WHERE id = auth.uid() AND role = ANY(roles)
+    WHERE id = auth.uid() AND roles && roles_to_check
   );
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -245,8 +245,8 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger AS $$
 BEGIN
-  INSERT INTO public.users (id, email, full_name, role)
-  VALUES (NEW.id, NEW.email, NEW.raw_user_meta_data->>'full_name', 'customer')
+  INSERT INTO public.users (id, email, full_name, roles)
+  VALUES (NEW.id, NEW.email, NEW.raw_user_meta_data->>'full_name', '{customer}')
   ON CONFLICT (id) DO UPDATE
     SET email = EXCLUDED.email,
         full_name = COALESCE(EXCLUDED.full_name, public.users.full_name),

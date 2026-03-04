@@ -46,7 +46,7 @@ export default function AdminLayout() {
   ];
 
   const filteredMenu = menuItems.filter(item => 
-    user && (item.roles.includes(user.role) || user.email === 'jjtovar1510@gmail.com')
+    user && (item.roles.some(r => user.roles.includes(r as any)) || user.email === 'jjtovar1510@gmail.com')
   );
 
   async function handleLogout() {
@@ -111,7 +111,7 @@ export default function AdminLayout() {
             </div>
             <div className="flex-grow min-w-0">
               <p className="text-xs font-bold truncate">{user?.full_name || 'Admin'}</p>
-              <p className="text-[10px] text-ml-quebrada/60 truncate">{user?.role}</p>
+              <p className="text-[10px] text-ml-quebrada/60 truncate">{user?.roles.join(', ')}</p>
             </div>
           </div>
           <button 

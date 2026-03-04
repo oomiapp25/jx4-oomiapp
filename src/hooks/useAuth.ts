@@ -48,7 +48,7 @@ export function useAuth() {
         id: session.user.id,
         email: session.user.email || '',
         full_name: session.user.user_metadata?.full_name || 'Usuario',
-        role: session.user.email === 'jjtovar1510@gmail.com' ? 'admin' : 'customer',
+        roles: session.user.email === 'jjtovar1510@gmail.com' ? ['admin'] : ['customer'],
         created_at: new Date().toISOString()
       });
 
@@ -60,7 +60,7 @@ export function useAuth() {
             id: session.user.id,
             email: session.user.email,
             full_name: session.user.user_metadata?.full_name || 'Usuario',
-            role: session.user.email === 'jjtovar1510@gmail.com' ? 'admin' : 'customer'
+            roles: session.user.email === 'jjtovar1510@gmail.com' ? ['admin'] : ['customer']
           });
       }
     } else if (data) {

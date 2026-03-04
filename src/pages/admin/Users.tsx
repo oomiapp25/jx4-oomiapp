@@ -18,14 +18,14 @@ export default function AdminUsers() {
     email: '',
     password: '',
     fullName: '',
-    role: 'customer',
+    roles: ['customer'],
     departmentId: '',
     phoneNumber: ''
   });
 
   const [editFormData, setEditFormData] = useState({
     fullName: '',
-    role: 'customer',
+    roles: ['customer'],
     departmentId: '',
     phoneNumber: ''
   });
@@ -49,7 +49,7 @@ export default function AdminUsers() {
   const isSuperAdmin = currentUser?.email === 'jjtovar1510@gmail.com';
 
   async function updateUser(userId: string, updates: any) {
-    if (!isSuperAdmin && updates.role) {
+    if (!isSuperAdmin && updates.roles) {
       alert('Solo el Super Administrador puede cambiar roles.');
       return;
     }
@@ -69,7 +69,7 @@ export default function AdminUsers() {
     setSelectedUser(user);
     setEditFormData({
       fullName: user.full_name || '',
-      role: user.role || 'customer',
+      roles: user.roles || ['customer'],
       departmentId: user.department_id || '',
       phoneNumber: user.phone_number || ''
     });
@@ -82,7 +82,7 @@ export default function AdminUsers() {
     setSubmitting(true);
     await updateUser(selectedUser.id, {
       full_name: editFormData.fullName,
-      role: editFormData.role,
+      roles: editFormData.roles,
       department_id: editFormData.departmentId || null,
       phone_number: editFormData.phoneNumber
     });
@@ -120,7 +120,7 @@ export default function AdminUsers() {
         email: '',
         password: '',
         fullName: '',
-        role: 'customer',
+        roles: ['customer'],
         departmentId: '',
         phoneNumber: ''
       });
@@ -239,18 +239,27 @@ export default function AdminUsers() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-4">
                   <div>
-                    <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1.5 px-1">Rol</label>
-                    <select 
-                      value={formData.role}
-                      onChange={e => setFormData({...formData, role: e.target.value})}
-                      className="w-full px-4 py-2.5 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
-                    >
+                    <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1.5 px-1">Roles</label>
+                    <div className="grid grid-cols-2 gap-2 bg-stone-50 p-3 rounded-xl border border-stone-100">
                       {roles.map(r => (
-                        <option key={r.value} value={r.value}>{r.label}</option>
+                        <label key={r.value} className="flex items-center gap-2 cursor-pointer group">
+                          <input 
+                            type="checkbox"
+                            checked={formData.roles.includes(r.value)}
+                            onChange={e => {
+                              const newRoles = e.target.checked 
+                                ? [...formData.roles, r.value]
+                                : formData.roles.filter(role => role !== r.value);
+                              setFormData({...formData, roles: newRoles});
+                            }}
+                            className="w-4 h-4 rounded border-stone-300 text-stone-900 focus:ring-stone-900"
+                          />
+                          <span className="text-xs text-stone-600 group-hover:text-stone-900 transition-colors">{r.label}</span>
+                        </label>
                       ))}
-                    </select>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1.5 px-1">Departamento</label>
@@ -336,19 +345,28 @@ export default function AdminUsers() {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-4">
                   <div>
-                    <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1.5 px-1">Rol</label>
-                    <select 
-                      disabled={!isSuperAdmin}
-                      value={editFormData.role}
-                      onChange={e => setEditFormData({...editFormData, role: e.target.value})}
-                      className="w-full px-4 py-2.5 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none disabled:opacity-50"
-                    >
+                    <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1.5 px-1">Roles</label>
+                    <div className="grid grid-cols-2 gap-2 bg-stone-50 p-3 rounded-xl border border-stone-100">
                       {roles.map(r => (
-                        <option key={r.value} value={r.value}>{r.label}</option>
+                        <label key={r.value} className={`flex items-center gap-2 cursor-pointer group ${!isSuperAdmin ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                          <input 
+                            disabled={!isSuperAdmin}
+                            type="checkbox"
+                            checked={editFormData.roles.includes(r.value)}
+                            onChange={e => {
+                              const newRoles = e.target.checked 
+                                ? [...editFormData.roles, r.value]
+                                : editFormData.roles.filter(role => role !== r.value);
+                              setEditFormData({...editFormData, roles: newRoles});
+                            }}
+                            className="w-4 h-4 rounded border-stone-300 text-stone-900 focus:ring-stone-900"
+                          />
+                          <span className="text-xs text-stone-600 group-hover:text-stone-900 transition-colors">{r.label}</span>
+                        </label>
                       ))}
-                    </select>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1.5 px-1">Departamento</label>
@@ -413,12 +431,16 @@ export default function AdminUsers() {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
-                      user.role === 'admin' ? 'bg-purple-50 text-purple-600' : 
-                      user.role === 'customer' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'
-                    }`}>
-                      {roles.find(r => r.value === user.role)?.label || user.role}
-                    </span>
+                    <div className="flex flex-wrap gap-1">
+                      {user.roles?.map((role: string) => (
+                        <span key={role} className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${
+                          role === 'admin' ? 'bg-purple-50 text-purple-600' : 
+                          role === 'customer' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'
+                        }`}>
+                          {roles.find(r => r.value === role)?.label || role}
+                        </span>
+                      ))}
+                    </div>
                   </td>
                   <td className="px-6 py-4">
                     <span className="text-xs text-stone-600">
