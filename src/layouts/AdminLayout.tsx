@@ -16,7 +16,8 @@ import {
   Wrench,
   Settings,
   Menu,
-  X
+  X,
+  Heart
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
@@ -38,6 +39,7 @@ export default function AdminLayout() {
     { icon: Users, label: 'Usuarios', path: '/admin/usuarios', roles: ['super_admin'] },
     { icon: ImageIcon, label: 'Publicidad', path: '/admin/ads', roles: ['admin'] },
     { icon: Newspaper, label: 'Noticias', path: '/admin/noticias', roles: ['admin', 'journalist'] },
+    { icon: Heart, label: 'Ayuda Social', path: '/admin/ayuda-social', roles: ['admin', 'social_admin'] },
     { icon: Settings, label: 'Configuración', path: '/admin/configuracion', roles: ['admin'] },
   ];
 

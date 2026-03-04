@@ -1,6 +1,6 @@
 import { Link, Outlet, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Search, User, Menu, MessageCircle, ArrowUp, Home, Package, Shield, MapPin, Bus, Plus, Briefcase, Wrench, Newspaper, CreditCard } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { ShoppingCart, Search, User, Menu, MessageCircle, ArrowUp, Home, Package, Shield, MapPin, Bus, Plus, Briefcase, Wrench, Newspaper, CreditCard, Heart } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase, Ad, News, TransportLine } from '../lib/supabase';
 import { useAuth } from '../hooks/useAuth';
@@ -84,6 +84,10 @@ export default function MainLayout() {
             <div className="flex items-center gap-6">
               {user ? (
                 <div className="flex items-center gap-4">
+                  <Link to="/ayuda-social" className="flex items-center gap-1 text-ml-quebrada hover:text-white transition-colors font-bold mr-2">
+                    <Heart className="w-4 h-4" />
+                    <span className="hidden lg:inline">Ayuda Social</span>
+                  </Link>
                   <Link to="/perfil" className="flex items-center gap-1 hover:text-white transition-colors">
                     <User className="w-4 h-4" />
                     <span className="hidden sm:inline">{user.email?.split('@')[0]}</span>
@@ -93,6 +97,10 @@ export default function MainLayout() {
                 </div>
               ) : (
                 <div className="flex items-center gap-4">
+                  <Link to="/ayuda-social" className="flex items-center gap-1 text-ml-quebrada hover:text-white transition-colors font-bold mr-2">
+                    <Heart className="w-4 h-4" />
+                    <span className="hidden lg:inline">Ayuda Social</span>
+                  </Link>
                   <Link to="/register" className="hover:text-white transition-colors">Crea tu cuenta</Link>
                   <Link to="/login" className="hover:text-white transition-colors">Ingresa</Link>
                   <Link to="/mis-pedidos" className="hover:text-white transition-colors">Mis compras</Link>

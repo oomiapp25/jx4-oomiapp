@@ -9,7 +9,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-export type UserRole = 'customer' | 'admin' | 'category_admin' | 'department_admin' | 'transport_admin' | 'journalist';
+export type UserRole = 'customer' | 'admin' | 'category_admin' | 'department_admin' | 'transport_admin' | 'social_admin';
 
 export interface UserProfile {
   id: string;
@@ -138,4 +138,38 @@ export interface News {
   image_url: string;
   active: boolean;
   published_at: string;
+}
+
+export interface SocialInventory {
+  id: string;
+  name: string;
+  description: string | null;
+  quantity: number;
+  image_url: string | null;
+  active: boolean;
+  created_by: string;
+  created_at: string;
+}
+
+export interface SocialRequest {
+  id: string;
+  requester_name: string;
+  requester_phone: string;
+  item_requested: string;
+  justification: string;
+  medical_report_url: string | null;
+  status: 'pending' | 'approved' | 'rejected' | 'delivered';
+  notes: string | null;
+  created_at: string;
+}
+
+export interface SocialDelivery {
+  id: string;
+  beneficiary_name: string;
+  item_delivered: string;
+  description: string | null;
+  image_url: string | null;
+  delivery_date: string;
+  created_by: string;
+  created_at: string;
 }

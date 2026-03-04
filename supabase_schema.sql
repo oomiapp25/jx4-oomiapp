@@ -8,9 +8,15 @@ DROP FUNCTION IF EXISTS public.has_any_role(user_role[]);
 
 -- 1. Custom Types
 DO $$ BEGIN
-    CREATE TYPE user_role AS ENUM ('customer', 'admin', 'category_admin', 'department_admin', 'transport_admin');
+    CREATE TYPE user_role AS ENUM ('customer', 'admin', 'category_admin', 'department_admin', 'transport_admin', 'social_admin');
 EXCEPTION
-    WHEN duplicate_object THEN null;
+    WHEN duplicate_object THEN 
+        -- If type exists, we might need to add the new value if it's missing
+        BEGIN
+            ALTER TYPE user_role ADD VALUE 'social_admin';
+        EXCEPTION
+            WHEN duplicate_object THEN null;
+        END;
 END $$;
 
 -- 2. Tables
@@ -158,6 +164,43 @@ CREATE TABLE IF NOT EXISTS public.settings (
     updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 
+-- Social Help Tables
+CREATE TABLE IF NOT EXISTS public.social_inventory (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT,
+    quantity INTEGER DEFAULT 0 NOT NULL,
+    image_url TEXT,
+    active BOOLEAN DEFAULT true NOT NULL,
+    created_by UUID REFERENCES public.users(id),
+    created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS public.social_requests (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    requester_name TEXT NOT NULL,
+    requester_phone TEXT NOT NULL,
+    item_requested TEXT NOT NULL,
+    justification TEXT NOT NULL,
+    medical_report_url TEXT,
+    status TEXT DEFAULT 'pending' NOT NULL, -- pending, approved, rejected, delivered
+    notes TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+    updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS public.social_deliveries (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    beneficiary_name TEXT NOT NULL,
+    item_delivered TEXT NOT NULL,
+    description TEXT,
+    image_url TEXT,
+    delivery_date TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+    created_by UUID REFERENCES public.users(id),
+    created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
+);
+
 -- Alter users additions (if not present)
 ALTER TABLE public.users ADD COLUMN IF NOT EXISTS department_id UUID REFERENCES public.departments(id);
 ALTER TABLE public.users ADD COLUMN IF NOT EXISTS phone_number TEXT;
@@ -221,6 +264,9 @@ ALTER TABLE public.ads ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.news ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.admin_invites ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.social_inventory ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.social_requests ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.social_deliveries ENABLE ROW LEVEL SECURITY;
 
 -- 5. Policies (Idempotent)
 
@@ -299,6 +345,24 @@ DROP POLICY IF EXISTS "Anyone can view settings" ON public.settings;
 DROP POLICY IF EXISTS "Admins can manage settings" ON public.settings;
 CREATE POLICY "Anyone can view settings" ON public.settings FOR SELECT USING (true);
 CREATE POLICY "Admins can manage settings" ON public.settings FOR ALL USING (public.is_admin());
+
+-- Social Inventory
+DROP POLICY IF EXISTS "Anyone can view social inventory" ON public.social_inventory;
+DROP POLICY IF EXISTS "Social admins can manage inventory" ON public.social_inventory;
+CREATE POLICY "Anyone can view social inventory" ON public.social_inventory FOR SELECT USING (active = true);
+CREATE POLICY "Social admins can manage inventory" ON public.social_inventory FOR ALL USING (public.has_any_role(ARRAY['admin'::user_role, 'social_admin'::user_role]));
+
+-- Social Requests
+DROP POLICY IF EXISTS "Anyone can create requests" ON public.social_requests;
+DROP POLICY IF EXISTS "Social admins can view requests" ON public.social_requests;
+CREATE POLICY "Anyone can create requests" ON public.social_requests FOR INSERT WITH CHECK (true);
+CREATE POLICY "Social admins can view requests" ON public.social_requests FOR ALL USING (public.has_any_role(ARRAY['admin'::user_role, 'social_admin'::user_role]));
+
+-- Social Deliveries
+DROP POLICY IF EXISTS "Anyone can view deliveries" ON public.social_deliveries;
+DROP POLICY IF EXISTS "Social admins can manage deliveries" ON public.social_deliveries;
+CREATE POLICY "Anyone can view deliveries" ON public.social_deliveries FOR SELECT USING (true);
+CREATE POLICY "Social admins can manage deliveries" ON public.social_deliveries FOR ALL USING (public.has_any_role(ARRAY['admin'::user_role, 'social_admin'::user_role]));
 
 -- 6. Triggers
 CREATE TRIGGER on_auth_user_created

@@ -304,6 +304,7 @@ export default function AdminSettings() {
                         <option value="category_admin">Admin Categoría</option>
                         <option value="department_admin">Admin Departamento</option>
                         <option value="transport_admin">Admin Transporte</option>
+                        <option value="social_admin">Gestor Social (Alvert Sanz)</option>
                       </select>
                     </div>
                     <div>
