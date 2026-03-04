@@ -7,6 +7,7 @@ import { useAuth } from '../../hooks/useAuth';
 export default function AdminSettings() {
   const { user: currentUser } = useAuth();
   const [exchangeRate, setExchangeRate] = useState('1');
+  const [euroRate, setEuroRate] = useState('1');
   const [admins, setAdmins] = useState<UserProfile[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [transportLines, setTransportLines] = useState<any[]>([]);
@@ -36,6 +37,7 @@ export default function AdminSettings() {
     const { data } = await supabase.from('settings').select('*').eq('key', 'exchange_rate').single();
     if (data) {
       setExchangeRate(data.value.rate);
+      setEuroRate(data.value.euro_rate || (parseFloat(data.value.rate) * 1.08).toFixed(2));
     }
   }
 
@@ -59,7 +61,10 @@ export default function AdminSettings() {
     setSaving(true);
     const { error } = await supabase.from('settings').upsert({
       key: 'exchange_rate',
-      value: { rate: exchangeRate },
+      value: { 
+        rate: exchangeRate,
+        euro_rate: euroRate 
+      },
       updated_at: new Date().toISOString()
     });
 
@@ -129,7 +134,7 @@ export default function AdminSettings() {
 
           <div className="space-y-4">
             <div>
-              <label className="block text-[10px] font-black text-ml-principal uppercase tracking-widest mb-2 px-1">Tasa del día (1 USD = ? BS)</label>
+              <label className="block text-[10px] font-black text-ml-principal uppercase tracking-widest mb-2 px-1">Tasa USD (1 USD = ? BS)</label>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-ml-principal">Bs.</span>
                 <input 
@@ -141,6 +146,21 @@ export default function AdminSettings() {
                 />
               </div>
             </div>
+
+            <div>
+              <label className="block text-[10px] font-black text-ml-principal uppercase tracking-widest mb-2 px-1">Tasa EUR (1 EUR = ? BS)</label>
+              <div className="relative">
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-ml-principal">Bs.</span>
+                <input 
+                  type="number" 
+                  step="0.01"
+                  value={euroRate}
+                  onChange={e => setEuroRate(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 bg-ml-neutral border border-ml-principal/10 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-ml-secundario outline-none"
+                />
+              </div>
+            </div>
+
             <button 
               onClick={saveExchangeRate}
               disabled={saving}

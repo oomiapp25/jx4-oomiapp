@@ -14,6 +14,7 @@ export default function MainLayout() {
   const [news, setNews] = useState<News[]>([]);
   const [transportLines, setTransportLines] = useState<TransportLine[]>([]);
   const [exchangeRate, setExchangeRate] = useState<string | null>(null);
+  const [euroRate, setEuroRate] = useState<string | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isFabOpen, setIsFabOpen] = useState(false);
 
@@ -45,7 +46,10 @@ export default function MainLayout() {
 
   async function fetchExchangeRate() {
     const { data } = await supabase.from('settings').select('*').eq('key', 'exchange_rate').single();
-    if (data) setExchangeRate(data.value.rate);
+    if (data) {
+      setExchangeRate(data.value.rate);
+      setEuroRate(data.value.euro_rate || (parseFloat(data.value.rate) * 1.08).toFixed(2));
+    }
   }
 
   return (
@@ -116,7 +120,7 @@ export default function MainLayout() {
               <CreditCard className="w-3 h-3 text-ml-teja" />
               <span>Tasa USD: <span className="text-ml-teja">Bs. {exchangeRate}</span></span>
               <div className="w-1 h-1 rounded-full bg-stone-300 mx-2" />
-              <span>Tasa EUR: <span className="text-ml-teja">Bs. {(parseFloat(exchangeRate) * 1.08).toFixed(2)}</span></span>
+              <span>Tasa EUR: <span className="text-ml-teja">Bs. {euroRate}</span></span>
             </div>
           )}
 
@@ -146,7 +150,7 @@ export default function MainLayout() {
               <CreditCard className="w-3 h-3 text-ml-teja" />
               <span>Tasa USD: <span className="text-ml-teja">Bs. {exchangeRate}</span></span>
               <div className="w-1 h-1 rounded-full bg-stone-300 mx-2" />
-              <span>Tasa EUR: <span className="text-ml-teja">Bs. {(parseFloat(exchangeRate) * 1.08).toFixed(2)}</span></span>
+              <span>Tasa EUR: <span className="text-ml-teja">Bs. {euroRate}</span></span>
             </div>
           )}
         </div>
