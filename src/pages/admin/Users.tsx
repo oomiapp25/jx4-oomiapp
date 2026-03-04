@@ -247,7 +247,7 @@ export default function AdminUsers() {
                         <label key={r.value} className="flex items-center gap-2 cursor-pointer group">
                           <input 
                             type="checkbox"
-                            checked={formData.roles.includes(r.value)}
+                            checked={(formData.roles || []).includes(r.value)}
                             onChange={e => {
                               const newRoles = e.target.checked 
                                 ? [...formData.roles, r.value]
@@ -354,7 +354,7 @@ export default function AdminUsers() {
                           <input 
                             disabled={!isSuperAdmin}
                             type="checkbox"
-                            checked={editFormData.roles.includes(r.value)}
+                            checked={(editFormData.roles || []).includes(r.value)}
                             onChange={e => {
                               const newRoles = e.target.checked 
                                 ? [...editFormData.roles, r.value]

@@ -38,11 +38,15 @@ export default function Login() {
       if (session?.user) {
         const { data: profile } = await supabase
           .from('users')
-          .select('role')
+          .select('roles')
           .eq('id', session.user.id)
           .single();
         
-        if (profile && (profile.role === 'admin' || profile.role.includes('_admin') || session.user.email === 'jjtovar1510@gmail.com')) {
+        const userRoles = profile?.roles || [];
+        const isSuperAdmin = session.user.email === 'jjtovar1510@gmail.com';
+        const hasAdminRole = userRoles.includes('admin') || userRoles.some((r: string) => r.includes('_admin'));
+
+        if (profile && (hasAdminRole || isSuperAdmin)) {
           navigate('/admin');
         } else {
           navigate('/');

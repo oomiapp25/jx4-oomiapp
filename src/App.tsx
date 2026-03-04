@@ -93,8 +93,8 @@ export default function App() {
           path="/admin" 
           element={
             user && (
-              user.roles.includes('admin') || 
-              user.roles.some(r => r.includes('_admin')) || 
+              (user.roles || []).includes('admin') || 
+              (user.roles || []).some(r => r.includes('_admin')) || 
               user.email === 'jjtovar1510@gmail.com'
             ) ? <AdminLayout /> : <Navigate to="/" />
           }
