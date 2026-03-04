@@ -203,6 +203,7 @@ export default function AdminUsers() {
                       <option value="category_admin">Admin Categoría</option>
                       <option value="department_admin">Admin Departamento</option>
                       <option value="transport_admin">Admin Transporte</option>
+                      <option value="social_admin">Gestor Social (Alvert Sanz)</option>
                       <option value="journalist">Periodista / Noticias</option>
                     </select>
                   </div>
@@ -283,6 +284,7 @@ export default function AdminUsers() {
                       <option value="category_admin">Cat Admin</option>
                       <option value="department_admin">Dept Admin</option>
                       <option value="transport_admin">Trans Admin</option>
+                      <option value="social_admin">Gestor Social</option>
                       <option value="journalist">Periodista</option>
                     </select>
                   </td>
