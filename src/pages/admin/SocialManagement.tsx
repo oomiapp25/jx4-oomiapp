@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { supabase, SocialInventory, SocialRequest, SocialDelivery } from '../../lib/supabase';
-import { Heart, Package, CheckCircle, Clock, AlertCircle, Plus, Trash2, Edit2, Search, Filter, User, Phone, FileText, X, Loader2 } from 'lucide-react';
+import { Heart, Package, CheckCircle, Clock, AlertCircle, Plus, Trash2, Edit2, Search, Filter, User, Phone, FileText, X, Loader2, Camera, Upload } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { uploadToImgBB } from '../../services/imgbbService';
 
 export default function SocialManagement() {
   const [inventory, setInventory] = useState<SocialInventory[]>([]);
@@ -12,6 +13,7 @@ export default function SocialManagement() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalType, setModalType] = useState<'inventory' | 'delivery' | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [uploading, setUploading] = useState(false);
 
   // Form states
   const [inventoryForm, setInventoryForm] = useState({
@@ -65,6 +67,25 @@ export default function SocialManagement() {
       alert('Error: ' + error.message);
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>, type: 'inventory' | 'delivery') {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const url = await uploadToImgBB(file);
+      if (type === 'inventory') {
+        setInventoryForm({ ...inventoryForm, image_url: url });
+      } else {
+        setDeliveryForm({ ...deliveryForm, image_url: url });
+      }
+    } catch (error: any) {
+      alert('Error al subir imagen: ' + error.message);
+    } finally {
+      setUploading(false);
     }
   }
 
@@ -353,14 +374,29 @@ export default function SocialManagement() {
                         />
                       </div>
                       <div>
-                        <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2 px-1">URL Imagen</label>
-                        <input 
-                          type="text" 
-                          value={inventoryForm.image_url}
-                          onChange={e => setInventoryForm({...inventoryForm, image_url: e.target.value})}
-                          className="w-full px-5 py-3.5 bg-stone-50 border border-stone-100 rounded-2xl text-sm focus:ring-2 focus:ring-ml-monte-verde outline-none"
-                          placeholder="https://..."
-                        />
+                        <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2 px-1">Imagen del Insumo</label>
+                        <div className="relative">
+                          <input 
+                            type="file" 
+                            accept="image/*"
+                            onChange={e => handleImageUpload(e, 'inventory')}
+                            className="hidden"
+                            id="inventory-image"
+                          />
+                          <label 
+                            htmlFor="inventory-image"
+                            className="w-full px-5 py-3.5 bg-stone-50 border border-stone-100 rounded-2xl text-sm flex items-center gap-2 cursor-pointer hover:bg-stone-100 transition-colors"
+                          >
+                            {uploading ? (
+                              <Loader2 className="w-4 h-4 animate-spin text-ml-monte-verde" />
+                            ) : (
+                              <Camera className="w-4 h-4 text-stone-400" />
+                            )}
+                            <span className="text-stone-500 truncate">
+                              {inventoryForm.image_url ? 'Imagen lista' : 'Subir imagen'}
+                            </span>
+                          </label>
+                        </div>
                       </div>
                     </div>
                     <button 
@@ -394,6 +430,31 @@ export default function SocialManagement() {
                         className="w-full px-5 py-3.5 bg-stone-50 border border-stone-100 rounded-2xl text-sm focus:ring-2 focus:ring-emerald-600 outline-none"
                         placeholder="Ej. 1 Silla de Ruedas"
                       />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2 px-1">Foto de la Entrega (Opcional)</label>
+                      <div className="relative">
+                        <input 
+                          type="file" 
+                          accept="image/*"
+                          onChange={e => handleImageUpload(e, 'delivery')}
+                          className="hidden"
+                          id="delivery-image"
+                        />
+                        <label 
+                          htmlFor="delivery-image"
+                          className="w-full px-5 py-3.5 bg-stone-50 border border-stone-100 rounded-2xl text-sm flex items-center gap-2 cursor-pointer hover:bg-stone-100 transition-colors"
+                        >
+                          {uploading ? (
+                            <Loader2 className="w-4 h-4 animate-spin text-emerald-600" />
+                          ) : (
+                            <Camera className="w-4 h-4 text-stone-400" />
+                          )}
+                          <span className="text-stone-500 truncate">
+                            {deliveryForm.image_url ? 'Imagen lista' : 'Subir foto evidencia'}
+                          </span>
+                        </label>
+                      </div>
                     </div>
                     <div>
                       <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2 px-1">Nota / Comentario</label>

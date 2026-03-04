@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { supabase, SocialInventory, SocialDelivery } from '../lib/supabase';
-import { Heart, Package, CheckCircle, Clock, AlertCircle, Send, Phone, User, FileText } from 'lucide-react';
+import { Heart, Package, CheckCircle, Clock, AlertCircle, Send, Phone, User, FileText, Camera, Loader2 } from 'lucide-react';
 import { motion } from 'motion/react';
+import { uploadToImgBB } from '../services/imgbbService';
 
 export default function SocialHelp() {
   const [inventory, setInventory] = useState<SocialInventory[]>([]);
   const [deliveries, setDeliveries] = useState<SocialDelivery[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   const [formData, setFormData] = useState({
     requester_name: '',
@@ -40,13 +43,17 @@ export default function SocialHelp() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!acceptedTerms) {
+      alert('Debes aceptar los términos y condiciones para continuar.');
+      return;
+    }
     setSubmitting(true);
     try {
       const { error } = await supabase.from('social_requests').insert([formData]);
       if (error) throw error;
       
       // Construct WhatsApp message
-      const message = `Hola Alvert Sanz, mi nombre es ${formData.requester_name}. Solicito el siguiente insumo médico: ${formData.item_requested}. Justificación: ${formData.justification}. Mi contacto: ${formData.requester_phone}`;
+      const message = `🆕 *Nueva Solicitud de Ayuda Social*\n\n👤 *Nombre:* ${formData.requester_name}\n📱 *Teléfono:* ${formData.requester_phone}\n📦 *Insumo Requerido:* ${formData.item_requested}\n📝 *Motivo:* ${formData.justification}${formData.medical_report_url ? `\n📄 *Informe Médico:* ${formData.medical_report_url}` : ''}`;
       const whatsappUrl = `https://wa.me/584242384014?text=${encodeURIComponent(message)}`;
       
       setSuccess(true);
@@ -57,6 +64,7 @@ export default function SocialHelp() {
         justification: '',
         medical_report_url: ''
       });
+      setAcceptedTerms(false);
 
       // Redirect to WhatsApp
       window.open(whatsappUrl, '_blank');
@@ -64,6 +72,21 @@ export default function SocialHelp() {
       alert('Error al enviar solicitud: ' + error.message);
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const url = await uploadToImgBB(file);
+      setFormData({ ...formData, medical_report_url: url });
+    } catch (error: any) {
+      alert('Error al subir imagen: ' + error.message);
+    } finally {
+      setUploading(false);
     }
   }
 
@@ -281,6 +304,32 @@ export default function SocialHelp() {
                       </div>
                     </div>
 
+                    <div>
+                      <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1.5 px-1">Foto Informe Médico (Opcional)</label>
+                      <div className="relative">
+                        <input 
+                          type="file" 
+                          accept="image/*"
+                          onChange={handleImageUpload}
+                          className="hidden"
+                          id="medical-report"
+                        />
+                        <label 
+                          htmlFor="medical-report"
+                          className="w-full px-4 py-3 bg-stone-50 border border-stone-100 rounded-xl text-sm flex items-center gap-2 cursor-pointer hover:bg-stone-100 transition-colors"
+                        >
+                          {uploading ? (
+                            <Loader2 className="w-4 h-4 animate-spin text-ml-monte-verde" />
+                          ) : (
+                            <Camera className="w-4 h-4 text-stone-300" />
+                          )}
+                          <span className="text-stone-500 truncate">
+                            {formData.medical_report_url ? 'Informe cargado ✅' : 'Subir foto del informe'}
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+
                     <div className="p-4 bg-amber-50 rounded-2xl border border-amber-100 flex gap-3">
                       <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0" />
                       <p className="text-[10px] text-amber-700 leading-tight font-medium">
@@ -288,9 +337,27 @@ export default function SocialHelp() {
                       </p>
                     </div>
 
+                    <div className="space-y-3 p-4 bg-stone-50 rounded-2xl border border-stone-100">
+                      <p className="text-[9px] text-stone-500 leading-relaxed">
+                        Al enviar esta solicitud, aceptas los siguientes términos: 1) Los insumos médicos deben ser utilizados exclusivamente para el fin declarado y devueltos en buen estado dentro del plazo acordado (si aplica). 2) El mal uso, pérdida o no devolución implicará responsabilidad legal, pudiendo ser sometido a las autoridades competentes. 3) Te comprometes a presentar el informe médico original al momento de la entrega. 4) Aceptas que tus datos sean utilizados para fines de transparencia y gestión del banco social.
+                      </p>
+                      <label className="flex items-start gap-2 cursor-pointer group">
+                        <input 
+                          type="checkbox" 
+                          required
+                          checked={acceptedTerms}
+                          onChange={e => setAcceptedTerms(e.target.checked)}
+                          className="mt-0.5 w-4 h-4 rounded border-stone-300 text-ml-monte-verde focus:ring-ml-quebrada"
+                        />
+                        <span className="text-[10px] font-bold text-stone-600 group-hover:text-stone-900 transition-colors">
+                          He leído y acepto los términos y condiciones
+                        </span>
+                      </label>
+                    </div>
+
                     <button 
                       type="submit"
-                      disabled={submitting}
+                      disabled={submitting || !acceptedTerms}
                       className="w-full py-4 bg-ml-monte-verde text-white rounded-2xl font-black text-sm hover:bg-ml-monte-verde/90 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
                     >
                       {submitting ? 'Enviando...' : 'Enviar Solicitud'}
