@@ -51,7 +51,7 @@ export default function Home() {
   if (loading) {
     return (
       <div className="space-y-8 pb-20">
-        <div className="w-full aspect-[21/9] bg-stone-200 animate-pulse" />
+      <div className="w-full aspect-[16/9] sm:aspect-[21/9] bg-stone-200 animate-pulse" />
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[...Array(8)].map((_, i) => (
             <div key={i} className="bg-white rounded shadow-sm p-4 animate-pulse">

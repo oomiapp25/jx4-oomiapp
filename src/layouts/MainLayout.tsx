@@ -17,6 +17,7 @@ export default function MainLayout() {
   const [euroRate, setEuroRate] = useState<string | null>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isFabOpen, setIsFabOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   useEffect(() => {
     fetchAds();
@@ -58,69 +59,107 @@ export default function MainLayout() {
       <header className="bg-ml-monte-verde shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4">
           {/* Top Bar */}
-          <div className="h-14 flex items-center justify-between gap-4 md:gap-8">
+          <div className="h-14 flex items-center justify-between gap-4">
             <Link to="/" className="flex-shrink-0">
-              <h1 className="text-xl md:text-2xl font-black tracking-tighter text-white leading-none">
+              <h1 className="text-lg sm:text-xl md:text-2xl font-black tracking-tighter text-white leading-none">
                 JX4<span className="text-ml-quebrada">PARACOTOS</span>
               </h1>
             </Link>
 
-            <div className="flex-grow max-w-2xl">
+            <div className="flex-grow max-w-xs sm:max-w-md">
               <div className="relative group">
                 <input 
                   type="text" 
-                  placeholder="Buscar productos, marcas y más..." 
-                  className="w-full pl-4 pr-12 py-2 bg-white border-none rounded shadow-sm text-sm focus:ring-0 transition-all placeholder:text-stone-400"
+                  placeholder="Buscar..." 
+                  className="w-full pl-3 pr-10 py-1.5 bg-white border-none rounded shadow-sm text-xs sm:text-sm focus:ring-0 transition-all placeholder:text-stone-400"
                 />
-                <button className="absolute right-0 top-0 h-full px-4 text-ml-hierro border-l border-stone-100 hover:text-ml-teja transition-colors">
-                  <Search className="w-4 h-4" />
+                <button className="absolute right-0 top-0 h-full px-3 text-ml-hierro border-l border-stone-100 hover:text-ml-teja transition-colors">
+                  <Search className="w-3.5 h-3.5" />
                 </button>
               </div>
             </div>
-          </div>
 
-          {/* Bottom Bar */}
-          <div className="h-10 flex items-center justify-end text-xs md:text-sm text-white/80">
-            <div className="flex items-center gap-6">
-              {user ? (
-                <div className="flex items-center gap-4">
-                  <Link to="/comunidad" className="flex items-center gap-1 text-ml-quebrada hover:text-white transition-colors font-bold mr-2">
-                    <Trophy className="w-4 h-4" />
-                    <span className="hidden lg:inline">Comunidad</span>
-                  </Link>
-                  <Link to="/ayuda-social" className="flex items-center gap-1 text-ml-quebrada hover:text-white transition-colors font-bold mr-2">
-                    <Heart className="w-4 h-4" />
-                    <span className="hidden lg:inline">Ayuda Social</span>
-                  </Link>
-                  <Link to="/perfil" className="flex items-center gap-1 hover:text-white transition-colors">
-                    <User className="w-4 h-4" />
-                    <span className="hidden sm:inline">{user.email?.split('@')[0]}</span>
-                  </Link>
-                  <Link to="/mis-pedidos" className="hover:text-white transition-colors">Mis compras</Link>
-                  <button onClick={() => supabase.auth.signOut()} className="hover:text-ml-pared-floreada transition-colors">Salir</button>
-                </div>
-              ) : (
-                <div className="flex items-center gap-4">
-                  <Link to="/comunidad" className="flex items-center gap-1 text-ml-quebrada hover:text-white transition-colors font-bold mr-2">
-                    <Trophy className="w-4 h-4" />
-                    <span className="hidden lg:inline">Comunidad</span>
-                  </Link>
-                  <Link to="/ayuda-social" className="flex items-center gap-1 text-ml-quebrada hover:text-white transition-colors font-bold mr-2">
-                    <Heart className="w-4 h-4" />
-                    <span className="hidden lg:inline">Ayuda Social</span>
-                  </Link>
-                  <Link to="/register" className="hover:text-white transition-colors">Crea tu cuenta</Link>
-                  <Link to="/login" className="hover:text-white transition-colors">Ingresa</Link>
-                  <Link to="/mis-pedidos" className="hover:text-white transition-colors">Mis compras</Link>
-                </div>
-              )}
-              <Link to="/checkout" className="relative hover:text-white transition-colors">
+            <div className="flex items-center gap-2 sm:gap-4">
+              <div className="relative">
+                <button 
+                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                  className="p-2 text-white hover:bg-white/10 rounded-full transition-colors"
+                >
+                  <User className="w-5 h-5" />
+                </button>
+
+                <AnimatePresence>
+                  {isUserMenuOpen && (
+                    <>
+                      <div className="fixed inset-0 z-[60]" onClick={() => setIsUserMenuOpen(false)} />
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        className="absolute right-0 mt-2 w-48 bg-white rounded-2xl shadow-2xl border border-stone-100 py-2 z-[70] overflow-hidden"
+                      >
+                        {user ? (
+                          <>
+                            <div className="px-4 py-2 border-b border-stone-50 mb-1">
+                              <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest">Usuario</p>
+                              <p className="text-xs font-bold text-ml-monte-verde truncate">{user.email}</p>
+                            </div>
+                            <Link to="/perfil" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-stone-600 hover:bg-stone-50 transition-colors">
+                              <User className="w-4 h-4" /> Perfil
+                            </Link>
+                            <Link to="/mis-pedidos" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-stone-600 hover:bg-stone-50 transition-colors">
+                              <Package className="w-4 h-4" /> Mis compras
+                            </Link>
+                            <button 
+                              onClick={() => {
+                                supabase.auth.signOut();
+                                setIsUserMenuOpen(false);
+                              }} 
+                              className="w-full flex items-center gap-2 px-4 py-2 text-xs font-bold text-red-500 hover:bg-red-50 transition-colors"
+                            >
+                              Salir
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <Link to="/login" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-stone-600 hover:bg-stone-50 transition-colors">
+                              Ingresar
+                            </Link>
+                            <Link to="/register" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-stone-600 hover:bg-stone-50 transition-colors">
+                              Crear cuenta
+                            </Link>
+                            <Link to="/mis-pedidos" onClick={() => setIsUserMenuOpen(false)} className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-stone-600 hover:bg-stone-50 transition-colors">
+                              Mis compras
+                            </Link>
+                          </>
+                        )}
+                      </motion.div>
+                    </>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              <Link to="/checkout" className="relative p-2 text-white hover:bg-white/10 rounded-full transition-colors">
                 <ShoppingCart className="w-5 h-5" />
                 {itemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-ml-teja text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
+                  <span className="absolute top-1 right-1 bg-ml-teja text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">
                     {itemCount}
                   </span>
                 )}
+              </Link>
+            </div>
+          </div>
+
+          {/* Bottom Bar - Desktop Only or Hidden on Mobile */}
+          <div className="h-10 hidden sm:flex items-center justify-end text-xs md:text-sm text-white/80 border-t border-white/10">
+            <div className="flex items-center gap-6">
+              <Link to="/comunidad" className="flex items-center gap-1 text-ml-quebrada hover:text-white transition-colors font-bold">
+                <Trophy className="w-4 h-4" />
+                <span>Comunidad</span>
+              </Link>
+              <Link to="/ayuda-social" className="flex items-center gap-1 text-ml-quebrada hover:text-white transition-colors font-bold">
+                <Heart className="w-4 h-4" />
+                <span>Ayuda Social</span>
               </Link>
             </div>
           </div>
@@ -128,7 +167,7 @@ export default function MainLayout() {
       </header>
       
       {/* Sticky Ticker Bar */}
-      <div className="bg-ml-quebrada/10 border-b border-ml-quebrada/20 py-1.5 overflow-hidden sticky top-[96px] z-40 backdrop-blur-md">
+      <div className="bg-ml-quebrada/10 border-b border-ml-quebrada/20 py-1.5 overflow-hidden sticky top-[56px] sm:top-[96px] z-40 backdrop-blur-md w-full max-w-full">
         <div className="flex animate-marquee whitespace-nowrap items-center">
           {/* Exchange Rates */}
           {exchangeRate && (
@@ -312,7 +351,7 @@ export default function MainLayout() {
             Tus tiendas de confianza en Paracotos. Calidad y servicio en un solo lugar
           </p>
           
-          <div className="flex items-center justify-center gap-6 mb-8">
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mb-8">
             <Link to="/" className="text-xs font-bold text-ml-hierro hover:text-ml-monte-verde uppercase tracking-widest transition-colors">Inicio</Link>
             <Link to="/comunidad" className="text-xs font-bold text-ml-hierro hover:text-ml-monte-verde uppercase tracking-widest transition-colors">Comunidad</Link>
             <Link to="/noticias" className="text-xs font-bold text-ml-hierro hover:text-ml-monte-verde uppercase tracking-widest transition-colors">Noticias</Link>

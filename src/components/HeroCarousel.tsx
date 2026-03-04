@@ -36,7 +36,7 @@ export default function HeroCarousel() {
   if (loading || ads.length === 0) return null;
 
   return (
-    <div className="relative w-full aspect-[21/9] md:h-[400px] bg-stone-200 overflow-hidden group">
+    <div className="relative w-full aspect-[16/9] sm:aspect-[21/9] md:h-[400px] bg-stone-200 overflow-hidden group">
       <AnimatePresence mode="wait">
         <motion.div
           key={ads[currentIndex].id}

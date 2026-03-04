@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase, CommunityEntry, CommunitySpace } from '../lib/supabase';
-import { Trophy, Music, Calendar, MapPin, Phone, Search, Filter, ChevronRight, Info, ExternalLink, Loader2 } from 'lucide-react';
+import { Trophy, Music, Calendar, MapPin, Phone, Search, Filter, ChevronRight, Info, ExternalLink, Loader2, X, Home, Newspaper } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function Community() {
@@ -9,6 +9,7 @@ export default function Community() {
   const [loading, setLoading] = useState(true);
   const [activeArea, setActiveArea] = useState<'all' | 'sports' | 'culture'>('all');
   const [activeTab, setActiveTab] = useState<'news' | 'calendar' | 'directory'>('news');
+  const [selectedEntry, setSelectedEntry] = useState<CommunityEntry | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -43,7 +44,7 @@ export default function Community() {
   return (
     <div className="min-h-screen bg-stone-50 pb-20">
       {/* Hero Section */}
-      <div className="bg-ml-monte-verde text-white py-16 px-4 relative overflow-hidden">
+      <div className="bg-ml-monte-verde text-white py-10 sm:py-16 px-4 relative overflow-hidden">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
           <div className="absolute top-0 left-0 w-64 h-64 bg-ml-quebrada rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-ml-quebrada rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
@@ -58,11 +59,11 @@ export default function Community() {
             <Trophy className="w-4 h-4" />
             Comunidad Paracoteña
           </motion.div>
-          <h1 className="text-4xl md:text-5xl font-black mb-6 tracking-tight">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-black mb-6 tracking-tight leading-none px-4">
             Deporte y Cultura <br />
             <span className="text-ml-quebrada">JX4 Paracotos</span>
           </h1>
-          <p className="text-lg text-white/80 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base md:text-lg text-white/80 max-w-2xl mx-auto leading-relaxed px-4">
             El espacio donde celebramos el talento, la disciplina y las tradiciones de nuestra parroquia. Mantente al día con los eventos y movimientos locales.
           </p>
         </div>
@@ -70,26 +71,27 @@ export default function Community() {
 
       <div className="max-w-7xl mx-auto px-4 -mt-8 relative z-20">
         {/* Navigation Tabs */}
-        <div className="bg-white rounded-3xl shadow-xl border border-stone-100 p-2 flex flex-wrap gap-2 mb-8">
+        <div className="bg-white rounded-3xl shadow-xl border border-stone-100 p-2 grid grid-cols-3 gap-2 mb-8">
           <button 
             onClick={() => setActiveArea('all')}
-            className={`px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all ${activeArea === 'all' ? 'bg-ml-monte-verde text-white' : 'text-stone-400 hover:bg-stone-50'}`}
+            className={`py-3 rounded-2xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 ${activeArea === 'all' ? 'bg-ml-monte-verde text-white' : 'text-stone-400 hover:bg-stone-50'}`}
           >
-            Todo
+            <Home className="w-5 h-5 sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline text-[10px] sm:text-xs">Todo</span>
           </button>
           <button 
             onClick={() => setActiveArea('sports')}
-            className={`px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeArea === 'sports' ? 'bg-ml-monte-verde text-white' : 'text-stone-400 hover:bg-stone-50'}`}
+            className={`py-3 rounded-2xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 ${activeArea === 'sports' ? 'bg-ml-monte-verde text-white' : 'text-stone-400 hover:bg-stone-50'}`}
           >
-            <Trophy className="w-4 h-4" />
-            Deporte
+            <Trophy className="w-5 h-5 sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline text-[10px] sm:text-xs">Deporte</span>
           </button>
           <button 
             onClick={() => setActiveArea('culture')}
-            className={`px-6 py-3 rounded-2xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 ${activeArea === 'culture' ? 'bg-ml-monte-verde text-white' : 'text-stone-400 hover:bg-stone-50'}`}
+            className={`py-3 rounded-2xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 ${activeArea === 'culture' ? 'bg-ml-monte-verde text-white' : 'text-stone-400 hover:bg-stone-50'}`}
           >
-            <Music className="w-4 h-4" />
-            Cultura
+            <Music className="w-5 h-5 sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline text-[10px] sm:text-xs">Cultura</span>
           </button>
         </div>
 
@@ -97,30 +99,39 @@ export default function Community() {
           {/* Sidebar Navigation */}
           <div className="lg:col-span-1 space-y-4">
             <div className="bg-white rounded-3xl shadow-sm border border-stone-100 overflow-hidden">
-              <div className="p-4 bg-stone-50 border-b border-stone-100">
+              <div className="p-4 bg-stone-50 border-b border-stone-100 hidden sm:block">
                 <h3 className="text-[10px] font-black text-stone-400 uppercase tracking-widest">Secciones</h3>
               </div>
-              <div className="p-2 space-y-1">
+              <div className="p-2 flex sm:flex-col gap-1 overflow-x-auto no-scrollbar">
                 <button 
                   onClick={() => setActiveTab('news')}
-                  className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all ${activeTab === 'news' ? 'bg-ml-monte-verde text-white' : 'text-stone-600 hover:bg-stone-50'}`}
+                  className={`flex-shrink-0 sm:w-full flex items-center justify-between p-3 sm:p-4 rounded-2xl transition-all ${activeTab === 'news' ? 'bg-ml-monte-verde text-white' : 'text-stone-600 hover:bg-stone-50'}`}
                 >
-                  <span className="font-bold text-sm">Noticias y Perfiles</span>
-                  <ChevronRight className="w-4 h-4" />
+                  <div className="flex items-center gap-3">
+                    <Newspaper className="w-5 h-5 sm:w-4 sm:h-4" />
+                    <span className="font-bold text-xs sm:text-sm">Noticias</span>
+                  </div>
+                  <ChevronRight className="hidden sm:block w-4 h-4" />
                 </button>
                 <button 
                   onClick={() => setActiveTab('calendar')}
-                  className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all ${activeTab === 'calendar' ? 'bg-ml-monte-verde text-white' : 'text-stone-600 hover:bg-stone-50'}`}
+                  className={`flex-shrink-0 sm:w-full flex items-center justify-between p-3 sm:p-4 rounded-2xl transition-all ${activeTab === 'calendar' ? 'bg-ml-monte-verde text-white' : 'text-stone-600 hover:bg-stone-50'}`}
                 >
-                  <span className="font-bold text-sm">Agenda de Eventos</span>
-                  <ChevronRight className="w-4 h-4" />
+                  <div className="flex items-center gap-3">
+                    <Calendar className="w-5 h-5 sm:w-4 sm:h-4" />
+                    <span className="font-bold text-xs sm:text-sm">Agenda</span>
+                  </div>
+                  <ChevronRight className="hidden sm:block w-4 h-4" />
                 </button>
                 <button 
                   onClick={() => setActiveTab('directory')}
-                  className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all ${activeTab === 'directory' ? 'bg-ml-monte-verde text-white' : 'text-stone-600 hover:bg-stone-50'}`}
+                  className={`flex-shrink-0 sm:w-full flex items-center justify-between p-3 sm:p-4 rounded-2xl transition-all ${activeTab === 'directory' ? 'bg-ml-monte-verde text-white' : 'text-stone-600 hover:bg-stone-50'}`}
                 >
-                  <span className="font-bold text-sm">Directorio de Espacios</span>
-                  <ChevronRight className="w-4 h-4" />
+                  <div className="flex items-center gap-3">
+                    <MapPin className="w-5 h-5 sm:w-4 sm:h-4" />
+                    <span className="font-bold text-xs sm:text-sm">Directorio</span>
+                  </div>
+                  <ChevronRight className="hidden sm:block w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -159,7 +170,11 @@ export default function Community() {
                     className="grid grid-cols-1 md:grid-cols-2 gap-6"
                   >
                     {newsEntries.length > 0 ? newsEntries.map((entry) => (
-                      <div key={entry.id} className="bg-white rounded-3xl shadow-sm border border-stone-100 overflow-hidden group hover:shadow-md transition-all">
+                      <div 
+                        key={entry.id} 
+                        onClick={() => setSelectedEntry(entry)}
+                        className="bg-white rounded-3xl shadow-sm border border-stone-100 overflow-hidden group hover:shadow-md transition-all cursor-pointer"
+                      >
                         <div className="aspect-video relative overflow-hidden">
                           {entry.image_url ? (
                             <img src={entry.image_url} alt={entry.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" referrerPolicy="no-referrer" />
@@ -185,8 +200,11 @@ export default function Community() {
                               </>
                             )}
                           </div>
-                          <h3 className="text-xl font-black text-stone-900 mb-3 leading-tight">{entry.title}</h3>
+                          <h3 className="text-xl font-black text-stone-900 mb-3 leading-tight group-hover:text-ml-monte-verde transition-colors">{entry.title}</h3>
                           <p className="text-sm text-stone-500 line-clamp-3 leading-relaxed">{entry.content}</p>
+                          <div className="mt-4 pt-4 border-t border-stone-50 flex items-center gap-2 text-[10px] font-black text-ml-monte-verde uppercase tracking-widest">
+                            Leer más <ChevronRight className="w-3 h-3" />
+                          </div>
                         </div>
                       </div>
                     )) : (
@@ -207,12 +225,16 @@ export default function Community() {
                     className="space-y-4"
                   >
                     {calendarEntries.length > 0 ? calendarEntries.map((event) => (
-                      <div key={event.id} className="bg-white rounded-3xl shadow-sm border border-stone-100 p-6 flex flex-col md:flex-row gap-6 items-center">
-                        <div className="flex-shrink-0 w-24 h-24 bg-stone-50 rounded-2xl flex flex-col items-center justify-center border border-stone-100">
-                          <span className="text-[10px] font-black text-stone-400 uppercase tracking-widest">
+                      <div 
+                        key={event.id} 
+                        onClick={() => setSelectedEntry(event)}
+                        className="bg-white rounded-3xl shadow-sm border border-stone-100 p-6 flex flex-col md:flex-row gap-6 items-center cursor-pointer hover:shadow-md transition-all group"
+                      >
+                        <div className="flex-shrink-0 w-24 h-24 bg-stone-50 rounded-2xl flex flex-col items-center justify-center border border-stone-100 group-hover:bg-ml-monte-verde group-hover:border-ml-monte-verde transition-colors">
+                          <span className="text-[10px] font-black text-stone-400 uppercase tracking-widest group-hover:text-white/70">
                             {event.event_date ? new Date(event.event_date).toLocaleString('es-ES', { month: 'short' }) : '---'}
                           </span>
-                          <span className="text-3xl font-black text-stone-900">
+                          <span className="text-3xl font-black text-stone-900 group-hover:text-white">
                             {event.event_date ? new Date(event.event_date).getDate() : '--'}
                           </span>
                         </div>
@@ -227,7 +249,7 @@ export default function Community() {
                               </span>
                             )}
                           </div>
-                          <h3 className="text-xl font-black text-stone-900 mb-2">{event.title}</h3>
+                          <h3 className="text-xl font-black text-stone-900 mb-2 group-hover:text-ml-monte-verde transition-colors">{event.title}</h3>
                           <div className="flex flex-wrap justify-center md:justify-start gap-4 text-xs text-stone-500 font-medium">
                             {event.location && (
                               <div className="flex items-center gap-1">
@@ -243,7 +265,7 @@ export default function Community() {
                             )}
                           </div>
                         </div>
-                        <div className="flex-shrink-0">
+                        <div className="flex-shrink-0" onClick={(e) => e.stopPropagation()}>
                           <a 
                             href={`https://wa.me/584242384014?text=${encodeURIComponent(`Hola, me interesa el evento: ${event.title}`)}`}
                             target="_blank"
@@ -315,6 +337,100 @@ export default function Community() {
           </div>
         </div>
       </div>
+
+      {/* Entry Detail Modal */}
+      <AnimatePresence>
+        {selectedEntry && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedEntry(null)}
+              className="absolute inset-0 bg-stone-900/60 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative bg-white w-full max-w-3xl max-h-[90vh] rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col"
+            >
+              <button 
+                onClick={() => setSelectedEntry(null)}
+                className="absolute top-6 right-6 z-10 p-2 bg-white/80 backdrop-blur-md rounded-full text-stone-900 hover:bg-white transition-all shadow-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              <div className="overflow-y-auto">
+                {selectedEntry.image_url && (
+                  <div className="w-full aspect-video">
+                    <img 
+                      src={selectedEntry.image_url} 
+                      alt={selectedEntry.title} 
+                      className="w-full h-full object-cover"
+                      referrerPolicy="no-referrer"
+                    />
+                  </div>
+                )}
+                <div className="p-8 md:p-12">
+                  <div className="flex flex-wrap items-center gap-3 mb-6">
+                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${selectedEntry.area === 'sports' ? 'bg-ml-monte-verde text-white' : 'bg-ml-quebrada text-ml-monte-verde'}`}>
+                      {selectedEntry.area === 'sports' ? 'Deporte' : 'Cultura'}
+                    </span>
+                    <div className="flex items-center gap-2 text-[10px] text-stone-400 font-bold uppercase tracking-widest">
+                      <Calendar className="w-3 h-3" />
+                      {new Date(selectedEntry.created_at).toLocaleDateString()}
+                    </div>
+                    {selectedEntry.category && (
+                      <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-stone-100 text-stone-500">
+                        {selectedEntry.category}
+                      </span>
+                    )}
+                  </div>
+                  
+                  <h2 className="text-3xl md:text-4xl font-black text-stone-900 tracking-tight mb-8 leading-tight">
+                    {selectedEntry.title}
+                  </h2>
+                  
+                  <div className="prose prose-stone max-w-none">
+                    <p className="text-lg text-stone-600 leading-relaxed whitespace-pre-wrap">
+                      {selectedEntry.content}
+                    </p>
+                  </div>
+
+                  {(selectedEntry.location || selectedEntry.contact_info) && (
+                    <div className="mt-12 pt-8 border-t border-stone-100 grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {selectedEntry.location && (
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 bg-stone-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <MapPin className="w-5 h-5 text-ml-monte-verde" />
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">Ubicación</p>
+                            <p className="text-sm font-bold text-stone-900">{selectedEntry.location}</p>
+                          </div>
+                        </div>
+                      )}
+                      {selectedEntry.contact_info && (
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 bg-stone-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <Phone className="w-5 h-5 text-ml-monte-verde" />
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1">Contacto</p>
+                            <p className="text-sm font-bold text-stone-900">{selectedEntry.contact_info}</p>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
