@@ -81,7 +81,7 @@ export default function AdminAds() {
       description: formData.description,
       link: formData.link,
       priority: formData.priority,
-      ends_at: formData.ends_at,
+      ends_at: formData.ends_at || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
       active: editingAd ? editingAd.active : true,
       starts_at: editingAd ? editingAd.starts_at : new Date().toISOString()
     };

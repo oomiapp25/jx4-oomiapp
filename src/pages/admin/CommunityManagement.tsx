@@ -81,7 +81,11 @@ export default function CommunityManagement() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const { error } = await supabase.from('community_entries').insert([entryForm]);
+      const dataToInsert = {
+        ...entryForm,
+        event_date: entryForm.event_date || null
+      };
+      const { error } = await supabase.from('community_entries').insert([dataToInsert]);
       if (error) throw error;
       setIsModalOpen(false);
       setEntryForm({
