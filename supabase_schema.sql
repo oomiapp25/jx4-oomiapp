@@ -8,12 +8,17 @@ DROP FUNCTION IF EXISTS public.has_any_role(user_role[]);
 
 -- 1. Custom Types
 DO $$ BEGIN
-    CREATE TYPE user_role AS ENUM ('customer', 'admin', 'category_admin', 'department_admin', 'transport_admin', 'social_admin');
+    CREATE TYPE user_role AS ENUM ('customer', 'admin', 'category_admin', 'department_admin', 'transport_admin', 'social_admin', 'sports_admin', 'culture_admin');
 EXCEPTION
     WHEN duplicate_object THEN 
-        -- If type exists, we might need to add the new value if it's missing
+        -- If type exists, we might need to add the new values if they're missing
         BEGIN
-            ALTER TYPE user_role ADD VALUE 'social_admin';
+            ALTER TYPE user_role ADD VALUE 'sports_admin';
+        EXCEPTION
+            WHEN duplicate_object THEN null;
+        END;
+        BEGIN
+            ALTER TYPE user_role ADD VALUE 'culture_admin';
         EXCEPTION
             WHEN duplicate_object THEN null;
         END;
@@ -363,6 +368,50 @@ DROP POLICY IF EXISTS "Anyone can view deliveries" ON public.social_deliveries;
 DROP POLICY IF EXISTS "Social admins can manage deliveries" ON public.social_deliveries;
 CREATE POLICY "Anyone can view deliveries" ON public.social_deliveries FOR SELECT USING (true);
 CREATE POLICY "Social admins can manage deliveries" ON public.social_deliveries FOR ALL USING (public.has_any_role(ARRAY['admin'::user_role, 'social_admin'::user_role]));
+
+-- Community (Sports & Culture)
+CREATE TABLE IF NOT EXISTS public.community_entries (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    image_url TEXT,
+    area TEXT NOT NULL CHECK (area IN ('sports', 'culture')),
+    type TEXT NOT NULL CHECK (type IN ('news', 'event', 'profile')),
+    category TEXT,
+    event_date TIMESTAMPTZ,
+    location TEXT,
+    contact_info TEXT,
+    published_by UUID REFERENCES public.users(id),
+    created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+    active BOOLEAN DEFAULT true
+);
+
+CREATE TABLE IF NOT EXISTS public.community_spaces (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL,
+    description TEXT,
+    location TEXT,
+    contact_info TEXT,
+    image_url TEXT,
+    area TEXT NOT NULL CHECK (area IN ('sports', 'culture')),
+    created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL,
+    active BOOLEAN DEFAULT true
+);
+
+ALTER TABLE public.community_entries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.community_spaces ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Public can view active community entries" ON public.community_entries;
+CREATE POLICY "Public can view active community entries" ON public.community_entries FOR SELECT USING (active = true);
+
+DROP POLICY IF EXISTS "Public can view active community spaces" ON public.community_spaces;
+CREATE POLICY "Public can view active community spaces" ON public.community_spaces FOR SELECT USING (active = true);
+
+DROP POLICY IF EXISTS "Admins can manage community entries" ON public.community_entries;
+CREATE POLICY "Admins can manage community entries" ON public.community_entries FOR ALL USING (public.has_any_role(ARRAY['admin'::user_role, 'sports_admin'::user_role, 'culture_admin'::user_role]));
+
+DROP POLICY IF EXISTS "Admins can manage community spaces" ON public.community_spaces;
+CREATE POLICY "Admins can manage community spaces" ON public.community_spaces FOR ALL USING (public.has_any_role(ARRAY['admin'::user_role, 'sports_admin'::user_role, 'culture_admin'::user_role]));
 
 -- 6. Triggers
 CREATE TRIGGER on_auth_user_created

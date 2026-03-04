@@ -9,6 +9,7 @@ import {
   Users, 
   Image as ImageIcon, 
   Newspaper, 
+  Trophy,
   LogOut,
   ChevronRight,
   Bell,
@@ -39,6 +40,7 @@ export default function AdminLayout() {
     { icon: Users, label: 'Usuarios', path: '/admin/usuarios', roles: ['super_admin'] },
     { icon: ImageIcon, label: 'Publicidad', path: '/admin/ads', roles: ['admin'] },
     { icon: Newspaper, label: 'Noticias', path: '/admin/noticias', roles: ['admin', 'journalist'] },
+    { icon: Trophy, label: 'Comunidad', path: '/admin/comunidad', roles: ['admin', 'sports_admin', 'culture_admin'] },
     { icon: Heart, label: 'Ayuda Social', path: '/admin/ayuda-social', roles: ['admin', 'social_admin'] },
     { icon: Settings, label: 'Configuración', path: '/admin/configuracion', roles: ['admin'] },
   ];

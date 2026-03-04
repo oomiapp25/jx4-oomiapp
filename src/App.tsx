@@ -26,6 +26,7 @@ import DepartmentDetail from './pages/DepartmentDetail';
 import CategoryDetail from './pages/CategoryDetail';
 import NewsPage from './pages/News';
 import SocialHelp from './pages/SocialHelp';
+import Community from './pages/Community';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/Dashboard';
@@ -39,6 +40,7 @@ import AdminNews from './pages/admin/News';
 import AdminJobs from './pages/admin/Jobs';
 import AdminServices from './pages/admin/Services';
 import AdminSocial from './pages/admin/SocialManagement';
+import AdminCommunity from './pages/admin/CommunityManagement';
 import AdminSettings from './pages/admin/Settings';
 
 export default function App() {
@@ -76,6 +78,7 @@ export default function App() {
           <Route path="/departamento/:slug" element={<DepartmentDetail />} />
           <Route path="/categoria/:slug" element={<CategoryDetail />} />
           <Route path="/ayuda-social" element={<SocialHelp />} />
+          <Route path="/comunidad" element={<Community />} />
           
           {/* Protected Customer Routes */}
           <Route path="/checkout" element={<Checkout />} />
@@ -107,6 +110,7 @@ export default function App() {
           <Route path="empleos" element={<AdminJobs />} />
           <Route path="servicios" element={<AdminServices />} />
           <Route path="ayuda-social" element={<AdminSocial />} />
+          <Route path="comunidad" element={<AdminCommunity />} />
           <Route path="configuracion" element={<AdminSettings />} />
         </Route>
       </Routes>

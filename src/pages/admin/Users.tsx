@@ -1,6 +1,6 @@
 import { useState, useEffect, FormEvent } from 'react';
 import { supabase, Department } from '../../lib/supabase';
-import { Plus, UserPlus, Shield, Mail, MoreVertical, Phone, Building2, X, Loader2, Lock } from 'lucide-react';
+import { Plus, UserPlus, Shield, Mail, MoreVertical, Phone, Building2, X, Loader2, Lock, Edit2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../../hooks/useAuth';
 
@@ -10,6 +10,8 @@ export default function AdminUsers() {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
   const [submitting, setSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -21,11 +23,19 @@ export default function AdminUsers() {
     phoneNumber: ''
   });
 
+  const [editFormData, setEditFormData] = useState({
+    fullName: '',
+    role: 'customer',
+    departmentId: '',
+    phoneNumber: ''
+  });
+
   useEffect(() => {
     fetchData();
   }, []);
 
   async function fetchData() {
+    setLoading(true);
     const [usersRes, deptsRes] = await Promise.all([
       supabase.from('users').select('*').order('created_at', { ascending: false }),
       supabase.from('departments').select('*').order('name')
@@ -49,7 +59,34 @@ export default function AdminUsers() {
       .eq('id', userId);
 
     if (error) alert('Error: ' + error.message);
-    else fetchData();
+    else {
+      fetchData();
+      setIsEditModalOpen(false);
+    }
+  }
+
+  const openEditModal = (user: any) => {
+    setSelectedUser(user);
+    setEditFormData({
+      fullName: user.full_name || '',
+      role: user.role || 'customer',
+      departmentId: user.department_id || '',
+      phoneNumber: user.phone_number || ''
+    });
+    setIsEditModalOpen(true);
+  };
+
+  async function handleEditSubmit(e: FormEvent) {
+    e.preventDefault();
+    if (!selectedUser) return;
+    setSubmitting(true);
+    await updateUser(selectedUser.id, {
+      full_name: editFormData.fullName,
+      role: editFormData.role,
+      department_id: editFormData.departmentId || null,
+      phone_number: editFormData.phoneNumber
+    });
+    setSubmitting(false);
   }
 
   async function handleCreateUser(e: FormEvent) {
@@ -94,6 +131,18 @@ export default function AdminUsers() {
       setSubmitting(false);
     }
   }
+
+  const roles = [
+    { value: 'customer', label: 'Cliente' },
+    { value: 'admin', label: 'Administrador General' },
+    { value: 'category_admin', label: 'Admin Categoría' },
+    { value: 'department_admin', label: 'Admin Departamento' },
+    { value: 'transport_admin', label: 'Admin Transporte' },
+    { value: 'social_admin', label: 'Gestor Social (Alvert Sanz)' },
+    { value: 'journalist', label: 'Periodista / Noticias' },
+    { value: 'sports_admin', label: 'Admin Deportes' },
+    { value: 'culture_admin', label: 'Admin Cultura' },
+  ];
 
   return (
     <div className="space-y-6">
@@ -198,13 +247,9 @@ export default function AdminUsers() {
                       onChange={e => setFormData({...formData, role: e.target.value})}
                       className="w-full px-4 py-2.5 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
                     >
-                      <option value="customer">Cliente</option>
-                      <option value="admin">Administrador</option>
-                      <option value="category_admin">Admin Categoría</option>
-                      <option value="department_admin">Admin Departamento</option>
-                      <option value="transport_admin">Admin Transporte</option>
-                      <option value="social_admin">Gestor Social (Alvert Sanz)</option>
-                      <option value="journalist">Periodista / Noticias</option>
+                      {roles.map(r => (
+                        <option key={r.value} value={r.value}>{r.label}</option>
+                      ))}
                     </select>
                   </div>
                   <div>
@@ -245,6 +290,104 @@ export default function AdminUsers() {
         )}
       </AnimatePresence>
 
+      {/* Edit User Modal */}
+      <AnimatePresence>
+        {isEditModalOpen && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsEditModalOpen(false)}
+              className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden"
+            >
+              <div className="p-6 border-b border-stone-100 flex items-center justify-between">
+                <h3 className="text-lg font-black text-stone-900">Editar Usuario</h3>
+                <button onClick={() => setIsEditModalOpen(false)} className="p-2 hover:bg-stone-50 rounded-full transition-colors">
+                  <X className="w-5 h-5 text-stone-400" />
+                </button>
+              </div>
+
+              <form onSubmit={handleEditSubmit} className="p-6 space-y-4">
+                <div>
+                  <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1.5 px-1">Nombre Completo</label>
+                  <input 
+                    required
+                    type="text" 
+                    value={editFormData.fullName}
+                    onChange={e => setEditFormData({...editFormData, fullName: e.target.value})}
+                    className="w-full px-4 py-2.5 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1.5 px-1">Teléfono</label>
+                  <input 
+                    type="tel" 
+                    value={editFormData.phoneNumber}
+                    onChange={e => setEditFormData({...editFormData, phoneNumber: e.target.value})}
+                    className="w-full px-4 py-2.5 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1.5 px-1">Rol</label>
+                    <select 
+                      disabled={!isSuperAdmin}
+                      value={editFormData.role}
+                      onChange={e => setEditFormData({...editFormData, role: e.target.value})}
+                      className="w-full px-4 py-2.5 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none disabled:opacity-50"
+                    >
+                      {roles.map(r => (
+                        <option key={r.value} value={r.value}>{r.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1.5 px-1">Departamento</label>
+                    <select 
+                      value={editFormData.departmentId}
+                      onChange={e => setEditFormData({...editFormData, departmentId: e.target.value})}
+                      className="w-full px-4 py-2.5 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                    >
+                      <option value="">Ninguno</option>
+                      {departments.map(d => (
+                        <option key={d.id} value={d.id}>{d.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="pt-4 flex gap-3">
+                  <button 
+                    type="button"
+                    onClick={() => setIsEditModalOpen(false)}
+                    className="flex-1 py-3 border border-stone-200 rounded-xl text-sm font-bold text-stone-600 hover:bg-stone-50 transition-colors"
+                  >
+                    Cancelar
+                  </button>
+                  <button 
+                    type="submit"
+                    disabled={submitting}
+                    className="flex-1 py-3 bg-stone-900 text-white rounded-xl text-sm font-bold hover:bg-emerald-600 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
+                    {submitting ? 'Guardando...' : 'Guardar Cambios'}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
       <div className="bg-white rounded-2xl border border-stone-200 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left">
@@ -255,7 +398,7 @@ export default function AdminUsers() {
                 <th className="px-6 py-4">Departamento</th>
                 <th className="px-6 py-4">Teléfono</th>
                 <th className="px-6 py-4">Email</th>
-                <th className="px-6 py-4"></th>
+                <th className="px-6 py-4 text-right">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">
@@ -270,46 +413,22 @@ export default function AdminUsers() {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <select 
-                      disabled={!isSuperAdmin}
-                      value={user.role}
-                      onChange={(e) => updateUser(user.id, { role: e.target.value })}
-                      className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase outline-none cursor-pointer disabled:cursor-not-allowed ${
-                        user.role === 'admin' ? 'bg-purple-50 text-purple-600' : 
-                        user.role === 'customer' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'
-                      }`}
-                    >
-                      <option value="customer">Customer</option>
-                      <option value="admin">Admin</option>
-                      <option value="category_admin">Cat Admin</option>
-                      <option value="department_admin">Dept Admin</option>
-                      <option value="transport_admin">Trans Admin</option>
-                      <option value="social_admin">Gestor Social</option>
-                      <option value="journalist">Periodista</option>
-                    </select>
+                    <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
+                      user.role === 'admin' ? 'bg-purple-50 text-purple-600' : 
+                      user.role === 'customer' ? 'bg-blue-50 text-blue-600' : 'bg-amber-50 text-amber-600'
+                    }`}>
+                      {roles.find(r => r.value === user.role)?.label || user.role}
+                    </span>
                   </td>
                   <td className="px-6 py-4">
-                    <select 
-                      value={user.department_id || ''}
-                      onChange={(e) => updateUser(user.id, { department_id: e.target.value || null })}
-                      className="text-xs bg-stone-50 border border-stone-100 rounded-lg px-2 py-1 outline-none"
-                    >
-                      <option value="">Ninguno</option>
-                      {departments.map(d => (
-                        <option key={d.id} value={d.id}>{d.name}</option>
-                      ))}
-                    </select>
+                    <span className="text-xs text-stone-600">
+                      {departments.find(d => d.id === user.department_id)?.name || 'Ninguno'}
+                    </span>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      <Phone className="w-3 h-3 text-stone-400" />
-                      <input 
-                        type="text"
-                        defaultValue={user.phone_number || ''}
-                        onBlur={(e) => updateUser(user.id, { phone_number: e.target.value })}
-                        placeholder="Sin teléfono"
-                        className="bg-transparent border-none p-0 text-xs focus:ring-0 w-24"
-                      />
+                    <div className="flex items-center gap-2 text-stone-500">
+                      <Phone className="w-3 h-3" />
+                      {user.phone_number || 'Sin teléfono'}
                     </div>
                   </td>
                   <td className="px-6 py-4 text-stone-500 font-medium">
@@ -319,8 +438,12 @@ export default function AdminUsers() {
                     </div>
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button className="p-2 text-stone-400 hover:text-stone-900 transition-colors">
-                      <MoreVertical className="w-4 h-4" />
+                    <button 
+                      onClick={() => openEditModal(user)}
+                      className="p-2 text-stone-400 hover:text-emerald-600 transition-colors"
+                      title="Editar Usuario"
+                    >
+                      <Edit2 className="w-4 h-4" />
                     </button>
                   </td>
                 </tr>

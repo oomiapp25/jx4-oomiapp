@@ -9,7 +9,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-export type UserRole = 'customer' | 'admin' | 'category_admin' | 'department_admin' | 'transport_admin' | 'social_admin';
+export type UserRole = 'customer' | 'admin' | 'category_admin' | 'department_admin' | 'transport_admin' | 'social_admin' | 'sports_admin' | 'culture_admin';
 
 export interface UserProfile {
   id: string;
@@ -172,4 +172,32 @@ export interface SocialDelivery {
   delivery_date: string;
   created_by: string;
   created_at: string;
+}
+
+export interface CommunityEntry {
+  id: string;
+  title: string;
+  content: string;
+  image_url: string | null;
+  area: 'sports' | 'culture';
+  type: 'news' | 'event' | 'profile';
+  category: string | null;
+  event_date: string | null;
+  location: string | null;
+  contact_info: string | null;
+  published_by: string;
+  created_at: string;
+  active: boolean;
+}
+
+export interface CommunitySpace {
+  id: string;
+  name: string;
+  description: string | null;
+  location: string | null;
+  contact_info: string | null;
+  image_url: string | null;
+  area: 'sports' | 'culture';
+  created_at: string;
+  active: boolean;
 }
