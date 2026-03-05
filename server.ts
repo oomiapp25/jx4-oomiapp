@@ -20,6 +20,12 @@ async function startServer() {
 
   app.use(express.json());
 
+  // Debug middleware for API
+  app.use("/api", (req, res, next) => {
+    console.log(`API REQUEST: ${req.method} ${req.url}`);
+    next();
+  });
+
   // API Routes
   app.get("/api/health", (req, res) => {
     res.json({ status: "ok" });
@@ -141,7 +147,7 @@ async function startServer() {
   });
 
   // POST /api/orders (Bypass RLS for Guest Checkout)
-  app.post("/api/orders", async (req, res) => {
+  app.post(["/api/orders", "/api/orders/"], async (req, res) => {
     if (!supabaseUrl || !supabaseServiceKey) {
       return res.status(500).json({ 
         error: "Configuración de servidor incompleta", 
