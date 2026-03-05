@@ -247,15 +247,16 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    // En producción, servimos estáticos PERO ignoramos cualquier ruta que empiece por /api
-    app.use((req, res, next) => {
-      if (req.url.startsWith('/api') || req.url.startsWith('/submit-order')) {
-        return res.status(404).json({ error: "Ruta de API no encontrada", path: req.url });
-      }
-      next();
-    });
+    // En producción, servimos los archivos estáticos de la carpeta dist
     app.use(express.static("dist"));
-    app.get("*", (req, res) => {
+    
+    // Manejo de SPA: cualquier ruta que no sea API debe devolver el index.html
+    app.get("*", (req, res, next) => {
+      // Si la ruta empieza por /api o es nuestra ruta de pedidos, no debemos servir el index.html
+      // sino dejar que pase al siguiente manejador (que probablemente dará un 404 si no coincide nada)
+      if (req.url.startsWith('/api') || req.url.startsWith('/submit-order')) {
+        return next();
+      }
       res.sendFile("dist/index.html", { root: "." });
     });
   }
