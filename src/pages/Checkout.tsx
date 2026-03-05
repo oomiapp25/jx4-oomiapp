@@ -115,7 +115,8 @@ export default function Checkout() {
         result = await response.json();
       } else {
         const text = await response.text();
-        throw new Error(text || 'Error del servidor sin respuesta JSON');
+        console.error('Respuesta del servidor no es JSON. Status:', response.status, 'Text:', text);
+        throw new Error(text || `Error del servidor (Status: ${response.status}) sin respuesta JSON`);
       }
 
       if (!response.ok) {

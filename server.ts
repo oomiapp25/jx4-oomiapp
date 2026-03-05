@@ -142,6 +142,13 @@ async function startServer() {
 
   // POST /api/orders (Bypass RLS for Guest Checkout)
   app.post("/api/orders", async (req, res) => {
+    if (!supabaseUrl || !supabaseServiceKey) {
+      return res.status(500).json({ 
+        error: "Configuración de servidor incompleta", 
+        details: "Las variables de entorno de Supabase no están configuradas." 
+      });
+    }
+
     const { user_id, items, total, status, transport_id, address, customer_name, customer_phone } = req.body;
     
     // Sanitize UUIDs: if they are empty strings or not valid UUIDs, set to null
@@ -185,7 +192,10 @@ async function startServer() {
       res.json({ success: true, order: data });
     } catch (err: any) {
       console.error("Error inesperado en create-order:", err);
-      res.status(500).json({ error: err.message });
+      return res.status(500).json({ 
+        error: "Error interno del servidor al procesar el pedido", 
+        details: err.message || String(err) 
+      });
     }
   });
 
@@ -244,6 +254,15 @@ async function startServer() {
       res.sendFile("dist/index.html", { root: "." });
     });
   }
+
+  // Global Error Handler - Ensure JSON response for all errors
+  app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error("GLOBAL ERROR HANDLER:", err);
+    res.status(500).json({
+      error: "Error interno del servidor",
+      details: err.message || "Ocurrió un error inesperado"
+    });
+  });
 
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on http://localhost:${PORT}`);
