@@ -147,7 +147,17 @@ async function startServer() {
   });
 
   // POST /api/orders (Bypass RLS for Guest Checkout)
-  app.post(["/api/orders", "/api/orders/"], async (req, res) => {
+  // Usamos .all para capturar cualquier intento y diagnosticar si el método es incorrecto
+  app.all(["/api/orders", "/api/orders/"], async (req, res) => {
+    console.log(`SOLICITUD RECIBIDA EN /api/orders - MÉTODO: ${req.method}`);
+
+    if (req.method !== 'POST') {
+      return res.status(405).json({ 
+        error: `Método ${req.method} no permitido`, 
+        details: "Esta ruta solo acepta peticiones POST para crear pedidos." 
+      });
+    }
+
     if (!supabaseUrl || !supabaseServiceKey) {
       return res.status(500).json({ 
         error: "Configuración de servidor incompleta", 
@@ -158,7 +168,6 @@ async function startServer() {
     const { user_id, items, total, status, transport_id, address, customer_name, customer_phone } = req.body;
     
     // Sanitize UUIDs: if they are empty strings or not valid UUIDs, set to null
-    // Valid UUID check (simple version)
     const isValidUUID = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
     
     const cleanUserId = (user_id && isValidUUID(user_id)) ? user_id : null;
@@ -175,7 +184,7 @@ async function startServer() {
       customer_phone
     };
 
-    console.log("INTENTANDO INSERTAR PEDIDO CON PAYLOAD:", JSON.stringify(payload, null, 2));
+    console.log("PROCESANDO INSERCIÓN EN SUPABASE:", JSON.stringify(payload, null, 2));
 
     try {
       const { data, error } = await supabaseAdmin
@@ -185,7 +194,7 @@ async function startServer() {
         .single();
 
       if (error) {
-        console.error("DETALLE COMPLETO ERROR SUPABASE:", error);
+        console.error("ERROR DE SUPABASE AL INSERTAR:", error);
         return res.status(500).json({ 
           error: error.message, 
           code: error.code,
@@ -194,12 +203,12 @@ async function startServer() {
         });
       }
 
-      console.log("PEDIDO CREADO EXITOSAMENTE:", data.id);
-      res.json({ success: true, order: data });
+      console.log("PEDIDO CREADO CON ÉXITO. ID:", data.id);
+      return res.json({ success: true, order: data });
     } catch (err: any) {
-      console.error("Error inesperado en create-order:", err);
+      console.error("EXCEPCIÓN EN RUTA DE PEDIDOS:", err);
       return res.status(500).json({ 
-        error: "Error interno del servidor al procesar el pedido", 
+        error: "Error interno al procesar el pedido", 
         details: err.message || String(err) 
       });
     }
