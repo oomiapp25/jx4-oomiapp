@@ -20,18 +20,72 @@ async function startServer() {
 
   app.use(express.json());
 
-  // Debug middleware for API
-  app.use("/api", (req, res, next) => {
-    console.log(`API REQUEST: ${req.method} ${req.url}`);
+  // 1. PRIORIDAD ABSOLUTA: Registro de depuración para TODAS las peticiones
+  app.use((req, res, next) => {
+    if (req.url.startsWith('/api')) {
+      console.log(`[API DEBUG] ${req.method} ${req.url}`);
+    }
     next();
   });
 
-  // API Routes
+  // 2. RUTAS DE API (Definidas antes que cualquier otra cosa)
   app.get("/api/health", (req, res) => {
     res.json({ status: "ok" });
   });
 
-  // POST /api/invite-admin
+  // RUTA DE PEDIDOS (Movida arriba para máxima prioridad)
+  app.all(["/api/orders", "/api/orders/"], async (req, res) => {
+    console.log(`[ORDERS ROUTE] Capturado: ${req.method} ${req.url}`);
+
+    if (req.method !== 'POST') {
+      return res.status(405).json({ 
+        error: "Método no permitido", 
+        details: `Se esperaba POST pero se recibió ${req.method}` 
+      });
+    }
+
+    if (!supabaseUrl || !supabaseServiceKey) {
+      return res.status(500).json({ 
+        error: "Error de configuración", 
+        details: "Faltan las credenciales de Supabase en el servidor." 
+      });
+    }
+
+    try {
+      const { user_id, items, total, status, transport_id, address, customer_name, customer_phone } = req.body;
+      const isValidUUID = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+      
+      const payload = {
+        user_id: (user_id && isValidUUID(user_id)) ? user_id : null,
+        items,
+        total,
+        status: status || 'pending',
+        transport_id: (transport_id && isValidUUID(transport_id)) ? transport_id : null,
+        address,
+        customer_name,
+        customer_phone
+      };
+
+      const { data, error } = await supabaseAdmin
+        .from('orders')
+        .insert(payload)
+        .select()
+        .single();
+
+      if (error) {
+        console.error("[SUPABASE ERROR]", error);
+        return res.status(500).json({ error: error.message, details: error.hint });
+      }
+
+      console.log("[SUCCESS] Pedido creado:", data.id);
+      return res.json({ success: true, order: data });
+    } catch (err: any) {
+      console.error("[SERVER EXCEPTION]", err);
+      return res.status(500).json({ error: "Error interno", details: err.message });
+    }
+  });
+
+  // Otras rutas de API...
   app.post("/api/invite-admin", async (req, res) => {
     const { email, role, invitedBy } = req.body;
     
@@ -146,74 +200,6 @@ async function startServer() {
     }
   });
 
-  // POST /api/orders (Bypass RLS for Guest Checkout)
-  // Usamos .all para capturar cualquier intento y diagnosticar si el método es incorrecto
-  app.all(["/api/orders", "/api/orders/"], async (req, res) => {
-    console.log(`SOLICITUD RECIBIDA EN /api/orders - MÉTODO: ${req.method}`);
-
-    if (req.method !== 'POST') {
-      return res.status(405).json({ 
-        error: `Método ${req.method} no permitido`, 
-        details: "Esta ruta solo acepta peticiones POST para crear pedidos." 
-      });
-    }
-
-    if (!supabaseUrl || !supabaseServiceKey) {
-      return res.status(500).json({ 
-        error: "Configuración de servidor incompleta", 
-        details: "Las variables de entorno de Supabase no están configuradas." 
-      });
-    }
-
-    const { user_id, items, total, status, transport_id, address, customer_name, customer_phone } = req.body;
-    
-    // Sanitize UUIDs: if they are empty strings or not valid UUIDs, set to null
-    const isValidUUID = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
-    
-    const cleanUserId = (user_id && isValidUUID(user_id)) ? user_id : null;
-    const cleanTransportId = (transport_id && isValidUUID(transport_id)) ? transport_id : null;
-
-    const payload = {
-      user_id: cleanUserId,
-      items,
-      total,
-      status: status || 'pending',
-      transport_id: cleanTransportId,
-      address,
-      customer_name,
-      customer_phone
-    };
-
-    console.log("PROCESANDO INSERCIÓN EN SUPABASE:", JSON.stringify(payload, null, 2));
-
-    try {
-      const { data, error } = await supabaseAdmin
-        .from('orders')
-        .insert(payload)
-        .select()
-        .single();
-
-      if (error) {
-        console.error("ERROR DE SUPABASE AL INSERTAR:", error);
-        return res.status(500).json({ 
-          error: error.message, 
-          code: error.code,
-          hint: error.hint,
-          details: error.details 
-        });
-      }
-
-      console.log("PEDIDO CREADO CON ÉXITO. ID:", data.id);
-      return res.json({ success: true, order: data });
-    } catch (err: any) {
-      console.error("EXCEPCIÓN EN RUTA DE PEDIDOS:", err);
-      return res.status(500).json({ 
-        error: "Error interno al procesar el pedido", 
-        details: err.message || String(err) 
-      });
-    }
-  });
-
   // POST /api/accept-invite
   app.post("/api/accept-invite", async (req, res) => {
     const { token, userId } = req.body;
@@ -264,6 +250,13 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
+    // En producción, servimos estáticos PERO ignoramos cualquier ruta que empiece por /api
+    app.use((req, res, next) => {
+      if (req.url.startsWith('/api')) {
+        return res.status(404).json({ error: "Ruta de API no encontrada", path: req.url });
+      }
+      next();
+    });
     app.use(express.static("dist"));
     app.get("*", (req, res) => {
       res.sendFile("dist/index.html", { root: "." });
