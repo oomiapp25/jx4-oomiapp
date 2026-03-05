@@ -144,27 +144,44 @@ async function startServer() {
   app.post("/api/orders", async (req, res) => {
     const { user_id, items, total, status, transport_id, address, customer_name, customer_phone } = req.body;
     
+    // Sanitize UUIDs: if they are empty strings or not valid UUIDs, set to null
+    // Valid UUID check (simple version)
+    const isValidUUID = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    
+    const cleanUserId = (user_id && isValidUUID(user_id)) ? user_id : null;
+    const cleanTransportId = (transport_id && isValidUUID(transport_id)) ? transport_id : null;
+
+    const payload = {
+      user_id: cleanUserId,
+      items,
+      total,
+      status: status || 'pending',
+      transport_id: cleanTransportId,
+      address,
+      customer_name,
+      customer_phone
+    };
+
+    console.log("INTENTANDO INSERTAR PEDIDO CON PAYLOAD:", JSON.stringify(payload, null, 2));
+
     try {
       const { data, error } = await supabaseAdmin
         .from('orders')
-        .insert({
-          user_id: user_id || null,
-          items,
-          total,
-          status: status || 'pending',
-          transport_id: transport_id || null,
-          address,
-          customer_name,
-          customer_phone
-        })
+        .insert(payload)
         .select()
         .single();
 
       if (error) {
-        console.error("Error de Supabase al crear pedido:", error);
-        return res.status(500).json({ error: error.message });
+        console.error("DETALLE COMPLETO ERROR SUPABASE:", error);
+        return res.status(500).json({ 
+          error: error.message, 
+          code: error.code,
+          hint: error.hint,
+          details: error.details 
+        });
       }
 
+      console.log("PEDIDO CREADO EXITOSAMENTE:", data.id);
       res.json({ success: true, order: data });
     } catch (err: any) {
       console.error("Error inesperado en create-order:", err);

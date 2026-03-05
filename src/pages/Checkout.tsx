@@ -118,7 +118,12 @@ export default function Checkout() {
         throw new Error(text || 'Error del servidor sin respuesta JSON');
       }
 
-      if (!response.ok) throw new Error(result.error || 'Error al crear el pedido');
+      if (!response.ok) {
+        const errorMessage = result.error || 'Error al crear el pedido';
+        const errorDetails = result.details || result.hint || '';
+        console.error('Error del servidor:', result);
+        throw new Error(`${errorMessage}${errorDetails ? ` (${errorDetails})` : ''}`);
+      }
 
       const order = result.order;
 

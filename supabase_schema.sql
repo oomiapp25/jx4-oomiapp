@@ -212,6 +212,10 @@ CREATE TABLE IF NOT EXISTS public.social_deliveries (
 ALTER TABLE public.users ADD COLUMN IF NOT EXISTS department_id UUID REFERENCES public.departments(id);
 ALTER TABLE public.users ADD COLUMN IF NOT EXISTS phone_number TEXT;
 
+-- Alter orders additions
+ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS customer_name TEXT;
+ALTER TABLE public.orders ADD COLUMN IF NOT EXISTS customer_phone TEXT;
+
 -- 3. Functions & Triggers
 
 CREATE OR REPLACE FUNCTION public.is_admin()
