@@ -33,55 +33,6 @@ async function startServer() {
     res.json({ status: "ok" });
   });
 
-  // RUTA DE PEDIDOS (Cambiamos el nombre para evitar conflictos con /api)
-  app.all(["/submit-order-direct", "/submit-order-direct/"], async (req, res) => {
-    console.log(`[ORDER] Solicitud: ${req.method} ${req.url}`);
-
-    if (req.method !== 'POST') {
-      return res.status(405).json({ error: "Solo se permite POST" });
-    }
-
-    if (!supabaseUrl || !supabaseServiceKey) {
-      return res.status(500).json({ 
-        error: "Error de configuración", 
-        details: "Faltan las credenciales de Supabase en el servidor." 
-      });
-    }
-
-    try {
-      const { user_id, items, total, status, transport_id, address, customer_name, customer_phone } = req.body;
-      const isValidUUID = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
-      
-      const payload = {
-        user_id: (user_id && isValidUUID(user_id)) ? user_id : null,
-        items,
-        total,
-        status: status || 'pending',
-        transport_id: (transport_id && isValidUUID(transport_id)) ? transport_id : null,
-        address,
-        customer_name,
-        customer_phone
-      };
-
-      const { data, error } = await supabaseAdmin
-        .from('orders')
-        .insert(payload)
-        .select()
-        .single();
-
-      if (error) {
-        console.error("[SUPABASE ERROR]", error);
-        return res.status(500).json({ error: error.message, details: error.hint });
-      }
-
-      console.log("[SUCCESS] Pedido creado:", data.id);
-      return res.json({ success: true, order: data });
-    } catch (err: any) {
-      console.error("[SERVER EXCEPTION]", err);
-      return res.status(500).json({ error: "Error interno", details: err.message });
-    }
-  });
-
   // Otras rutas de API...
   app.post("/api/invite-admin", async (req, res) => {
     const { email, role, invitedBy } = req.body;
@@ -247,16 +198,8 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    // En producción, servimos los archivos estáticos de la carpeta dist
     app.use(express.static("dist"));
-    
-    // Manejo de SPA: cualquier ruta que no sea API debe devolver el index.html
-    app.get("*", (req, res, next) => {
-      // Si la ruta empieza por /api o es nuestra ruta de pedidos, no debemos servir el index.html
-      // sino dejar que pase al siguiente manejador (que probablemente dará un 404 si no coincide nada)
-      if (req.url.startsWith('/api') || req.url.startsWith('/submit-order')) {
-        return next();
-      }
+    app.get("*", (req, res) => {
       res.sendFile("dist/index.html", { root: "." });
     });
   }

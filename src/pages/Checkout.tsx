@@ -91,7 +91,7 @@ export default function Checkout() {
 
     setSubmitting(true);
     try {
-      // 1. Save Order to DB via Backend API (to bypass RLS for Guest Checkout)
+      // 1. Save Order directly to Supabase
       const orderPayload = {
         user_id: user?.id || null,
         items: cart,
@@ -103,30 +103,18 @@ export default function Checkout() {
         customer_phone: formData.phone
       };
 
-      const response = await fetch('/submit-order-direct', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(orderPayload)
-      });
+      const { data: orderData, error: orderError } = await supabase
+        .from('orders')
+        .insert([orderPayload])
+        .select()
+        .single();
 
-      let result;
-      const contentType = response.headers.get("content-type");
-      if (contentType && contentType.indexOf("application/json") !== -1) {
-        result = await response.json();
-      } else {
-        const text = await response.text();
-        console.error('Respuesta del servidor no es JSON. Status:', response.status, 'Text:', text);
-        throw new Error(text || `Error del servidor (Status: ${response.status}) sin respuesta JSON`);
+      if (orderError) {
+        console.error('Error de Supabase:', orderError);
+        throw new Error(orderError.message || 'Error al guardar el pedido en la base de datos');
       }
 
-      if (!response.ok) {
-        const errorMessage = result.error || 'Error al crear el pedido';
-        const errorDetails = result.details || result.hint || '';
-        console.error('Error del servidor:', result);
-        throw new Error(`${errorMessage}${errorDetails ? ` (${errorDetails})` : ''}`);
-      }
-
-      const order = result.order;
+      const order = orderData;
 
       // 2. Route WhatsApp Messages by Department
       const departmentIds = [...new Set(cart.map(item => item.department_id))];
