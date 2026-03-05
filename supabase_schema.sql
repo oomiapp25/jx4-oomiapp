@@ -126,6 +126,8 @@ CREATE TABLE IF NOT EXISTS public.orders (
     status TEXT DEFAULT 'pending' NOT NULL,
     transport_id UUID REFERENCES public.transports(id),
     address TEXT NOT NULL,
+    customer_name TEXT,
+    customer_phone TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 

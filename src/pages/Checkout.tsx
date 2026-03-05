@@ -98,7 +98,7 @@ export default function Checkout() {
         total: total + (method === 'delivery' ? (transports.find(t => t.id === selectedTransport)?.base_price || 0) : 0),
         status: 'pending',
         transport_id: method === 'delivery' ? selectedTransport : null,
-        address: formData.address,
+        address: method === 'pickup' ? 'RETIRO EN TIENDA' : formData.address,
         customer_name: formData.receiver_name,
         customer_phone: formData.phone
       };
@@ -109,7 +109,15 @@ export default function Checkout() {
         body: JSON.stringify(orderPayload)
       });
 
-      const result = await response.json();
+      let result;
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        result = await response.json();
+      } else {
+        const text = await response.text();
+        throw new Error(text || 'Error del servidor sin respuesta JSON');
+      }
+
       if (!response.ok) throw new Error(result.error || 'Error al crear el pedido');
 
       const order = result.order;

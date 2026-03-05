@@ -153,10 +153,9 @@ async function startServer() {
           total,
           status: status || 'pending',
           transport_id: transport_id || null,
-          address
-          // Nota: Si agregaste columnas customer_name/phone a la DB, se guardarán aquí.
-          // Si no existen, Supabase ignorará los campos extra o dará error dependiendo de la config.
-          // Por ahora los enviamos para que queden registrados si la tabla los soporta.
+          address,
+          customer_name,
+          customer_phone
         })
         .select()
         .single();

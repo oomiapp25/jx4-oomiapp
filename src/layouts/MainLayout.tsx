@@ -79,7 +79,17 @@ export default function MainLayout() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-4">
+            <div className="flex items-center gap-1 sm:gap-4">
+              {/* Mobile Icons for Comunidad and Ayuda Social */}
+              <div className="flex sm:hidden items-center gap-1">
+                <Link to="/comunidad" className="p-2 text-ml-quebrada hover:bg-white/10 rounded-full transition-colors">
+                  <Trophy className="w-5 h-5" />
+                </Link>
+                <Link to="/ayuda-social" className="p-2 text-ml-quebrada hover:bg-white/10 rounded-full transition-colors">
+                  <Heart className="w-5 h-5" />
+                </Link>
+              </div>
+
               <div className="relative">
                 <button 
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
