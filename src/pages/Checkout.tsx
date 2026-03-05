@@ -103,7 +103,7 @@ export default function Checkout() {
         customer_phone: formData.phone
       };
 
-      const response = await fetch('/api/orders', {
+      const response = await fetch('/submit-order-direct', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(orderPayload)

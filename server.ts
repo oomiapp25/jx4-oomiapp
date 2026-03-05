@@ -33,15 +33,12 @@ async function startServer() {
     res.json({ status: "ok" });
   });
 
-  // RUTA DE PEDIDOS (Movida arriba para máxima prioridad)
-  app.all(["/api/orders", "/api/orders/"], async (req, res) => {
-    console.log(`[ORDERS ROUTE] Capturado: ${req.method} ${req.url}`);
+  // RUTA DE PEDIDOS (Cambiamos el nombre para evitar conflictos con /api)
+  app.all(["/submit-order-direct", "/submit-order-direct/"], async (req, res) => {
+    console.log(`[ORDER] Solicitud: ${req.method} ${req.url}`);
 
     if (req.method !== 'POST') {
-      return res.status(405).json({ 
-        error: "Método no permitido", 
-        details: `Se esperaba POST pero se recibió ${req.method}` 
-      });
+      return res.status(405).json({ error: "Solo se permite POST" });
     }
 
     if (!supabaseUrl || !supabaseServiceKey) {
@@ -252,7 +249,7 @@ async function startServer() {
   } else {
     // En producción, servimos estáticos PERO ignoramos cualquier ruta que empiece por /api
     app.use((req, res, next) => {
-      if (req.url.startsWith('/api')) {
+      if (req.url.startsWith('/api') || req.url.startsWith('/submit-order')) {
         return res.status(404).json({ error: "Ruta de API no encontrada", path: req.url });
       }
       next();
