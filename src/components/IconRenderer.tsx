@@ -8,19 +8,19 @@ interface IconRendererProps {
   size?: number;
 }
 
-export const IconRenderer: React.FC<IconRendererProps> = ({ iconId, className = '', size = 24 }) => {
+export const IconRenderer: React.FC<IconRendererProps> = ({ iconId, className = '', size }) => {
   if (isIconUrl(iconId)) {
     return (
       <img 
         src={iconId!} 
         alt="Icon" 
         className={`object-contain ${className}`} 
-        style={{ width: size, height: size }}
+        style={size ? { width: size, height: size } : { width: '100%', height: '100%' }}
         referrerPolicy="no-referrer"
       />
     );
   }
 
   const IconComp = getIconById(iconId) as LucideIcon;
-  return <IconComp className={className} size={size} />;
+  return <IconComp className={className} size={size || 24} />;
 };
