@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase, Product, Department } from '../lib/supabase';
 import { motion } from 'motion/react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, CreditCard, Truck, ShieldCheck, Ticket, Smartphone, Store, Footprints, Package, Plus } from 'lucide-react';
+import { ShoppingCart, CreditCard, Truck, ShieldCheck, Ticket, Smartphone, Store, Footprints, Package, Plus, Search } from 'lucide-react';
 import HeroCarousel from '../components/HeroCarousel';
 import { getIconById } from '../lib/icons';
 import { IconRenderer } from '../components/IconRenderer';
@@ -71,6 +71,21 @@ export default function Home() {
       <HeroCarousel />
 
       <div className="max-w-7xl mx-auto px-4">
+        {/* Search Bar - Moved from Header */}
+        <div className="max-w-2xl mx-auto mb-8">
+          <div className="relative group">
+            <input 
+              type="text" 
+              placeholder="¿Qué estás buscando hoy?" 
+              className="w-full pl-5 pr-12 py-4 bg-white border-none rounded-2xl shadow-xl text-sm sm:text-base focus:ring-2 focus:ring-ml-quebrada transition-all placeholder:text-stone-400 font-medium"
+            />
+            <button className="absolute right-2 top-2 bottom-2 px-5 bg-ml-monte-verde text-white rounded-xl hover:bg-ml-teja transition-colors flex items-center gap-2">
+              <Search className="w-4 h-4" />
+              <span className="hidden sm:inline text-xs font-bold uppercase tracking-widest">Buscar</span>
+            </button>
+          </div>
+        </div>
+
         {/* Dynamic Access Bar */}
         <div className="bg-white p-6 rounded shadow-sm flex items-center justify-between gap-4 overflow-x-auto no-scrollbar">
           <Link 

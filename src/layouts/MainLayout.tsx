@@ -1,5 +1,5 @@
 import { Link, Outlet, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Search, User, Menu, MessageCircle, ArrowUp, Home, Package, Shield, MapPin, Bus, Plus, Briefcase, Wrench, Newspaper, CreditCard, Heart, Trophy } from 'lucide-react';
+import { ShoppingCart, User, Menu, MessageCircle, ArrowUp, Home, Package, Shield, MapPin, Bus, Plus, Briefcase, Wrench, Newspaper, CreditCard, Heart, Trophy } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase, Ad, News, TransportLine } from '../lib/supabase';
@@ -65,19 +65,6 @@ export default function MainLayout() {
                 JX4<span className="text-ml-quebrada">PARACOTOS</span>
               </h1>
             </Link>
-
-            <div className="flex-grow max-w-xs sm:max-w-md">
-              <div className="relative group">
-                <input 
-                  type="text" 
-                  placeholder="Buscar..." 
-                  className="w-full pl-3 pr-10 py-1.5 bg-white border-none rounded shadow-sm text-xs sm:text-sm focus:ring-0 transition-all placeholder:text-stone-400"
-                />
-                <button className="absolute right-0 top-0 h-full px-3 text-ml-hierro border-l border-stone-100 hover:text-ml-teja transition-colors">
-                  <Search className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
 
             <div className="flex items-center gap-1 sm:gap-4">
               {/* Mobile Icons for Comunidad and Ayuda Social */}
