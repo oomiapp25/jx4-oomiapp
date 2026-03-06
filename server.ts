@@ -14,6 +14,30 @@ if (!supabaseUrl || !supabaseServiceKey) {
 
 const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
+async function fetchExchangeRates() {
+  try {
+    // Consultamos tanto BCV como Paralelo para dar opciones
+    const [bcvRes, paraleloRes, euroRes] = await Promise.all([
+      fetch('https://ve.dolarapi.com/v1/dolares/bcv').then(r => r.json()),
+      fetch('https://ve.dolarapi.com/v1/dolares/paralelo').then(r => r.json()),
+      fetch('https://ve.dolarapi.com/v1/dolares/euro').then(r => r.json())
+    ]);
+
+    const rates = {
+      usd_bcv: bcvRes.promedio || bcvRes.valor,
+      usd_paralelo: paraleloRes.promedio || paraleloRes.valor,
+      eur_bcv: euroRes.promedio || euroRes.valor,
+      last_updated: new Date().toISOString()
+    };
+    
+    console.log('Tasas actualizadas:', rates);
+    return rates;
+  } catch (error) {
+    console.error('Error fetching exchange rates:', error);
+    return null;
+  }
+}
+
 async function startServer() {
   const app = express();
   const PORT = 3000;
@@ -188,6 +212,27 @@ async function startServer() {
       .eq('id', invite.id);
 
     res.json({ success: true, role: invite.role_to_grant });
+  });
+
+  // GET /api/update-exchange-rate (Manual trigger)
+  app.get("/api/update-exchange-rate", async (req, res) => {
+    try {
+      const rates = await fetchExchangeRates();
+      if (rates) {
+        const { error } = await supabaseAdmin
+          .from('settings')
+          .upsert({ 
+            key: 'exchange_rates', 
+            value: rates 
+          }, { onConflict: 'key' });
+        
+        if (error) throw error;
+        return res.json({ success: true, rates });
+      }
+      res.status(500).json({ error: "No se pudo obtener las tasas" });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
   });
 
   // Vite middleware for development

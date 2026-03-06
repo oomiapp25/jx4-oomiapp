@@ -93,26 +93,18 @@ export default function SocialHelp() {
   return (
     <div className="min-h-screen bg-stone-50 pb-20">
       {/* Hero Section */}
-      <div className="bg-ml-monte-verde text-white py-16 px-4">
+      <div className="bg-ml-monte-verde text-white py-8 sm:py-12 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full text-ml-quebrada font-bold text-xs uppercase tracking-widest mb-6"
+            className="inline-flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full text-ml-quebrada font-bold text-[10px] uppercase tracking-widest mb-4"
           >
-            <Heart className="w-4 h-4 fill-current" />
+            <Heart className="w-3.5 h-3.5 fill-current" />
             Iniciativa Social
           </motion.div>
-          <h1 className="text-4xl md:text-5xl font-black mb-6 tracking-tight">
-            Banco de Ayuda Social <br />
-            <span className="text-ml-quebrada">JX4 Paracotos</span>
-          </h1>
-          <p className="text-lg text-white/80 max-w-2xl mx-auto leading-relaxed">
-            Impulsado por <span className="text-white font-bold">Alvert Sanz</span>. 
-            Un espacio dedicado a canalizar la solidaridad y brindar apoyo con insumos médicos a quienes más lo necesitan en nuestra parroquia.
-          </p>
           
-          <div className="mt-10 flex flex-wrap justify-center gap-4">
+          <div className="mt-4 flex flex-wrap justify-center gap-4">
             <div className="bg-white/5 backdrop-blur-sm border border-white/10 p-4 rounded-2xl flex items-center gap-3">
               <div className="w-10 h-10 bg-ml-quebrada rounded-xl flex items-center justify-center text-ml-monte-verde">
                 <CheckCircle className="w-5 h-5" />
@@ -385,6 +377,12 @@ export default function SocialHelp() {
           </div>
 
         </div>
+      </div>
+      <div className="max-w-4xl mx-auto px-4 mt-20 text-center">
+        <p className="text-sm sm:text-base text-stone-400 max-w-2xl mx-auto leading-relaxed italic">
+          Impulsado por <span className="text-stone-600 font-bold">Alvert Sanz</span>. 
+          Un espacio dedicado a canalizar la solidaridad y brindar apoyo con insumos médicos a quienes más lo necesitan en nuestra parroquia.
+        </p>
       </div>
     </div>
   );
