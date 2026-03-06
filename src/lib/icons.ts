@@ -44,7 +44,13 @@ export const AVAILABLE_ICONS = [
   { id: 'Gift', icon: Gift, label: 'Regalos' }
 ];
 
+export function isIconUrl(id: string | null | undefined): boolean {
+  if (!id) return false;
+  return id.startsWith('http://') || id.startsWith('https://') || id.startsWith('data:image/');
+}
+
 export function getIconById(id: string | null | undefined) {
+  if (isIconUrl(id)) return null;
   const found = AVAILABLE_ICONS.find(i => i.id === id);
   return found ? found.icon : Package;
 }

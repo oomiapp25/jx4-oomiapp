@@ -4,6 +4,7 @@ import { supabase, Product, Category } from '../lib/supabase';
 import { motion } from 'motion/react';
 import { Package, ArrowLeft, Star, Plus } from 'lucide-react';
 import { getIconById } from '../lib/icons';
+import { IconRenderer } from '../components/IconRenderer';
 import { useCart } from '../hooks/useCart';
 
 export default function CategoryDetail() {
@@ -79,14 +80,12 @@ export default function CategoryDetail() {
     );
   }
 
-  const CatIcon = getIconById(category.icon);
-
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center text-ml-monte-verde">
-            <CatIcon className="w-8 h-8" />
+            <IconRenderer iconId={category.icon} className="w-8 h-8" />
           </div>
           <div>
             <h1 className="text-3xl font-black text-ml-monte-verde tracking-tighter">{category.name}</h1>

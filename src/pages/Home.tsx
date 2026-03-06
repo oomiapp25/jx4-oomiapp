@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, CreditCard, Truck, ShieldCheck, Ticket, Smartphone, Store, Footprints, Package, Plus } from 'lucide-react';
 import HeroCarousel from '../components/HeroCarousel';
 import { getIconById } from '../lib/icons';
+import { IconRenderer } from '../components/IconRenderer';
 import { useCart } from '../hooks/useCart';
 
 export default function Home() {
@@ -83,7 +84,6 @@ export default function Home() {
           </Link>
 
           {departments.map((dept) => {
-            const DeptIcon = getIconById(dept.icon);
             return (
               <Link 
                 key={dept.id} 
@@ -91,7 +91,7 @@ export default function Home() {
                 className="flex flex-col items-center gap-2 min-w-[80px] cursor-pointer group"
               >
                 <div className="w-12 h-12 rounded-full bg-ml-white-cal flex items-center justify-center group-hover:bg-ml-quebrada transition-colors">
-                  <DeptIcon className="w-6 h-6 text-ml-hierro group-hover:text-white transition-colors" />
+                  <IconRenderer iconId={dept.icon} className="w-6 h-6 text-ml-hierro group-hover:text-white transition-colors" />
                 </div>
                 <span className="text-[11px] font-medium text-ml-hierro text-center">{dept.name}</span>
               </Link>
