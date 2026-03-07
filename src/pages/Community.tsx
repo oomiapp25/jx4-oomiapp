@@ -340,10 +340,26 @@ export default function Community() {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 mt-20 text-center">
-        <p className="text-sm sm:text-base text-stone-400 max-w-2xl mx-auto leading-relaxed italic">
-          El espacio donde celebramos el talento, la disciplina y las tradiciones de nuestra parroquia. Mantente al día con los eventos y movimientos locales.
-        </p>
+      {/* CTA Section */}
+      <div className="max-w-4xl mx-auto px-4 mt-16 mb-20">
+        <div className="bg-ml-monte-verde rounded-3xl p-8 sm:p-12 text-center relative overflow-hidden shadow-2xl">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-ml-quebrada/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2" />
+          <div className="relative z-10">
+            <h2 className="text-2xl sm:text-3xl font-black text-white mb-4 tracking-tight">¿Quieres publicar?</h2>
+            <p className="text-white/80 text-sm sm:text-base mb-8 max-w-xl mx-auto font-medium">
+              Si eres organizador de eventos deportivos o culturales, contáctanos para difundir tu actividad.
+            </p>
+            <a 
+              href="https://wa.me/584123868364"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 bg-ml-quebrada text-ml-monte-verde px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-white transition-all shadow-lg"
+            >
+              Contactar acá
+              <Phone className="w-4 h-4" />
+            </a>
+          </div>
+        </div>
       </div>
 
       {/* Entry Detail Modal */}

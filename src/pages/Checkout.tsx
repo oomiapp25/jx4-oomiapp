@@ -123,12 +123,18 @@ export default function Checkout() {
       // 2. Prepare WhatsApp Messages
       const departmentIds = [...new Set(cart.map(item => item.department_id))];
       const { data: depts } = await supabase.from('departments').select('*').in('id', departmentIds);
+      const { data: deptAdmins } = await supabase
+        .from('users')
+        .select('phone_number, department_id')
+        .in('department_id', departmentIds)
+        .contains('roles', ['department_admin']);
       
       const sellerLinks: { deptName: string; link: string }[] = [];
       
       for (const deptId of departmentIds) {
         const dept = depts?.find(d => d.id === deptId);
-        const whatsapp = dept?.whatsapp;
+        const admin = deptAdmins?.find(a => a.department_id === deptId);
+        const whatsapp = dept?.whatsapp || admin?.phone_number;
 
         if (whatsapp) {
           const deptItems = cart.filter(item => item.department_id === deptId);
@@ -143,6 +149,7 @@ export default function Checkout() {
             `• Nombre: ${formData.receiver_name.toUpperCase()}\n` +
             `• WhatsApp: ${formData.phone}\n` +
             `• Método: ${method === 'pickup' ? '🏪 Retiro en Tienda' : '🚚 Envío a Domicilio'}\n` +
+            (method === 'delivery' ? `🛵*DELIVERY:* ${transport?.name || 'N/A'}\n` : '') +
             `🛍️*PRODUCTOS:*\n${itemsText}\n\n` +
             `💵*TOTAL: USD ${deptTotal.toFixed(2)}*\n` +
             `💰*VES: Bs. ${(deptTotal * exchangeRate).toLocaleString('es-VE', { minimumFractionDigits: 2 })}*\n` +
