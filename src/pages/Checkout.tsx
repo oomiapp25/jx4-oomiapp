@@ -15,6 +15,12 @@ export default function Checkout() {
   const [selectedTransport, setSelectedTransport] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [orderResults, setOrderResults] = useState<{
+    orderId: string;
+    deliveryLink?: string;
+    sellerLinks: { deptName: string; link: string }[];
+  } | null>(null);
   
   const [exchangeRate, setExchangeRate] = useState<number>(0);
   
@@ -91,11 +97,14 @@ export default function Checkout() {
 
     setSubmitting(true);
     try {
+      const transport = transports.find(t => t.id === selectedTransport);
+      const transportFee = method === 'delivery' ? (transport?.base_price || 0) : 0;
+      
       // 1. Save Order directly to Supabase
       const orderPayload = {
         user_id: user?.id || null,
         items: cart,
-        total: total + (method === 'delivery' ? (transports.find(t => t.id === selectedTransport)?.base_price || 0) : 0),
+        total: total + transportFee,
         status: 'pending',
         transport_id: method === 'delivery' ? selectedTransport : null,
         address: method === 'pickup' ? 'RETIRO EN TIENDA' : formData.address,
@@ -109,55 +118,66 @@ export default function Checkout() {
         .select()
         .single();
 
-      if (orderError) {
-        console.error('Error de Supabase:', orderError);
-        throw new Error(orderError.message || 'Error al guardar el pedido en la base de datos');
-      }
+      if (orderError) throw new Error(orderError.message);
 
-      const order = orderData;
-
-      // 2. Route WhatsApp Messages by Department
+      // 2. Prepare WhatsApp Messages
       const departmentIds = [...new Set(cart.map(item => item.department_id))];
-      
-      // Fetch departments and their managers
       const { data: depts } = await supabase.from('departments').select('*').in('id', departmentIds);
-      const { data: managers } = await supabase.from('users').select('*').in('department_id', departmentIds).eq('role', 'department_admin');
-
+      
+      const sellerLinks: { deptName: string; link: string }[] = [];
+      
       for (const deptId of departmentIds) {
         const dept = depts?.find(d => d.id === deptId);
-        const manager = managers?.find(m => m.department_id === deptId);
-        const whatsapp = dept?.whatsapp || manager?.phone_number;
+        const whatsapp = dept?.whatsapp;
 
         if (whatsapp) {
           const deptItems = cart.filter(item => item.department_id === deptId);
           const itemsText = deptItems.map(item => `• ${item.title} x${item.quantity}`).join('\n');
           const deptSubtotal = deptItems.reduce((s, i) => s + (i.price * i.quantity), 0);
-          const transportFee = method === 'delivery' ? (transports.find(t => t.id === selectedTransport)?.base_price || 0) : 0;
-          const deptTotal = deptSubtotal + transportFee;
+          const deptTotal = deptSubtotal + (method === 'delivery' ? (transportFee / departmentIds.length) : 0); // Pro-rate transport or just subtotal
           const totalVES = deptTotal * exchangeRate;
 
           const message = `🛒*NUEVO PEDIDO - JX4 PARACOTOS*\n` +
-            `📅 Fecha: ${new Date().toLocaleDateString('es-ES')}\n` +
+            `🆔 Orden: #${orderData.id.slice(0, 8)}\n` +
             `👤*CLIENTE:*\n` +
             `• Nombre: ${formData.receiver_name.toUpperCase()}\n` +
             `• WhatsApp: ${formData.phone}\n` +
             `• Método: ${method === 'pickup' ? '🏪 Retiro en Tienda' : '🚚 Envío a Domicilio'}\n` +
             `🛍️*PRODUCTOS:*\n${itemsText}\n\n` +
-            `Subtotal: USD ${deptSubtotal.toFixed(2)}\n` +
-            `💵*TOTAL USD: USD ${deptTotal.toFixed(2)}*\n` +
-            `💰*VES total:Bs.S ${totalVES.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 3 }) }*\n` +
-            `(Tasa: ${exchangeRate.toFixed(2)})\n` +
-            `📝*NOTAS:*_ ${formData.notes || 'Sin notas adicionales'} _`;
+            `💵*TOTAL: USD ${deptTotal.toFixed(2)}*\n` +
+            `💰*VES: Bs. ${(deptTotal * exchangeRate).toLocaleString('es-VE', { minimumFractionDigits: 2 })}*\n` +
+            `📍*DIRECCIÓN:* ${orderPayload.address}\n` +
+            `📝*NOTAS:* ${formData.notes || 'N/A'}`;
 
-          const encodedMsg = encodeURIComponent(message);
-          window.open(`https://wa.me/${whatsapp.replace(/\D/g, '')}?text=${encodedMsg}`, '_blank');
+          sellerLinks.push({
+            deptName: dept.name,
+            link: `https://wa.me/${whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`
+          });
         }
       }
 
-      // 3. Clear Cart and Redirect
+      let deliveryLink = '';
+      if (method === 'delivery' && transport?.whatsapp) {
+        const itemsText = cart.map(item => `• ${item.title} x${item.quantity}`).join('\n');
+        const message = `🛵*SOLICITUD DE DELIVERY - JX4*\n` +
+          `🆔 Orden: #${orderData.id.slice(0, 8)}\n` +
+          `👤*CLIENTE:* ${formData.receiver_name.toUpperCase()}\n` +
+          `📞*TELÉFONO:* ${formData.phone}\n` +
+          `📍*DESTINO:* ${formData.address}\n` +
+          `🛍️*PRODUCTOS:*\n${itemsText}\n` +
+          `💰*TARIFA DELIVERY: USD ${transportFee.toFixed(2)}*`;
+        
+        deliveryLink = `https://wa.me/${transport.whatsapp.replace(/\D/g, '')}?text=${encodeURIComponent(message)}`;
+      }
+
+      setOrderResults({
+        orderId: orderData.id,
+        sellerLinks,
+        deliveryLink: deliveryLink || undefined
+      });
+      
+      setShowSuccess(true);
       clearCart();
-      alert('¡Pedido confirmado! Se han abierto los chats de WhatsApp para coordinar con cada departamento.');
-      navigate(user ? '/mis-pedidos' : '/');
 
     } catch (error: any) {
       alert('Error al procesar el pedido: ' + error.message);
@@ -165,6 +185,77 @@ export default function Checkout() {
       setSubmitting(false);
     }
   };
+
+  if (showSuccess && orderResults) {
+    return (
+      <div className="min-h-[80vh] flex items-center justify-center px-4 py-12">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-white p-8 rounded-2xl shadow-xl border border-stone-100 max-w-md w-full text-center"
+        >
+          <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
+            <CheckCircle2 className="w-10 h-10" />
+          </div>
+          <h2 className="text-2xl font-black text-ml-monte-verde mb-2">¡Pedido Confirmado!</h2>
+          <p className="text-sm text-ml-hierro mb-8">
+            Tu orden <span className="font-bold">#{orderResults.orderId.slice(0, 8)}</span> ha sido registrada. 
+            Para concretar la venta, debes notificar al vendedor y al delivery vía WhatsApp.
+          </p>
+
+          <div className="space-y-4">
+            {orderResults.sellerLinks.map((seller, idx) => (
+              <a
+                key={idx}
+                href={seller.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-4 bg-ml-monte-verde text-white rounded-xl hover:bg-ml-teja transition-all group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
+                    <Store className="w-4 h-4" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-[10px] uppercase font-bold opacity-70">Notificar Vendedor</p>
+                    <p className="text-sm font-bold">{seller.deptName}</p>
+                  </div>
+                </div>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </a>
+            ))}
+
+            {orderResults.deliveryLink && (
+              <a
+                href={orderResults.deliveryLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-4 bg-ml-quebrada text-ml-monte-verde rounded-xl hover:bg-ml-teja hover:text-white transition-all group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-ml-monte-verde/10 rounded-lg flex items-center justify-center">
+                    <Truck className="w-4 h-4" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-[10px] uppercase font-bold opacity-70">Notificar Delivery</p>
+                    <p className="text-sm font-bold">Servicio de Envío</p>
+                  </div>
+                </div>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </a>
+            )}
+          </div>
+
+          <button
+            onClick={() => navigate(user ? '/mis-pedidos' : '/')}
+            className="mt-8 text-xs font-bold text-ml-hierro hover:text-ml-teja transition-colors uppercase tracking-widest"
+          >
+            Volver al inicio
+          </button>
+        </motion.div>
+      </div>
+    );
+  }
 
   if (cart.length === 0) {
     return (
