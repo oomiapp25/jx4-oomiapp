@@ -1,21 +1,20 @@
 {
   "name": "JX4 Paracotos",
   "short_name": "JX4",
-  "description": "Tu centro comercial y comunitario de Paracotos.",
+  "description": "Plataforma comunitaria de Paracotos",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#1c4d2d",
-  "orientation": "portrait",
+  "background_color": "#F9FAFB",
+  "theme_color": "#065F46",
   "icons": [
     {
-      "src": "https://picsum.photos/seed/jx4-192/192/192",
+      "src": "https://picsum.photos/seed/jx4/192/192",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "https://picsum.photos/seed/jx4-512/512/512",
+      "src": "https://picsum.photos/seed/jx4/512/512",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
