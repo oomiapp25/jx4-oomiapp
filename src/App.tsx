@@ -95,7 +95,7 @@ export default function App() {
             user && (
               (user.roles || []).includes('admin') || 
               (user.roles || []).some(r => r.includes('_admin')) || 
-              user.email === 'jjtovar1510@gmail.com'
+              user.email.toLowerCase() === 'jjtovar1510@gmail.com'
             ) ? <AdminLayout /> : <Navigate to="/" />
           }
         >
