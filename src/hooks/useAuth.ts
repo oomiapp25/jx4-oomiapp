@@ -36,6 +36,9 @@ export function useAuth() {
       return;
     }
 
+    const userEmail = session.user.email?.toLowerCase() || '';
+    const isAdminEmail = userEmail === 'jjtovar1510@gmail.com';
+
     const { data, error } = await supabase
       .from('users')
       .select('*')
@@ -46,9 +49,9 @@ export function useAuth() {
       // Fallback: set basic user info from session even if profile fetch fails
       setUser({
         id: session.user.id,
-        email: session.user.email || '',
+        email: userEmail,
         full_name: session.user.user_metadata?.full_name || 'Usuario',
-        roles: session.user.email === 'jjtovar1510@gmail.com' ? ['admin'] : ['customer'],
+        roles: isAdminEmail ? ['admin'] : ['customer'],
         created_at: new Date().toISOString()
       });
 
@@ -58,13 +61,18 @@ export function useAuth() {
           .from('users')
           .upsert({
             id: session.user.id,
-            email: session.user.email,
+            email: userEmail,
             full_name: session.user.user_metadata?.full_name || 'Usuario',
-            roles: session.user.email === 'jjtovar1510@gmail.com' ? ['admin'] : ['customer']
+            roles: isAdminEmail ? ['admin'] : ['customer']
           });
       }
     } else if (data) {
-      setUser(data as UserProfile);
+      const profile = data as UserProfile;
+      // Ensure admin email always has admin role even if DB is out of sync
+      if (isAdminEmail && !profile.roles.includes('admin')) {
+        profile.roles = [...profile.roles, 'admin'];
+      }
+      setUser(profile);
     }
     setLoading(false);
   }
