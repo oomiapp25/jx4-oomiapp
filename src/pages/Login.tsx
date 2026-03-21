@@ -43,10 +43,11 @@ export default function Login() {
           .single();
         
         const userRoles = profile?.roles || [];
-        const isSuperAdmin = session.user.email === 'jjtovar1510@gmail.com';
+        const userEmail = session.user.email?.toLowerCase() || '';
+        const isSuperAdmin = userEmail === 'jjtovar1510@gmail.com';
         const hasAdminRole = userRoles.includes('admin') || userRoles.some((r: string) => r.includes('_admin'));
 
-        if (profile && (hasAdminRole || isSuperAdmin)) {
+        if (hasAdminRole || isSuperAdmin) {
           navigate('/admin');
         } else {
           navigate('/');
