@@ -1,5 +1,5 @@
 import { Link, Outlet, useNavigate } from 'react-router-dom';
-import { ShoppingCart, User, Menu, MessageCircle, ArrowUp, Home, Package, Shield, MapPin, Bus, Plus, Briefcase, Wrench, Newspaper, CreditCard, Heart, Trophy, Download } from 'lucide-react';
+import { ShoppingCart, User, Menu, MessageCircle, ArrowUp, Home, Package, Shield, MapPin, Bus, Plus, Briefcase, Wrench, Newspaper, CreditCard, Heart, Trophy, Download, LogOut } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase, Ad, News, TransportLine } from '../lib/supabase';
@@ -72,11 +72,99 @@ export default function MainLayout() {
               <div className="relative">
                 <button 
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="p-2.5 bg-white/50 backdrop-blur-sm text-ml-monte-verde hover:bg-white rounded-2xl transition-all border border-white/50 shadow-sm"
+                  className="p-2.5 bg-stone-100 text-ml-monte-verde hover:bg-stone-200 rounded-full transition-all border border-stone-200 shadow-sm"
                 >
                   <User className="w-5 h-5" />
                 </button>
-                {/* ... existing user menu logic ... */}
+                
+                <AnimatePresence>
+                  {isUserMenuOpen && (
+                    <>
+                      <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setIsUserMenuOpen(false)}
+                        className="fixed inset-0 z-40"
+                      />
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        className="absolute right-0 mt-2 w-56 glass bg-white/90 backdrop-blur-xl rounded-[25px] border border-white/40 shadow-2xl p-2 z-50 overflow-hidden"
+                      >
+                        {user ? (
+                          <div className="space-y-1">
+                            <div className="px-4 py-3 border-b border-stone-100 mb-1">
+                              <p className="text-[10px] font-black text-stone-400 uppercase tracking-widest">Bienvenido</p>
+                              <p className="text-sm font-black text-ml-monte-verde truncate">{user.full_name || user.email}</p>
+                            </div>
+                            
+                            {(user.roles?.includes('admin') || user.email === 'jjtovar1510@gmail.com') && (
+                              <Link 
+                                to="/admin" 
+                                onClick={() => setIsUserMenuOpen(false)}
+                                className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-ml-monte-verde/10 text-ml-monte-verde transition-colors"
+                              >
+                                <Shield className="w-4 h-4" />
+                                <span className="text-xs font-black uppercase tracking-tighter">Panel Admin</span>
+                              </Link>
+                            )}
+                            
+                            <Link 
+                              to="/perfil" 
+                              onClick={() => setIsUserMenuOpen(false)}
+                              className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-ml-monte-verde/10 text-ml-monte-verde transition-colors"
+                            >
+                              <User className="w-4 h-4" />
+                              <span className="text-xs font-black uppercase tracking-tighter">Mi Perfil</span>
+                            </Link>
+                            
+                            <Link 
+                              to="/mis-pedidos" 
+                              onClick={() => setIsUserMenuOpen(false)}
+                              className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-ml-quebrada/10 text-ml-quebrada transition-colors"
+                            >
+                              <Package className="w-4 h-4" />
+                              <span className="text-xs font-black uppercase tracking-tighter">Mis Pedidos</span>
+                            </Link>
+                            
+                            <button 
+                              onClick={async () => {
+                                await supabase.auth.signOut();
+                                setIsUserMenuOpen(false);
+                                navigate('/');
+                              }}
+                              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-50 text-red-600 transition-colors"
+                            >
+                              <LogOut className="w-4 h-4" />
+                              <span className="text-xs font-black uppercase tracking-tighter">Cerrar Sesión</span>
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="space-y-1">
+                            <Link 
+                              to="/login" 
+                              onClick={() => setIsUserMenuOpen(false)}
+                              className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-ml-monte-verde/10 text-ml-monte-verde transition-colors"
+                            >
+                              <User className="w-4 h-4" />
+                              <span className="text-xs font-black uppercase tracking-tighter">Iniciar Sesión</span>
+                            </Link>
+                            <Link 
+                              to="/registro" 
+                              onClick={() => setIsUserMenuOpen(false)}
+                              className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-ml-teja/10 text-ml-teja transition-colors"
+                            >
+                              <Plus className="w-4 h-4" />
+                              <span className="text-xs font-black uppercase tracking-tighter">Crear Cuenta</span>
+                            </Link>
+                          </div>
+                        )}
+                      </motion.div>
+                    </>
+                  )}
+                </AnimatePresence>
               </div>
 
               <Link to="/checkout" className="relative p-2.5 bg-ml-monte-verde text-white hover:bg-ml-quebrada rounded-2xl transition-all shadow-lg shadow-ml-monte-verde/20">
