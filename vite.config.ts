@@ -12,29 +12,32 @@ export default defineConfig(({mode}) => {
       tailwindcss(),
       VitePWA({
         registerType: 'autoUpdate',
+        injectRegister: 'auto',
         includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
         manifest: {
           name: 'JX4 Paracotos',
           short_name: 'JX4',
           description: 'Catálogo Digital JX4 Paracotos - Compras Directas',
-          theme_color: '#8B2323',
+          theme_color: '#065F46',
           background_color: '#ffffff',
           display: 'standalone',
+          start_url: '/',
+          scope: '/',
           icons: [
             {
               src: 'https://picsum.photos/seed/jx4-icon/192/192',
               sizes: '192x192',
-              type: 'image/png'
+              type: 'image/jpeg'
             },
             {
               src: 'https://picsum.photos/seed/jx4-icon/512/512',
               sizes: '512x512',
-              type: 'image/png'
+              type: 'image/jpeg'
             },
             {
               src: 'https://picsum.photos/seed/jx4-icon/512/512',
               sizes: '512x512',
-              type: 'image/png',
+              type: 'image/jpeg',
               purpose: 'any maskable'
             }
           ]

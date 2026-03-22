@@ -38,6 +38,8 @@ export function useAuth() {
 
     const userEmail = session.user.email?.toLowerCase() || '';
     const isAdminEmail = userEmail === 'jjtovar1510@gmail.com';
+    
+    console.log('[Auth Debug] User Email:', userEmail, 'Is Admin Email:', isAdminEmail);
 
     const { data, error } = await supabase
       .from('users')
@@ -46,16 +48,20 @@ export function useAuth() {
       .single();
 
     if (error) {
+      console.log('[Auth Debug] Profile fetch error:', error.message);
       // Fallback: set basic user info from session even if profile fetch fails
-      setUser({
+      const fallbackUser: UserProfile = {
         id: session.user.id,
         email: userEmail,
         full_name: session.user.user_metadata?.full_name || 'Usuario',
         roles: isAdminEmail ? ['admin'] : ['customer'],
         created_at: new Date().toISOString()
-      });
+      };
+      
+      setUser(fallbackUser);
 
       if (error.code === 'PGRST116') {
+        console.log('[Auth Debug] Profile missing, creating...');
         // Try to create profile if missing
         await supabase
           .from('users')
@@ -68,8 +74,10 @@ export function useAuth() {
       }
     } else if (data) {
       const profile = data as UserProfile;
+      console.log('[Auth Debug] Profile found:', profile.email, 'Roles:', profile.roles);
       // Ensure admin email always has admin role even if DB is out of sync
       if (isAdminEmail && !profile.roles.includes('admin')) {
+        console.log('[Auth Debug] Injecting admin role for super admin');
         profile.roles = [...profile.roles, 'admin'];
       }
       setUser(profile);
