@@ -214,9 +214,9 @@ export default function MainLayout() {
             <Trophy className="w-6 h-6" />
             <span className="text-[10px] font-black uppercase tracking-tighter">Comunidad</span>
           </Link>
-          <Link to="/ayuda-social" className="flex flex-col items-center gap-1 p-3 rounded-2xl hover:bg-ml-quebrada/10 transition-colors text-ml-quebrada">
-            <Heart className="w-6 h-6" />
-            <span className="text-[10px] font-black uppercase tracking-tighter">Ayuda</span>
+          <Link to="/transporte" className="flex flex-col items-center gap-1 p-3 rounded-2xl hover:bg-ml-quebrada/10 transition-colors text-ml-quebrada">
+            <Bus className="w-6 h-6" />
+            <span className="text-[10px] font-black uppercase tracking-tighter">Buses</span>
           </Link>
         </div>
       </nav>
