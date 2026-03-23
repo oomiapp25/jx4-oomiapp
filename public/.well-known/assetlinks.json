@@ -1,0 +1,10 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "app.vercel.jx4_paracotos_v1.twa",
+    "sha256_cert_fingerprints": [
+      "00:51:E5:40:61:CC:9F:B9:39:5F:06:90:3B:AB:5F:6A:2D:12:17:C0:E3:EA:5B:6B:10:0A:E0:65:4F:3F:5C:65"
+    ]
+  }
+}]

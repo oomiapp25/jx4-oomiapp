@@ -286,6 +286,7 @@ export default function MainLayout() {
             <Link to="/comunidad" className="text-xs font-bold text-ml-hierro hover:text-ml-monte-verde uppercase tracking-widest transition-colors">Comunidad</Link>
             <Link to="/noticias" className="text-xs font-bold text-ml-hierro hover:text-ml-monte-verde uppercase tracking-widest transition-colors">Noticias</Link>
             <Link to="/mis-pedidos" className="text-xs font-bold text-ml-hierro hover:text-ml-monte-verde uppercase tracking-widest transition-colors">Mis Pedidos</Link>
+            <Link to="/privacidad" className="text-xs font-bold text-ml-hierro hover:text-ml-monte-verde uppercase tracking-widest transition-colors">Privacidad</Link>
             <a 
               href="https://wa.me/584241208234" 
               target="_blank" 

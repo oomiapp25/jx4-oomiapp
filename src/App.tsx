@@ -27,6 +27,7 @@ import CategoryDetail from './pages/CategoryDetail';
 import NewsPage from './pages/News';
 import SocialHelp from './pages/SocialHelp';
 import Community from './pages/Community';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/Dashboard';
@@ -80,6 +81,7 @@ export default function App() {
           <Route path="/categoria/:slug" element={<CategoryDetail />} />
           <Route path="/ayuda-social" element={<SocialHelp />} />
           <Route path="/comunidad" element={<Community />} />
+          <Route path="/privacidad" element={<PrivacyPolicy />} />
           
           {/* Protected Customer Routes */}
           <Route path="/checkout" element={<Checkout />} />
