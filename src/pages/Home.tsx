@@ -15,6 +15,7 @@ export default function Home() {
   const { isInstallable, installApp } = usePWA();
   const [products, setProducts] = useState<Product[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
+  const [communityVideos, setCommunityVideos] = useState<any[]>([]);
   const [exchangeRate, setExchangeRate] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -23,15 +24,17 @@ export default function Home() {
   }, []);
 
   async function fetchData() {
-    const [productsRes, deptsRes, rateRes] = await Promise.all([
+    const [productsRes, deptsRes, rateRes, videosRes] = await Promise.all([
       supabase.from('products').select('*').order('created_at', { ascending: false }),
       supabase.from('departments').select('*').order('name'),
-      supabase.from('settings').select('*').eq('key', 'exchange_rate').single()
+      supabase.from('settings').select('*').eq('key', 'exchange_rate').single(),
+      supabase.from('community_videos').select('*').eq('active', true).order('created_at', { ascending: false })
     ]);
     
     if (productsRes.data) setProducts(productsRes.data);
     if (deptsRes.data) setDepartments(deptsRes.data);
     if (rateRes.data) setExchangeRate(rateRes.data.value.rate);
+    if (videosRes.data) setCommunityVideos(videosRes.data);
     setLoading(false);
   }
 
@@ -72,28 +75,6 @@ export default function Home() {
     <div className="pb-32 space-y-12">
       <HeroCarousel />
 
-      {/* Security Banner - Prominent */}
-      <div className="max-w-7xl mx-auto px-4 -mt-8 relative z-30">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass bg-white/90 backdrop-blur-xl p-4 md:p-6 rounded-[30px] border border-white/40 shadow-xl flex items-center justify-between gap-4"
-        >
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-ml-monte-verde/10 rounded-2xl flex items-center justify-center text-ml-monte-verde">
-              <ShieldCheck className="w-7 h-7" />
-            </div>
-            <div>
-              <h4 className="text-sm font-black text-ml-monte-verde uppercase tracking-tighter">100% Seguridad Paracoteña</h4>
-              <p className="text-[10px] text-ml-hierro font-bold uppercase opacity-60">Tu confianza es nuestra prioridad</p>
-            </div>
-          </div>
-          <div className="hidden sm:flex items-center gap-2 px-4 py-2 bg-ml-monte-verde/10 rounded-full text-ml-monte-verde text-[10px] font-black uppercase tracking-widest">
-            Verificado
-          </div>
-        </motion.div>
-      </div>
-
       <div className="max-w-7xl mx-auto px-4">
         {/* Search Bar - Bento Style */}
         <motion.div 
@@ -114,83 +95,6 @@ export default function Home() {
             </button>
           </div>
         </motion.div>
-
-        {/* Bento Grid Sections */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-          {/* Featured Video / News - Large */}
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="md:col-span-2 aspect-[16/10] md:aspect-auto rounded-[40px] overflow-hidden relative bg-ml-quebrada group shadow-2xl"
-          >
-            <div className="absolute inset-0 bg-gradient-to-t from-ml-quebrada via-transparent to-transparent z-10" />
-            <img 
-              src="https://picsum.photos/seed/paracotos/800/800" 
-              className="w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700"
-              alt="Featured"
-            />
-            <div className="absolute bottom-6 left-6 right-6 md:bottom-10 md:left-10 md:right-10 z-20">
-              <span className="px-4 py-1.5 bg-ml-teja text-white text-[10px] font-black uppercase tracking-widest rounded-full mb-4 inline-block shadow-lg">Destacado</span>
-              <h3 className="text-2xl md:text-4xl font-black text-white leading-tight mb-4 tracking-tighter uppercase">Descubre lo mejor de nuestra parroquia</h3>
-              <Link to="/noticias" className="inline-flex items-center gap-2 text-white font-black text-xs uppercase tracking-widest hover:gap-4 transition-all bg-white/10 backdrop-blur-md px-6 py-3 rounded-full border border-white/20">
-                Leer más <Plus className="w-4 h-4" />
-              </Link>
-            </div>
-          </motion.div>
-
-          <div className="grid grid-cols-2 md:grid-cols-1 gap-4 md:gap-6">
-            {/* Stats / Info - Small */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="rounded-[40px] bg-ml-teja p-6 md:p-8 flex flex-col justify-between text-white shadow-2xl relative overflow-hidden group"
-            >
-              <div className="absolute -right-4 -top-4 opacity-10 group-hover:scale-110 transition-transform">
-                <ShieldCheck className="w-24 h-24" />
-              </div>
-              <ShieldCheck className="w-8 h-8 md:w-10 md:h-10 opacity-50" />
-              <div>
-                <div className="text-3xl md:text-5xl font-black mb-1 tracking-tighter">100%</div>
-                <div className="text-[10px] md:text-xs font-black uppercase tracking-widest opacity-80 leading-tight">Seguridad Paracoteña</div>
-              </div>
-            </motion.div>
-
-            {/* App Download / PWA - Small */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              onClick={() => isInstallable && installApp()}
-              className={`rounded-[40px] p-6 md:p-8 flex flex-col justify-between text-white transition-all duration-500 shadow-2xl relative overflow-hidden group ${isInstallable ? 'bg-ml-monte-verde cursor-pointer hover:bg-ml-quebrada hover:scale-[1.02]' : 'bg-stone-400 opacity-60 cursor-default'}`}
-            >
-              <div className="absolute -right-4 -top-4 opacity-10 group-hover:rotate-12 transition-transform">
-                <Smartphone className="w-24 h-24" />
-              </div>
-              <div className="flex justify-between items-start">
-                <Smartphone className="w-8 h-8 md:w-10 md:h-10 opacity-50" />
-                {isInstallable && (
-                  <motion.div 
-                    animate={{ y: [0, -5, 0] }}
-                    transition={{ repeat: Infinity, duration: 2 }}
-                    className="bg-white/20 p-2 rounded-full backdrop-blur-md border border-white/30"
-                  >
-                    <Download className="w-4 h-4" />
-                  </motion.div>
-                )}
-              </div>
-              <div>
-                <div className="text-lg md:text-2xl font-black leading-tight mb-1 tracking-tighter uppercase">
-                  {isInstallable ? 'Instalar App' : 'App Lista'}
-                </div>
-                <div className="text-[10px] font-black uppercase tracking-widest opacity-80 leading-tight">
-                  {isInstallable ? 'Experiencia Fluida' : 'Disfruta JX4'}
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </div>
 
         {/* Quick Access - Horizontal Scroll to minimize vertical scroll */}
         <div className="mt-12">
@@ -217,38 +121,45 @@ export default function Home() {
         </div>
 
         {/* Community Videos - Horizontal Scroll */}
-        <div className="mt-16">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-2xl md:text-3xl font-black text-ml-monte-verde tracking-tighter uppercase">Videos de la Comunidad</h2>
-              <div className="h-1 w-16 bg-ml-teja mt-1 rounded-full" />
+        {communityVideos.length > 0 && (
+          <div className="mt-16">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-2xl md:text-3xl font-black text-ml-monte-verde tracking-tighter uppercase">Videos de la Comunidad</h2>
+                <div className="h-1 w-16 bg-ml-teja mt-1 rounded-full" />
+              </div>
+              <button className="text-[10px] font-black text-ml-hierro uppercase tracking-widest bg-stone-100 px-4 py-2 rounded-full hover:bg-ml-monte-verde hover:text-white transition-all">Ver todos</button>
             </div>
-            <button className="text-[10px] font-black text-ml-hierro uppercase tracking-widest bg-stone-100 px-4 py-2 rounded-full hover:bg-ml-monte-verde hover:text-white transition-all">Ver todos</button>
-          </div>
-          
-          <div className="flex gap-6 overflow-x-auto no-scrollbar pb-6 -mx-4 px-4">
-            {[1, 2, 3].map((i) => (
-              <motion.div 
-                key={i}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                className="min-w-[280px] md:min-w-[400px] aspect-video rounded-[30px] overflow-hidden relative group shadow-xl border-2 border-white"
-              >
-                <img src={`https://picsum.photos/seed/video${i}/800/450`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="Video thumbnail" />
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30">
-                    <Play className="w-8 h-8 text-white fill-white" />
+            
+            <div className="flex gap-6 overflow-x-auto no-scrollbar pb-6 -mx-4 px-4">
+              {communityVideos.map((video) => (
+                <motion.div 
+                  key={video.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  className="min-w-[280px] md:min-w-[400px] aspect-video rounded-[30px] overflow-hidden relative group shadow-xl border-2 border-white"
+                >
+                  <img src={`https://img.youtube.com/vi/${video.youtube_id}/maxresdefault.jpg`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={video.title} />
+                  <a 
+                    href={`https://youtube.com/watch?v=${video.youtube_id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30">
+                      <Play className="w-8 h-8 text-white fill-white" />
+                    </div>
+                  </a>
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <span className="px-3 py-1 bg-ml-teja text-white text-[8px] font-black uppercase tracking-widest rounded-full mb-2 inline-block">Comunidad</span>
+                    <h4 className="text-white font-black text-sm leading-tight uppercase tracking-tighter">{video.title}</h4>
                   </div>
-                </div>
-                <div className="absolute bottom-4 left-4 right-4">
-                  <span className="px-3 py-1 bg-ml-teja text-white text-[8px] font-black uppercase tracking-widest rounded-full mb-2 inline-block">Comunidad</span>
-                  <h4 className="text-white font-black text-sm leading-tight uppercase tracking-tighter">Evento Especial en Paracotos #{i}</h4>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Community, Culture & Sports - Compact Grid */}
         <div className="mt-16">
@@ -337,6 +248,36 @@ export default function Home() {
             ))}
           </div>
         </div>
+
+        {/* Blue Circle Banner - Final Section */}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-24 mb-12"
+        >
+          <div className="glass bg-ml-monte-verde rounded-[40px] p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8 overflow-hidden relative shadow-2xl">
+            <div className="absolute -right-20 -bottom-20 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
+            <div className="absolute -left-20 -top-20 w-64 h-64 bg-ml-quebrada/20 rounded-full blur-3xl" />
+            
+            <div className="flex items-center gap-4 relative z-10 order-2 md:order-1">
+              <div className="w-16 h-16 md:w-20 md:h-20 bg-white/10 backdrop-blur-xl rounded-[25px] border border-white/20 flex items-center justify-center shadow-xl hover:scale-110 transition-transform">
+                <IconRenderer iconId="arepa" className="w-8 h-8 md:w-10 md:h-10 text-white" />
+              </div>
+              <div className="w-16 h-16 md:w-20 md:h-20 bg-white/10 backdrop-blur-xl rounded-[25px] border border-white/20 flex items-center justify-center shadow-xl hover:scale-110 transition-transform">
+                <IconRenderer iconId="nail-polish" className="w-8 h-8 md:w-10 md:h-10 text-white" />
+              </div>
+            </div>
+
+            <div className="relative z-10 text-center md:text-right order-1 md:order-2">
+              <h2 className="text-3xl md:text-5xl font-black text-white leading-tight tracking-tighter uppercase mb-4">
+                Recupera tu tiempo aquí,<br />
+                <span className="text-ml-quebrada">haz todo aquí</span>
+              </h2>
+              <p className="text-white/70 text-sm font-bold uppercase tracking-widest">Simplifica tu vida en Paracotos</p>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </div>
   );

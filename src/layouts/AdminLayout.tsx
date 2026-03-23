@@ -18,6 +18,7 @@ import {
   Settings,
   Menu,
   X,
+  Video,
   Heart
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
@@ -38,7 +39,8 @@ export default function AdminLayout() {
     { icon: Briefcase, label: 'Empleos', path: '/admin/empleos', roles: ['admin'] },
     { icon: Wrench, label: 'Servicios', path: '/admin/servicios', roles: ['admin'] },
     { icon: Users, label: 'Usuarios', path: '/admin/usuarios', roles: ['super_admin'] },
-    { icon: ImageIcon, label: 'Publicidad', path: '/admin/ads', roles: ['admin'] },
+    {icon: ImageIcon, label: 'Publicidad', path: '/admin/ads', roles: ['admin'] },
+    { icon: Video, label: 'Videos', path: '/admin/videos', roles: ['admin'] },
     { icon: Newspaper, label: 'Noticias', path: '/admin/noticias', roles: ['admin', 'journalist'] },
     { icon: Trophy, label: 'Comunidad', path: '/admin/comunidad', roles: ['admin', 'sports_admin', 'culture_admin'] },
     { icon: Heart, label: 'Ayuda Social', path: '/admin/ayuda-social', roles: ['admin', 'social_admin'] },

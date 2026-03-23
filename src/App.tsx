@@ -36,6 +36,7 @@ import AdminDepartments from './pages/admin/Departments';
 import AdminTransports from './pages/admin/Transports';
 import AdminUsers from './pages/admin/Users';
 import AdminAds from './pages/admin/Ads';
+import AdminVideos from './pages/admin/Videos';
 import AdminNews from './pages/admin/News';
 import AdminJobs from './pages/admin/Jobs';
 import AdminServices from './pages/admin/Services';
@@ -106,6 +107,7 @@ export default function App() {
           <Route path="transportes" element={<AdminTransports />} />
           <Route path="usuarios" element={<AdminUsers />} />
           <Route path="ads" element={<AdminAds />} />
+          <Route path="videos" element={<AdminVideos />} />
           <Route path="noticias" element={<AdminNews />} />
           <Route path="empleos" element={<AdminJobs />} />
           <Route path="servicios" element={<AdminServices />} />

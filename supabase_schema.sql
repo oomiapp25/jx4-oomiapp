@@ -149,6 +149,16 @@ CREATE TABLE community (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Community Videos Table
+CREATE TABLE community_videos (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title TEXT NOT NULL,
+  youtube_id TEXT NOT NULL,
+  description TEXT,
+  active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Settings Table
 CREATE TABLE settings (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),

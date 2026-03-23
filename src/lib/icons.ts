@@ -18,7 +18,9 @@ import {
   Zap,
   Star,
   Coffee,
-  Gift
+  Gift,
+  Sparkles,
+  Utensils as UtensilsIcon
 } from 'lucide-react';
 
 export const AVAILABLE_ICONS = [
@@ -41,7 +43,9 @@ export const AVAILABLE_ICONS = [
   { id: 'Zap', icon: Zap, label: 'Energía' },
   { id: 'Star', icon: Star, label: 'Favoritos' },
   { id: 'Coffee', icon: Coffee, label: 'Café' },
-  { id: 'Gift', icon: Gift, label: 'Regalos' }
+  { id: 'Gift', icon: Gift, label: 'Regalos' },
+  { id: 'arepa', icon: UtensilsIcon, label: 'Comida/Arepa' },
+  { id: 'nail-polish', icon: Sparkles, label: 'Belleza/Uñas' }
 ];
 
 export function isIconUrl(id: string | null | undefined): boolean {
