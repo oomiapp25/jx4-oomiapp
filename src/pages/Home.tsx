@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase, Product, Department } from '../lib/supabase';
 import { motion } from 'motion/react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, CreditCard, Truck, ShieldCheck, Ticket, Smartphone, Store, Footprints, Package, Plus, Search, Download, Play, Trophy, Music, Users } from 'lucide-react';
+import { ShoppingCart, CreditCard, Truck, ShieldCheck, Ticket, Smartphone, Store, Footprints, Package, Plus, Search, Download, Play, Trophy, Music, Users, ShoppingBag } from 'lucide-react';
 import HeroCarousel from '../components/HeroCarousel';
 import { getIconById } from '../lib/icons';
 import { IconRenderer } from '../components/IconRenderer';
@@ -14,6 +14,7 @@ export default function Home() {
   const { addToCart } = useCart();
   const { isInstallable, installApp } = usePWA();
   const [products, setProducts] = useState<Product[]>([]);
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [communityVideos, setCommunityVideos] = useState<any[]>([]);
   const [exchangeRate, setExchangeRate] = useState<string | null>(null);
@@ -31,7 +32,10 @@ export default function Home() {
       supabase.from('community_videos').select('*').eq('active', true).order('created_at', { ascending: false })
     ]);
     
-    if (productsRes.data) setProducts(productsRes.data);
+    if (productsRes.data) {
+      setProducts(productsRes.data);
+      setFeaturedProducts(productsRes.data.filter(p => p.featured));
+    }
     if (deptsRes.data) setDepartments(deptsRes.data);
     if (rateRes.data) setExchangeRate(rateRes.data.value.rate);
     if (videosRes.data) setCommunityVideos(videosRes.data);
@@ -96,29 +100,113 @@ export default function Home() {
           </div>
         </motion.div>
 
-        {/* Quick Access - Horizontal Scroll to minimize vertical scroll */}
+        {/* Departments Grid */}
         <div className="mt-12">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-black text-ml-monte-verde uppercase tracking-tighter">Explora Paracotos</h3>
-            <div className="h-1 w-12 bg-ml-teja rounded-full" />
-          </div>
-          <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 -mx-4 px-4">
-            <Link to="/transporte?tab=private" className="flex flex-col items-center gap-3 min-w-[100px] group">
-              <div className="w-20 h-20 rounded-[30px] bg-white shadow-xl flex items-center justify-center group-hover:bg-ml-teja transition-all group-hover:-translate-y-2 border border-stone-100">
-                <Truck className="w-8 h-8 text-ml-teja group-hover:text-white" />
-              </div>
-              <span className="text-[10px] font-black text-ml-hierro uppercase tracking-tighter text-center">Delivery</span>
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <h2 className="text-2xl md:text-3xl font-black text-ml-monte-verde tracking-tighter uppercase">Nuestros Departamentos</h2>
+              <div className="h-1 w-16 bg-ml-teja mt-1 rounded-full" />
+            </div>
+            <Link to="/catalogo" className="flex items-center gap-2 text-[10px] font-black text-ml-hierro uppercase tracking-widest bg-stone-100 px-4 py-2 rounded-full hover:bg-ml-monte-verde hover:text-white transition-all group">
+              <ShoppingBag className="w-3 h-3" />
+              Ver Todo
             </Link>
-            {departments.map((dept) => (
-              <Link key={dept.id} to={`/departamento/${dept.slug}`} className="flex flex-col items-center gap-3 min-w-[100px] group">
-                <div className="w-20 h-20 rounded-[30px] bg-white shadow-xl flex items-center justify-center group-hover:bg-ml-monte-verde transition-all group-hover:-translate-y-2 border border-stone-100">
-                  <IconRenderer iconId={dept.icon} className="w-8 h-8 text-ml-monte-verde group-hover:text-white" />
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            {/* Delivery Special Card */}
+            <Link to="/transporte?tab=private" className="relative aspect-[4/5] rounded-[35px] overflow-hidden group shadow-xl border border-stone-100">
+              <div className="absolute inset-0 bg-ml-teja" />
+              <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center z-10">
+                <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-[25px] flex items-center justify-center mb-4 border border-white/30 group-hover:scale-110 transition-transform">
+                  <Truck className="w-8 h-8 text-white" />
                 </div>
-                <span className="text-[10px] font-black text-ml-hierro uppercase tracking-tighter text-center">{dept.name}</span>
+                <h3 className="text-white font-black text-lg uppercase tracking-tighter leading-tight">Delivery Express</h3>
+                <p className="text-white/70 text-[10px] font-bold uppercase tracking-widest mt-2">Pide lo que quieras</p>
+              </div>
+            </Link>
+
+            {departments.map((dept) => (
+              <Link 
+                key={dept.id} 
+                to={`/departamento/${dept.slug}`} 
+                className="relative aspect-[4/5] rounded-[35px] overflow-hidden group shadow-xl border border-stone-100"
+              >
+                {dept.image_url ? (
+                  <img 
+                    src={dept.image_url} 
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                    alt={dept.name} 
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-ml-monte-verde/10" />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent group-hover:from-black/90 transition-colors" />
+                
+                <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center z-10">
+                  <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-[25px] flex items-center justify-center mb-4 border border-white/20 group-hover:scale-110 transition-transform">
+                    <IconRenderer iconId={dept.icon} className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-white font-black text-lg uppercase tracking-tighter leading-tight">{dept.name}</h3>
+                  <p className="text-white/60 text-[9px] font-bold uppercase tracking-widest mt-2">{dept.sector || 'Paracotos'}</p>
+                </div>
               </Link>
             ))}
           </div>
         </div>
+
+        {/* Featured Products - Horizontal Scroll */}
+        {featuredProducts.length > 0 && (
+          <div className="mt-16">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-2xl md:text-3xl font-black text-ml-monte-verde tracking-tighter uppercase">Destacados</h2>
+                <div className="h-1 w-16 bg-ml-quebrada mt-1 rounded-full" />
+              </div>
+              <Link to="/catalogo" className="text-[10px] font-black text-ml-hierro uppercase tracking-widest bg-stone-100 px-4 py-2 rounded-full hover:bg-ml-monte-verde hover:text-white transition-all">Ver Catálogo</Link>
+            </div>
+            
+            <div className="flex gap-6 overflow-x-auto no-scrollbar pb-6 -mx-4 px-4">
+              {featuredProducts.map((product) => (
+                <motion.div 
+                  key={product.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className="min-w-[200px] md:min-w-[240px] bg-white rounded-[35px] overflow-hidden shadow-xl border border-stone-100 group"
+                >
+                  <Link to={`/producto/${product.id}`} className="block relative aspect-square overflow-hidden">
+                    <img 
+                      src={product.images[0] || 'https://picsum.photos/seed/product/400/400'} 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+                      alt={product.title} 
+                    />
+                    <div className="absolute top-3 right-3">
+                      <button 
+                        onClick={(e) => handleQuickAdd(e, product)}
+                        className="w-10 h-10 bg-white/90 backdrop-blur-md rounded-xl flex items-center justify-center text-ml-monte-verde shadow-lg hover:bg-ml-monte-verde hover:text-white transition-all active:scale-90"
+                      >
+                        <Plus className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </Link>
+                  <div className="p-5">
+                    <h4 className="font-black text-ml-monte-verde uppercase tracking-tighter leading-tight line-clamp-1 mb-2">{product.title}</h4>
+                    <div className="flex items-center justify-between">
+                      <span className="text-lg font-black text-ml-monte-verde tracking-tighter">${product.price}</span>
+                      {exchangeRate && (
+                        <span className="text-[9px] font-black text-ml-quebrada uppercase tracking-widest">
+                          {Math.round(product.price * parseFloat(exchangeRate))} Bs.
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Community Videos - Horizontal Scroll */}
         {communityVideos.length > 0 && (
@@ -189,63 +277,6 @@ export default function Home() {
               </div>
               <span className="text-[9px] md:text-xs font-black uppercase tracking-widest text-center">Comunidad</span>
             </Link>
-          </div>
-        </div>
-
-        {/* Product Section - Bento Style */}
-        <div className="mt-24">
-          <div className="flex items-center justify-between mb-12">
-            <div>
-              <h2 className="text-4xl font-black text-ml-monte-verde tracking-tighter uppercase">Catálogo Premium</h2>
-              <div className="h-1.5 w-24 bg-ml-teja mt-2 rounded-full" />
-            </div>
-            <Link to="/" className="text-xs font-black text-ml-hierro hover:text-ml-monte-verde uppercase tracking-widest border-b-2 border-ml-teja pb-1">Ver todo</Link>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {products.map((product, index) => (
-              <motion.div
-                key={product.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="bento-item glass bg-white/60 group"
-              >
-                <Link to={`/producto/${product.id}`} className="block aspect-square overflow-hidden relative p-6">
-                  <img 
-                    src={product.images[0] || 'https://picsum.photos/seed/product/400/400'} 
-                    alt={product.title}
-                    className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute top-4 left-4">
-                    <span className="px-3 py-1 bg-white/80 backdrop-blur-md text-[9px] font-black uppercase tracking-widest rounded-full border border-white/50 text-ml-monte-verde shadow-sm">Nuevo</span>
-                  </div>
-                  <button
-                    onClick={(e) => handleQuickAdd(e, product)}
-                    className="absolute bottom-6 right-6 w-12 h-12 bg-ml-teja text-white rounded-2xl flex items-center justify-center shadow-2xl hover:scale-110 active:scale-90 transition-all z-10"
-                  >
-                    <Plus className="w-6 h-6" />
-                  </button>
-                </Link>
-                <div className="p-8 pt-0">
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-baseline gap-3">
-                      <span className="text-2xl font-black text-ml-monte-verde">${product.price}</span>
-                      {exchangeRate && (
-                        <span className="text-[10px] font-black text-stone-400 uppercase tracking-tighter">
-                          Bs. {(product.price * parseFloat(exchangeRate)).toLocaleString('es-VE', { minimumFractionDigits: 2 })}
-                        </span>
-                      )}
-                    </div>
-                    <Link to={`/producto/${product.id}`} className="text-sm font-bold text-ml-hierro hover:text-ml-monte-verde transition-colors line-clamp-2 leading-tight uppercase tracking-tighter">
-                      {product.title}
-                    </Link>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
           </div>
         </div>
 

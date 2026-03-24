@@ -89,7 +89,14 @@ export default function DepartmentDetail() {
           </div>
           <div>
             <h1 className="text-3xl font-black text-ml-monte-verde tracking-tighter">{department.name}</h1>
-            <p className="text-sm text-ml-hierro">Explora todos los productos de este departamento</p>
+            <div className="flex items-center gap-2">
+              {department.sector && (
+                <span className="text-[10px] font-black text-ml-quebrada uppercase tracking-widest bg-ml-quebrada/10 px-2 py-0.5 rounded-full">
+                  {department.sector}
+                </span>
+              )}
+              <p className="text-sm text-ml-hierro">Explora todos los productos de este departamento</p>
+            </div>
           </div>
         </div>
         <Link to="/" className="flex items-center gap-2 text-sm font-bold text-ml-hierro hover:text-ml-monte-verde transition-colors">

@@ -31,6 +31,8 @@ export interface Product {
   images: string[];
   category_id: string;
   department_id: string;
+  active: boolean;
+  featured: boolean;
   created_by: string;
   created_at: string;
 }
@@ -50,6 +52,8 @@ export interface Department {
   name: string;
   slug: string;
   icon?: string | null;
+  image_url?: string | null;
+  sector?: string | null;
   whatsapp?: string | null;
   created_by: string;
   created_at: string;

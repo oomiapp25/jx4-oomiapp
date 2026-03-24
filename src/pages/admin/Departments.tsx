@@ -17,9 +17,12 @@ export default function AdminDepartments() {
     name: '',
     slug: '',
     whatsapp: '',
-    icon: ''
+    icon: '',
+    sector: '',
+    image_url: ''
   });
   const [uploadingIcon, setUploadingIcon] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   async function handleIconUpload(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -36,6 +39,21 @@ export default function AdminDepartments() {
     }
   }
 
+  async function handleImageUpload(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    try {
+      const url = await uploadToImgBB(file);
+      setFormData({ ...formData, image_url: url });
+    } catch (err: any) {
+      alert('Error al subir la imagen: ' + err.message);
+    } finally {
+      setUploadingImage(false);
+    }
+  }
+
   useEffect(() => {
     fetchDepartments();
   }, []);
@@ -46,10 +64,12 @@ export default function AdminDepartments() {
         name: editingDepartment.name,
         slug: editingDepartment.slug,
         whatsapp: editingDepartment.whatsapp || '',
-        icon: editingDepartment.icon || ''
+        icon: editingDepartment.icon || '',
+        sector: editingDepartment.sector || '',
+        image_url: editingDepartment.image_url || ''
       });
     } else {
-      setFormData({ name: '', slug: '', whatsapp: '', icon: '' });
+      setFormData({ name: '', slug: '', whatsapp: '', icon: '', sector: '', image_url: '' });
     }
   }, [editingDepartment]);
 
@@ -101,7 +121,9 @@ export default function AdminDepartments() {
         name: formData.name, 
         slug,
         whatsapp: formData.whatsapp,
-        icon: formData.icon
+        icon: formData.icon,
+        sector: formData.sector,
+        image_url: formData.image_url
       };
 
       let error;
@@ -123,7 +145,7 @@ export default function AdminDepartments() {
       } else {
         setIsModalOpen(false);
         setEditingDepartment(null);
-        setFormData({ name: '', slug: '', whatsapp: '', icon: '' });
+        setFormData({ name: '', slug: '', whatsapp: '', icon: '', sector: '', image_url: '' });
         await fetchDepartments();
       }
     } catch (err: any) {
@@ -186,6 +208,16 @@ export default function AdminDepartments() {
                   />
                 </div>
                 <div>
+                  <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1.5 px-1">Sector / Dirección</label>
+                  <input 
+                    type="text" 
+                    value={formData.sector}
+                    onChange={e => setFormData({...formData, sector: e.target.value})}
+                    className="w-full px-4 py-2.5 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                    placeholder="Ej. Sector El Centro, Calle Real"
+                  />
+                </div>
+                <div>
                   <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1.5 px-1">WhatsApp del Encargado</label>
                   <input 
                     type="text" 
@@ -194,6 +226,36 @@ export default function AdminDepartments() {
                     className="w-full px-4 py-2.5 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
                     placeholder="+58 412... (opcional)"
                   />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-1.5 px-1">Imagen de Fondo (Banner)</label>
+                  <div className="flex items-center gap-4 p-4 bg-stone-50 rounded-2xl border border-stone-100">
+                    <div className="w-20 h-12 rounded-lg bg-stone-200 overflow-hidden flex items-center justify-center border border-stone-100">
+                      {uploadingImage ? (
+                        <Loader2 className="w-5 h-5 animate-spin text-stone-400" />
+                      ) : formData.image_url ? (
+                        <img src={formData.image_url} className="w-full h-full object-cover" alt="Banner" />
+                      ) : (
+                        <ImageIcon className="w-6 h-6 text-stone-300" />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <label className="block">
+                        <div className="px-4 py-2 bg-stone-900 text-white rounded-xl text-[10px] font-black uppercase tracking-widest cursor-pointer hover:bg-emerald-600 transition-all flex items-center justify-center gap-2">
+                          <Upload className="w-3 h-3" />
+                          {formData.image_url ? 'Cambiar Imagen' : 'Subir Imagen'}
+                        </div>
+                        <input 
+                          type="file" 
+                          accept="image/*" 
+                          onChange={handleImageUpload} 
+                          className="hidden" 
+                        />
+                      </label>
+                    </div>
+                  </div>
+                  <p className="text-[9px] text-stone-400 mt-1 px-1">Esta imagen se usará como fondo en la cuadrícula del inicio.</p>
                 </div>
 
                 <div>
@@ -291,28 +353,39 @@ export default function AdminDepartments() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {departments.length > 0 ? departments.map((dept) => {
           return (
-            <div key={dept.id} className="bg-white p-6 rounded-2xl border border-stone-200 shadow-sm hover:border-emerald-500 transition-all group">
-              <div className="flex items-center justify-between mb-4">
-                <div className="p-3 bg-stone-50 rounded-xl group-hover:bg-emerald-50 transition-colors">
-                  <IconRenderer iconId={dept.icon} className="w-6 h-6 text-stone-400 group-hover:text-emerald-600" />
-                </div>
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div key={dept.id} className="bg-white rounded-2xl border border-stone-200 shadow-sm hover:border-emerald-500 transition-all group overflow-hidden">
+              <div className="aspect-video w-full bg-stone-100 relative overflow-hidden">
+                {dept.image_url ? (
+                  <img src={dept.image_url} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={dept.name} />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-stone-300">
+                    <ImageIcon className="w-8 h-8" />
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
+                <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   <button 
                     onClick={() => openEditModal(dept)}
-                    className="p-2 text-stone-400 hover:text-stone-900 transition-colors"
+                    className="p-2 bg-white/90 backdrop-blur-md text-stone-900 rounded-lg hover:bg-white transition-colors shadow-lg"
                   >
                     <Edit2 className="w-4 h-4" />
                   </button>
                   <button 
                     onClick={() => deleteDepartment(dept.id)}
-                    className="p-2 text-stone-400 hover:text-red-500 transition-colors"
+                    className="p-2 bg-red-500/90 backdrop-blur-md text-white rounded-lg hover:bg-red-500 transition-colors shadow-lg"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
+                <div className="absolute bottom-3 left-3 p-2 bg-white/90 backdrop-blur-md rounded-lg shadow-lg">
+                  <IconRenderer iconId={dept.icon} className="w-5 h-5 text-emerald-600" />
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-stone-900">{dept.name}</h3>
-              <p className="text-xs text-stone-400 font-mono mt-1">/{dept.slug}</p>
+              <div className="p-6">
+                <h3 className="text-lg font-bold text-stone-900">{dept.name}</h3>
+                <p className="text-xs text-stone-400 font-bold mt-1 uppercase tracking-widest">{dept.sector || 'Sin sector'}</p>
+                <p className="text-xs text-stone-400 font-mono mt-1">/{dept.slug}</p>
+              </div>
             </div>
           );
         }) : (

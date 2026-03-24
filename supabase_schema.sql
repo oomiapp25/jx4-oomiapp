@@ -21,6 +21,8 @@ CREATE TABLE departments (
   name TEXT NOT NULL,
   slug TEXT UNIQUE NOT NULL,
   icon TEXT,
+  image_url TEXT,
+  sector TEXT,
   whatsapp TEXT,
   created_by UUID REFERENCES auth.users(id),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -48,6 +50,7 @@ CREATE TABLE products (
   department_id UUID REFERENCES departments(id),
   category_id UUID REFERENCES categories(id),
   active BOOLEAN DEFAULT true,
+  featured BOOLEAN DEFAULT false,
   created_by UUID REFERENCES auth.users(id),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

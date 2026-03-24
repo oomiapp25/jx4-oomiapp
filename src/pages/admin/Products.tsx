@@ -19,7 +19,8 @@ export default function AdminProducts() {
     stock: '',
     category_id: '',
     department_id: '',
-    images: [] as string[]
+    images: [] as string[],
+    featured: false
   });
   const [categories, setCategories] = useState<any[]>([]);
   const [departments, setDepartments] = useState<any[]>([]);
@@ -41,7 +42,8 @@ export default function AdminProducts() {
         stock: editingProduct.stock.toString(),
         category_id: editingProduct.category_id || '',
         department_id: editingProduct.department_id || '',
-        images: editingProduct.images || []
+        images: editingProduct.images || [],
+        featured: editingProduct.featured || false
       });
     } else {
       setFormData({ 
@@ -51,7 +53,8 @@ export default function AdminProducts() {
         stock: '', 
         category_id: '', 
         department_id: '', 
-        images: [] 
+        images: [],
+        featured: false
       });
     }
   }, [editingProduct]);
@@ -147,6 +150,7 @@ export default function AdminProducts() {
         category_id: formData.category_id || null,
         department_id: formData.department_id || null,
         images: formData.images,
+        featured: formData.featured
       };
 
       let error;
@@ -175,7 +179,8 @@ export default function AdminProducts() {
           stock: '', 
           category_id: '', 
           department_id: '', 
-          images: [] 
+          images: [],
+          featured: false
         });
         await fetchProducts();
       }
@@ -306,6 +311,18 @@ export default function AdminProducts() {
                         className="w-full px-4 py-2.5 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none resize-none"
                       />
                     </div>
+                    <div className="flex items-center gap-3 p-4 bg-stone-50 rounded-2xl border border-stone-100">
+                      <input 
+                        type="checkbox"
+                        id="featured"
+                        checked={formData.featured}
+                        onChange={e => setFormData({...formData, featured: e.target.checked})}
+                        className="w-5 h-5 rounded border-stone-300 text-emerald-600 focus:ring-emerald-500"
+                      />
+                      <label htmlFor="featured" className="text-sm font-bold text-stone-700 cursor-pointer">
+                        Destacar en el Inicio (Rotación)
+                      </label>
+                    </div>
                   </div>
 
                   <div className="space-y-4">
@@ -402,6 +419,7 @@ export default function AdminProducts() {
                 <th className="px-6 py-4">Producto</th>
                 <th className="px-6 py-4">Categoría</th>
                 <th className="px-6 py-4">Precio</th>
+                <th className="px-6 py-4">Estado</th>
                 <th className="px-6 py-4">Stock</th>
                 <th className="px-6 py-4">Acciones</th>
               </tr>
@@ -424,6 +442,13 @@ export default function AdminProducts() {
                     {(product as any).categories?.name || 'Sin categoría'}
                   </td>
                   <td className="px-6 py-4 font-bold text-stone-900">${product.price}</td>
+                  <td className="px-6 py-4">
+                    {product.featured && (
+                      <span className="px-2 py-1 bg-amber-100 text-amber-700 text-[10px] font-black uppercase tracking-widest rounded-full">
+                        Destacado
+                      </span>
+                    )}
+                  </td>
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${
                       product.stock > 10 ? 'bg-emerald-50 text-emerald-600' : 
