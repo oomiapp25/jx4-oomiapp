@@ -4,8 +4,9 @@
  */
 
 import { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './hooks/useAuth';
+import { ArrowUp } from 'lucide-react';
 
 // Layouts
 import MainLayout from './layouts/MainLayout';
@@ -46,6 +47,52 @@ import AdminSocial from './pages/admin/SocialManagement';
 import AdminCommunity from './pages/admin/CommunityManagement';
 import AdminSettings from './pages/admin/Settings';
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
+
+function FloatingScrollButton() {
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const toggleVisibility = () => {
+      if (window.pageYOffset > 300) {
+        setIsVisible(true);
+      } else {
+        setIsVisible(false);
+      }
+    };
+
+    window.addEventListener('scroll', toggleVisibility);
+    return () => window.removeEventListener('scroll', toggleVisibility);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
+
+  if (!isVisible) return null;
+
+  return (
+    <button
+      onClick={scrollToTop}
+      className="fixed bottom-20 right-6 z-50 p-3 bg-emerald-600 text-white rounded-full shadow-lg hover:bg-emerald-700 transition-all duration-300 animate-bounce"
+      aria-label="Volver arriba"
+    >
+      <ArrowUp size={24} />
+    </button>
+  );
+}
+
 export default function App() {
   const { user, loading } = useAuth();
 
@@ -65,6 +112,8 @@ export default function App() {
 
   return (
     <Router>
+      <ScrollToTop />
+      <FloatingScrollButton />
       <Routes>
         {/* Public Routes */}
         <Route element={<MainLayout />}>
