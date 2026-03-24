@@ -354,7 +354,7 @@ export default function AdminDepartments() {
         {departments.length > 0 ? departments.map((dept) => {
           return (
             <div key={dept.id} className="bg-white rounded-2xl border border-stone-200 shadow-sm hover:border-emerald-500 transition-all group overflow-hidden">
-              <div className="aspect-video w-full bg-stone-100 relative overflow-hidden">
+              <div className="aspect-video w-full bg-ml-monte-verde/10 relative overflow-hidden">
                 {dept.image_url ? (
                   <img src={dept.image_url} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={dept.name} />
                 ) : (
@@ -363,7 +363,7 @@ export default function AdminDepartments() {
                   </div>
                 )}
                 <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
-                <div className="absolute top-3 right-3 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="absolute top-3 right-3 flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                   <button 
                     onClick={() => openEditModal(dept)}
                     className="p-2 bg-white/90 backdrop-blur-md text-stone-900 rounded-lg hover:bg-white transition-colors shadow-lg"

@@ -140,7 +140,7 @@ export default function Home() {
                     referrerPolicy="no-referrer"
                   />
                 ) : (
-                  <div className="absolute inset-0 bg-ml-monte-verde/10" />
+                  <div className="absolute inset-0 bg-ml-monte-verde" />
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent group-hover:from-black/90 transition-colors" />
                 
