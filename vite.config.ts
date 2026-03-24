@@ -26,19 +26,25 @@ export default defineConfig(({mode}) => {
           scope: '/',
           icons: [
             {
-              src: 'https://picsum.photos/seed/jx4-icon/192/192',
+              src: '/icon-192x192.png',
               sizes: '192x192',
-              type: 'image/jpeg'
+              type: 'image/png'
             },
             {
-              src: 'https://picsum.photos/seed/jx4-icon/512/512',
+              src: '/icon-512x512.png',
               sizes: '512x512',
-              type: 'image/jpeg'
+              type: 'image/png'
             },
             {
-              src: 'https://picsum.photos/seed/jx4-icon/512/512',
+              src: '/icon-512x512.png',
               sizes: '512x512',
-              type: 'image/jpeg',
+              type: 'image/png',
+              purpose: 'any maskable'
+            },
+            {
+              src: '/icon.svg',
+              sizes: 'any',
+              type: 'image/svg+xml',
               purpose: 'any maskable'
             }
           ]

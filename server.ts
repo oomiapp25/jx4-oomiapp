@@ -74,6 +74,45 @@ async function startServer() {
     ], null, 2));
   });
 
+  // Ruta específica para manifest.json
+  app.get("/manifest.json", (req, res) => {
+    res.setHeader('Content-Type', 'application/manifest+json');
+    res.send(JSON.stringify({
+      name: 'JX4 Paracotos',
+      short_name: 'JX4',
+      description: 'Catálogo Digital JX4 Paracotos - Compras Directas',
+      theme_color: '#065F46',
+      background_color: '#ffffff',
+      display: 'standalone',
+      start_url: '/',
+      scope: '/',
+      icons: [
+        {
+          src: '/icon-192x192.png',
+          sizes: '192x192',
+          type: 'image/png'
+        },
+        {
+          src: '/icon-512x512.png',
+          sizes: '512x512',
+          type: 'image/png'
+        },
+        {
+          src: '/icon-512x512.png',
+          sizes: '512x512',
+          type: 'image/png',
+          purpose: 'any maskable'
+        },
+        {
+          src: '/icon.svg',
+          sizes: 'any',
+          type: 'image/svg+xml',
+          purpose: 'any maskable'
+        }
+      ]
+    }, null, 2));
+  });
+
   // Otras rutas de API...
   app.post("/api/invite-admin", async (req, res) => {
     const { email, role, invitedBy } = req.body;
