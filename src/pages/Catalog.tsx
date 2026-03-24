@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ShoppingBag, Search, Filter, ChevronRight, ShoppingCart, Plus } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase, Product, Category, Department } from '../lib/supabase';
 import { useCart } from '../hooks/useCart';
 
 export default function Catalog() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { addToCart } = useCart();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
   const [selectedSector, setSelectedSector] = useState<string | null>(null);
@@ -22,6 +23,13 @@ export default function Catalog() {
     fetchData();
     fetchExchangeRate();
   }, []);
+
+  useEffect(() => {
+    const q = searchParams.get('q');
+    if (q !== null) {
+      setSearchQuery(q);
+    }
+  }, [searchParams]);
 
   async function fetchExchangeRate() {
     const { data } = await supabase.from('settings').select('*').eq('key', 'exchange_rate').single();
@@ -113,7 +121,17 @@ export default function Catalog() {
                 type="text"
                 placeholder="¿Qué estás buscando hoy?"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setSearchParams(prev => {
+                    if (e.target.value) {
+                      prev.set('q', e.target.value);
+                    } else {
+                      prev.delete('q');
+                    }
+                    return prev;
+                  }, { replace: true });
+                }}
                 className="w-full bg-white/95 backdrop-blur-xl border-none rounded-[30px] py-5 pl-16 pr-6 text-ml-monte-verde placeholder:text-ml-monte-verde/40 font-bold shadow-2xl focus:ring-4 focus:ring-ml-quebrada/30 transition-all outline-none"
               />
             </div>

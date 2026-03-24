@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase, Product, Department } from '../lib/supabase';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShoppingCart, CreditCard, Truck, ShieldCheck, Ticket, Smartphone, Store, Footprints, Package, Plus, Search, Download, Play, Trophy, Music, Users, ShoppingBag } from 'lucide-react';
 import HeroCarousel from '../components/HeroCarousel';
@@ -19,10 +19,33 @@ export default function Home() {
   const [communityVideos, setCommunityVideos] = useState<any[]>([]);
   const [exchangeRate, setExchangeRate] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (searchQuery.trim().length > 1) {
+      const filteredProducts = products
+        .filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase()))
+        .slice(0, 5)
+        .map(p => ({ ...p, type: 'product' }));
+      
+      const filteredDepts = departments
+        .filter(d => d.name.toLowerCase().includes(searchQuery.toLowerCase()))
+        .slice(0, 3)
+        .map(d => ({ ...d, type: 'department' }));
+
+      setSuggestions([...filteredDepts, ...filteredProducts]);
+      setShowSuggestions(true);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  }, [searchQuery, products, departments]);
 
   async function fetchData() {
     const [productsRes, deptsRes, rateRes, videosRes] = await Promise.all([
@@ -58,6 +81,13 @@ export default function Home() {
     }
   };
 
+  const handleSearch = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/catalogo?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
+
   if (loading) {
     return (
       <div className="space-y-8 pb-20">
@@ -85,19 +115,81 @@ export default function Home() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="max-w-3xl mx-auto mb-16"
+          className="max-w-3xl mx-auto mb-16 relative z-[60]"
         >
-          <div className="relative group">
+          <form onSubmit={handleSearch} className="relative group">
             <input 
               type="text" 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => searchQuery.trim().length > 1 && setShowSuggestions(true)}
               placeholder="¿Qué estás buscando hoy en Paracotos?" 
               className="w-full pl-8 pr-16 py-6 glass bg-white/80 rounded-[35px] text-lg focus:ring-4 focus:ring-ml-monte-verde/20 transition-all placeholder:text-stone-400 font-bold shadow-2xl"
             />
-            <button className="absolute right-3 top-3 bottom-3 px-8 bg-ml-monte-verde text-white rounded-[25px] hover:bg-ml-quebrada transition-all flex items-center gap-2 shadow-lg shadow-ml-monte-verde/20">
+            <button 
+              type="submit"
+              className="absolute right-3 top-3 bottom-3 px-8 bg-ml-monte-verde text-white rounded-[25px] hover:bg-ml-quebrada transition-all flex items-center gap-2 shadow-lg shadow-ml-monte-verde/20"
+            >
               <Search className="w-5 h-5" />
               <span className="hidden sm:inline text-xs font-black uppercase tracking-widest">Buscar</span>
             </button>
-          </div>
+
+            {/* Suggestions Dropdown */}
+            <AnimatePresence>
+              {showSuggestions && suggestions.length > 0 && (
+                <>
+                  <div 
+                    className="fixed inset-0 z-[-1]" 
+                    onClick={() => setShowSuggestions(false)} 
+                  />
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="absolute top-full left-0 right-0 mt-4 glass bg-white/95 backdrop-blur-xl rounded-[30px] border border-white/40 shadow-2xl overflow-hidden z-50 p-2"
+                  >
+                    {suggestions.map((item, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          if (item.type === 'product') {
+                            navigate(`/producto/${item.id}`);
+                          } else {
+                            navigate(`/departamento/${item.slug}`);
+                          }
+                          setShowSuggestions(false);
+                          setSearchQuery('');
+                        }}
+                        className="w-full flex items-center gap-4 p-4 hover:bg-ml-monte-verde/5 rounded-2xl transition-colors text-left group"
+                      >
+                        <div className="w-12 h-12 bg-stone-100 rounded-xl flex items-center justify-center text-ml-monte-verde group-hover:bg-ml-monte-verde group-hover:text-white transition-all overflow-hidden">
+                          {item.type === 'product' ? (
+                            <img src={item.images[0]} className="w-full h-full object-cover" alt="" />
+                          ) : (
+                            <IconRenderer iconId={item.icon} className="w-6 h-6" />
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-sm font-black text-ml-monte-verde uppercase tracking-tighter">
+                            {item.type === 'product' ? item.title : item.name}
+                          </p>
+                          <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest">
+                            {item.type === 'product' ? 'Producto' : 'Departamento'}
+                          </p>
+                        </div>
+                      </button>
+                    ))}
+                    <button
+                      onClick={handleSearch}
+                      className="w-full p-4 text-center text-xs font-black text-ml-quebrada uppercase tracking-widest hover:bg-ml-quebrada/5 transition-colors border-t border-stone-100 mt-2"
+                    >
+                      Ver todos los resultados para "{searchQuery}"
+                    </button>
+                  </motion.div>
+                </>
+              )}
+            </AnimatePresence>
+          </form>
         </motion.div>
 
         {/* Departments Grid */}
