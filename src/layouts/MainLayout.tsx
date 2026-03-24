@@ -56,48 +56,42 @@ export default function MainLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-ml-white-cal flex flex-col font-sans">
+    <div className="min-h-screen bg-ml-white-cal flex flex-col font-sans overflow-x-hidden">
       {/* Header */}
       <header className="glass sticky top-0 z-50 border-b border-white/20">
         <div className="max-w-7xl mx-auto px-4">
           {/* Top Bar */}
-          <div className="h-16 flex items-center justify-between gap-4">
+          <div className="h-16 flex items-center justify-between gap-1 sm:gap-4">
             <Link to="/" className="flex-shrink-0">
-              <h1 className="text-xl sm:text-2xl font-black tracking-tighter text-ml-monte-verde leading-none">
+              <h1 className="text-lg sm:text-2xl font-black tracking-tighter text-ml-monte-verde leading-none">
                 JX4<span className="text-ml-quebrada">PARACOTOS</span>
               </h1>
             </Link>
 
-            {/* Exchange Rates Section */}
-            <div className="flex-1 flex flex-col items-center justify-center px-2">
-              <div className="flex items-center gap-2 sm:gap-4 bg-stone-50/50 px-3 py-1.5 rounded-2xl border border-stone-100 shadow-sm backdrop-blur-sm">
-                <div className="flex items-center gap-1.5">
-                  <div className="w-5 h-5 bg-ml-quebrada/10 rounded-lg flex items-center justify-center">
-                    <span className="text-[10px] font-black text-ml-quebrada">$</span>
+            {/* Exchange Rates Section - Hidden on mobile to prevent overflow */}
+            <div className="hidden sm:flex flex-1 flex-col items-center justify-center px-1">
+              <div className="flex items-center gap-2 bg-stone-50/50 px-2 py-1 rounded-2xl border border-stone-100 shadow-sm backdrop-blur-sm">
+                <div className="flex items-center gap-1">
+                  <div className="w-4 h-4 bg-ml-quebrada/10 rounded-lg flex items-center justify-center">
+                    <span className="text-[9px] font-black text-ml-quebrada">$</span>
                   </div>
-                  <span className="text-[11px] font-black text-ml-monte-verde tracking-tighter">
+                  <span className="text-[10px] font-black text-ml-monte-verde tracking-tighter">
                     {exchangeRate ? `${exchangeRate}` : '---'}
                   </span>
                 </div>
                 <div className="w-px h-3 bg-stone-200" />
-                <div className="flex items-center gap-1.5">
-                  <div className="w-5 h-5 bg-ml-teja/10 rounded-lg flex items-center justify-center">
-                    <span className="text-[10px] font-black text-ml-teja">€</span>
+                <div className="flex items-center gap-1">
+                  <div className="w-4 h-4 bg-ml-teja/10 rounded-lg flex items-center justify-center">
+                    <span className="text-[9px] font-black text-ml-teja">€</span>
                   </div>
-                  <span className="text-[11px] font-black text-ml-monte-verde tracking-tighter">
+                  <span className="text-[10px] font-black text-ml-monte-verde tracking-tighter">
                     {euroRate ? `${euroRate}` : '---'}
                   </span>
                 </div>
               </div>
-              <div className="mt-1 flex items-center gap-1.5">
-                <div className="w-1 h-1 bg-ml-quebrada rounded-full animate-pulse" />
-                <span className="text-[8px] font-black text-stone-400 uppercase tracking-widest">
-                  {new Date().toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' })}
-                </span>
-              </div>
             </div>
 
-            <div className="flex items-center gap-2 sm:gap-4">
+            <div className="flex items-center gap-1.5 sm:gap-4">
               <div className="relative">
                 <button 
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
@@ -210,9 +204,30 @@ export default function MainLayout() {
       </header>
       
       {/* Sticky Ticker Bar */}
-      <div className="bg-ml-quebrada/5 border-b border-white/20 py-2 overflow-hidden sticky top-[64px] z-40 backdrop-blur-md">
-        <div className="flex animate-marquee whitespace-nowrap items-center">
-          {/* ... existing ticker content ... */}
+      <div className="bg-ml-monte-verde text-white py-2 overflow-hidden sticky top-[64px] z-40 backdrop-blur-md">
+        <div className="flex animate-marquee whitespace-nowrap items-center gap-8">
+          {[...Array(4)].map((_, i) => (
+            <React.Fragment key={i}>
+              <span className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-ml-teja rounded-full" />
+                Tasa del día: $ {exchangeRate || '---'} Bs.
+              </span>
+              <span className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-ml-teja rounded-full" />
+                Euro: € {euroRate || '---'} Bs.
+              </span>
+              {news.length > 0 && (
+                <span className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 bg-ml-teja rounded-full" />
+                  Noticia: {news[0].title}
+                </span>
+              )}
+              <span className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                <span className="w-1.5 h-1.5 bg-ml-teja rounded-full" />
+                JX4 Paracotos: Calidad y Servicio
+              </span>
+            </React.Fragment>
+          ))}
         </div>
       </div>
 
