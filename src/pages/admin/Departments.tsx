@@ -363,16 +363,24 @@ export default function AdminDepartments() {
                   </div>
                 )}
                 <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
-                <div className="absolute top-3 right-3 flex items-center gap-1">
+                <div className="absolute top-3 right-3 flex items-center gap-2 z-20">
                   <button 
-                    onClick={() => openEditModal(dept)}
-                    className="p-2 bg-white/90 backdrop-blur-md text-stone-900 rounded-lg hover:bg-white transition-colors shadow-lg"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openEditModal(dept);
+                    }}
+                    className="p-2.5 bg-stone-900 text-white rounded-xl hover:bg-emerald-600 transition-all shadow-xl border border-white/20 active:scale-90"
+                    title="Editar Departamento"
                   >
                     <Edit2 className="w-4 h-4" />
                   </button>
                   <button 
-                    onClick={() => deleteDepartment(dept.id)}
-                    className="p-2 bg-red-500/90 backdrop-blur-md text-white rounded-lg hover:bg-red-500 transition-colors shadow-lg"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteDepartment(dept.id);
+                    }}
+                    className="p-2.5 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-all shadow-xl border border-white/20 active:scale-90"
+                    title="Eliminar Departamento"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
