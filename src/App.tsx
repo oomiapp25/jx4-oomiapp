@@ -5,6 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from './hooks/useAuth';
 import { ArrowUp } from 'lucide-react';
 
@@ -83,13 +84,25 @@ function FloatingScrollButton() {
   if (!isVisible) return null;
 
   return (
-    <button
-      onClick={scrollToTop}
-      className="fixed bottom-20 right-6 z-50 p-3 bg-emerald-600 text-white rounded-full shadow-lg hover:bg-emerald-700 transition-all duration-300 animate-bounce"
-      aria-label="Volver arriba"
-    >
-      <ArrowUp size={24} />
-    </button>
+    <AnimatePresence>
+      {isVisible && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0.5, y: 20 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.5, y: 20 }}
+          onClick={scrollToTop}
+          className="fixed bottom-24 right-6 z-[100] flex flex-col items-center gap-1 group"
+          aria-label="Volver arriba"
+        >
+          <div className="bg-ml-monte-verde text-white p-4 rounded-2xl shadow-2xl group-hover:bg-ml-quebrada transition-all duration-300 group-hover:-translate-y-2">
+            <ArrowUp size={24} className="animate-bounce" />
+          </div>
+          <span className="text-[8px] font-black text-ml-monte-verde uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+            Subir
+          </span>
+        </motion.button>
+      )}
+    </AnimatePresence>
   );
 }
 

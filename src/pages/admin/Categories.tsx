@@ -298,7 +298,7 @@ export default function AdminCategories() {
                 <div className="p-3 bg-stone-50 rounded-xl group-hover:bg-emerald-50 transition-colors">
                   <IconRenderer iconId={cat.icon} className="w-6 h-6 text-stone-400 group-hover:text-emerald-600" />
                 </div>
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center gap-1">
                   <button 
                     onClick={() => openEditModal(cat)}
                     className="p-2 text-stone-400 hover:text-stone-900 transition-colors"

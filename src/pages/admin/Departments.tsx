@@ -363,7 +363,7 @@ export default function AdminDepartments() {
                   </div>
                 )}
                 <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
-                <div className="absolute top-3 right-3 flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                <div className="absolute top-3 right-3 flex items-center gap-1">
                   <button 
                     onClick={() => openEditModal(dept)}
                     className="p-2 bg-white/90 backdrop-blur-md text-stone-900 rounded-lg hover:bg-white transition-colors shadow-lg"

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import { ShoppingBag, Search, Filter, ChevronRight, ShoppingCart, Plus } from 'lucide-react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase, Product, Category, Department } from '../lib/supabase';
 import { useCart } from '../hooks/useCart';
+import { IconRenderer } from '../components/IconRenderer';
 
 export default function Catalog() {
   const navigate = useNavigate();
@@ -14,6 +15,8 @@ export default function Catalog() {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
   const [selectedSector, setSelectedSector] = useState<string | null>(null);
@@ -30,6 +33,26 @@ export default function Catalog() {
       setSearchQuery(q);
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    if (searchQuery.trim().length > 1) {
+      const filteredProducts = products
+        .filter(p => p.title.toLowerCase().includes(searchQuery.toLowerCase()))
+        .slice(0, 5)
+        .map(p => ({ ...p, type: 'product' }));
+      
+      const filteredDepts = departments
+        .filter(d => d.name.toLowerCase().includes(searchQuery.toLowerCase()))
+        .slice(0, 3)
+        .map(d => ({ ...d, type: 'department' }));
+
+      setSuggestions([...filteredDepts, ...filteredProducts]);
+      setShowSuggestions(true);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  }, [searchQuery, products, departments]);
 
   async function fetchExchangeRate() {
     const { data } = await supabase.from('settings').select('*').eq('key', 'exchange_rate').single();
@@ -114,13 +137,14 @@ export default function Catalog() {
           </motion.div>
 
           {/* Search Bar */}
-          <div className="mt-10 max-w-2xl mx-auto">
+          <div className="mt-10 max-w-2xl mx-auto relative">
             <div className="relative group">
               <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-ml-monte-verde w-5 h-5 group-focus-within:scale-110 transition-transform" />
               <input 
                 type="text"
                 placeholder="¿Qué estás buscando hoy?"
                 value={searchQuery}
+                onFocus={() => searchQuery.trim().length > 1 && setShowSuggestions(true)}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
                   setSearchParams(prev => {
@@ -132,9 +156,66 @@ export default function Catalog() {
                     return prev;
                   }, { replace: true });
                 }}
-                className="w-full bg-white/95 backdrop-blur-xl border-none rounded-[30px] py-5 pl-16 pr-6 text-ml-monte-verde placeholder:text-ml-monte-verde/40 font-bold shadow-2xl focus:ring-4 focus:ring-ml-quebrada/30 transition-all outline-none"
+                className="w-full bg-white/95 backdrop-blur-xl border-none rounded-[30px] py-5 pl-16 pr-24 text-ml-monte-verde placeholder:text-ml-monte-verde/40 font-bold shadow-2xl focus:ring-4 focus:ring-ml-quebrada/30 transition-all outline-none"
               />
+              <button 
+                onClick={() => {
+                  if (searchQuery.trim()) {
+                    setSearchParams({ q: searchQuery.trim() });
+                  }
+                }}
+                className="absolute right-3 top-3 bottom-3 px-6 bg-ml-quebrada text-white rounded-[20px] hover:bg-ml-monte-verde transition-all flex items-center gap-2 shadow-lg"
+              >
+                <Search className="w-4 h-4" />
+                <span className="text-[10px] font-black uppercase tracking-widest">Buscar</span>
+              </button>
             </div>
+
+            {/* Suggestions Dropdown */}
+            {showSuggestions && suggestions.length > 0 && (
+              <>
+                <div 
+                  className="fixed inset-0 z-[-1]" 
+                  onClick={() => setShowSuggestions(false)} 
+                />
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="absolute top-full left-0 right-0 mt-4 bg-white/95 backdrop-blur-xl rounded-[30px] border border-white/40 shadow-2xl overflow-hidden z-[100] p-2"
+                >
+                  {suggestions.map((item, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        if (item.type === 'product') {
+                          navigate(`/producto/${item.id}`);
+                        } else {
+                          navigate(`/departamento/${item.slug}`);
+                        }
+                        setShowSuggestions(false);
+                      }}
+                      className="w-full flex items-center gap-4 p-4 hover:bg-ml-monte-verde/5 rounded-2xl transition-colors text-left group"
+                    >
+                      <div className="w-10 h-10 bg-stone-100 rounded-xl flex items-center justify-center text-ml-monte-verde group-hover:bg-ml-monte-verde group-hover:text-white transition-all overflow-hidden">
+                        {item.type === 'product' ? (
+                          <img src={item.images[0]} className="w-full h-full object-cover" alt="" />
+                        ) : (
+                          <IconRenderer iconId={item.icon} className="w-5 h-5" />
+                        )}
+                      </div>
+                      <div>
+                        <p className="text-sm font-black text-ml-monte-verde uppercase tracking-tighter">
+                          {item.type === 'product' ? item.title : item.name}
+                        </p>
+                        <p className="text-[9px] font-bold text-stone-400 uppercase tracking-widest">
+                          {item.type === 'product' ? 'Producto' : 'Departamento'}
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </motion.div>
+              </>
+            )}
           </div>
         </div>
       </div>
