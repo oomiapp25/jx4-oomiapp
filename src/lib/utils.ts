@@ -60,3 +60,30 @@ export async function optimizeImage(file: File, maxWidth = 1080, quality = 0.8):
     reader.onerror = (err) => reject(err);
   });
 }
+
+/**
+ * Parses image data from Supabase, handling both arrays and stringified JSON
+ * @param images images data from Supabase
+ * @returns array of image URLs
+ */
+export function parseImages(images: any): string[] {
+  if (!images) return [];
+  if (Array.isArray(images)) return images;
+  if (typeof images === 'string') {
+    // If it's empty string
+    if (!images.trim()) return [];
+    
+    // Check if it looks like a JSON array
+    if (images.trim().startsWith('[') && images.trim().endsWith(']')) {
+      try {
+        const parsed = JSON.parse(images);
+        return Array.isArray(parsed) ? parsed : [images];
+      } catch (e) {
+        return [images];
+      }
+    }
+    // It's likely a single URL string
+    return [images];
+  }
+  return [];
+}

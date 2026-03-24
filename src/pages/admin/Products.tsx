@@ -3,6 +3,7 @@ import { supabase, Product } from '../../lib/supabase';
 import { Plus, Search, Edit2, Trash2, Package, X, Upload, Loader2, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { uploadToImgBB } from '../../services/imgbbService';
+import { parseImages } from '../../lib/utils';
 
 export default function AdminProducts() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -20,7 +21,8 @@ export default function AdminProducts() {
     category_id: '',
     department_id: '',
     images: [] as string[],
-    featured: false
+    featured: false,
+    active: true
   });
   const [categories, setCategories] = useState<any[]>([]);
   const [departments, setDepartments] = useState<any[]>([]);
@@ -43,7 +45,8 @@ export default function AdminProducts() {
         category_id: editingProduct.category_id || '',
         department_id: editingProduct.department_id || '',
         images: editingProduct.images || [],
-        featured: editingProduct.featured || false
+        featured: editingProduct.featured || false,
+        active: editingProduct.active ?? true
       });
     } else {
       setFormData({ 
@@ -54,7 +57,8 @@ export default function AdminProducts() {
         category_id: '', 
         department_id: '', 
         images: [],
-        featured: false
+        featured: false,
+        active: true
       });
     }
   }, [editingProduct]);
@@ -150,7 +154,8 @@ export default function AdminProducts() {
         category_id: formData.category_id || null,
         department_id: formData.department_id || null,
         images: formData.images,
-        featured: formData.featured
+        featured: formData.featured,
+        active: formData.active
       };
 
       let error;
@@ -180,7 +185,8 @@ export default function AdminProducts() {
           category_id: '', 
           department_id: '', 
           images: [],
-          featured: false
+          featured: false,
+          active: true
         });
         await fetchProducts();
       }
@@ -311,17 +317,31 @@ export default function AdminProducts() {
                         className="w-full px-4 py-2.5 bg-stone-50 border border-stone-100 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none resize-none"
                       />
                     </div>
-                    <div className="flex items-center gap-3 p-4 bg-stone-50 rounded-2xl border border-stone-100">
-                      <input 
-                        type="checkbox"
-                        id="featured"
-                        checked={formData.featured}
-                        onChange={e => setFormData({...formData, featured: e.target.checked})}
-                        className="w-5 h-5 rounded border-stone-300 text-emerald-600 focus:ring-emerald-500"
-                      />
-                      <label htmlFor="featured" className="text-sm font-bold text-stone-700 cursor-pointer">
-                        Destacar en el Inicio (Rotación)
-                      </label>
+                    <div className="flex flex-col gap-4 p-4 bg-stone-50 rounded-2xl border border-stone-100">
+                      <div className="flex items-center gap-3">
+                        <input 
+                          type="checkbox"
+                          id="active"
+                          checked={formData.active}
+                          onChange={e => setFormData({...formData, active: e.target.checked})}
+                          className="w-5 h-5 rounded border-stone-300 text-emerald-600 focus:ring-emerald-500"
+                        />
+                        <label htmlFor="active" className="text-sm font-bold text-stone-700 cursor-pointer">
+                          Producto Activo (Visible en el catálogo)
+                        </label>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <input 
+                          type="checkbox"
+                          id="featured"
+                          checked={formData.featured}
+                          onChange={e => setFormData({...formData, featured: e.target.checked})}
+                          className="w-5 h-5 rounded border-stone-300 text-emerald-600 focus:ring-emerald-500"
+                        />
+                        <label htmlFor="featured" className="text-sm font-bold text-stone-700 cursor-pointer">
+                          Destacar en el Inicio (Rotación)
+                        </label>
+                      </div>
                     </div>
                   </div>
 
@@ -430,7 +450,7 @@ export default function AdminProducts() {
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-lg bg-stone-100 overflow-hidden">
-                        <img src={product.images[0] || 'https://picsum.photos/seed/prod/40/40'} alt="" className="w-full h-full object-cover" />
+                        <img src={parseImages(product.images)[0] || 'https://picsum.photos/seed/prod/40/40'} alt="" className="w-full h-full object-cover" />
                       </div>
                       <div>
                         <p className="font-bold text-stone-900">{product.title}</p>
@@ -443,11 +463,22 @@ export default function AdminProducts() {
                   </td>
                   <td className="px-6 py-4 font-bold text-stone-900">${product.price}</td>
                   <td className="px-6 py-4">
-                    {product.featured && (
-                      <span className="px-2 py-1 bg-amber-100 text-amber-700 text-[10px] font-black uppercase tracking-widest rounded-full">
-                        Destacado
-                      </span>
-                    )}
+                    <div className="flex flex-col gap-1">
+                      {product.active ? (
+                        <span className="px-2 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-widest rounded-full w-fit">
+                          Activo
+                        </span>
+                      ) : (
+                        <span className="px-2 py-1 bg-stone-100 text-stone-500 text-[10px] font-black uppercase tracking-widest rounded-full w-fit">
+                          Inactivo
+                        </span>
+                      )}
+                      {product.featured && (
+                        <span className="px-2 py-1 bg-amber-100 text-amber-700 text-[10px] font-black uppercase tracking-widest rounded-full w-fit">
+                          Destacado
+                        </span>
+                      )}
+                    </div>
                   </td>
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase ${

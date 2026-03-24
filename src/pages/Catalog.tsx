@@ -5,6 +5,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { supabase, Product, Category, Department } from '../lib/supabase';
 import { useCart } from '../hooks/useCart';
 import { IconRenderer } from '../components/IconRenderer';
+import { parseImages } from '../lib/utils';
 
 export default function Catalog() {
   const navigate = useNavigate();
@@ -62,7 +63,7 @@ export default function Catalog() {
   async function fetchData() {
     try {
       const [productsRes, categoriesRes, departmentsRes] = await Promise.all([
-        supabase.from('products').select('*').eq('active', true),
+        supabase.from('products').select('*'),
         supabase.from('categories').select('*'),
         supabase.from('departments').select('*')
       ]);
@@ -119,7 +120,7 @@ export default function Catalog() {
   return (
     <div className="min-h-screen bg-ml-white-cal pb-20">
       {/* Header */}
-      <div className="bg-ml-monte-verde text-white pt-12 pb-20 px-4 rounded-b-[50px] shadow-2xl relative overflow-hidden">
+      <div className="bg-emerald-900 text-white pt-12 pb-20 px-4 rounded-b-[50px] shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-20 -mt-20 blur-3xl" />
         <div className="max-w-7xl mx-auto relative z-10">
           <motion.div
@@ -129,17 +130,17 @@ export default function Catalog() {
           >
             <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-4 py-2 rounded-full border border-white/30 mb-2">
               <ShoppingBag className="w-4 h-4" />
-              <span className="text-[10px] font-black uppercase tracking-widest">Catálogo Completo</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-white">Catálogo Completo</span>
             </div>
-            <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase leading-none">
-              Todo lo que necesitas <br /> <span className="text-ml-quebrada">en un solo lugar</span>
+            <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase leading-none text-white">
+              Todo lo que necesitas <br /> <span className="text-amber-400">en un solo lugar</span>
             </h1>
           </motion.div>
 
           {/* Search Bar */}
           <div className="mt-10 max-w-2xl mx-auto relative">
             <div className="relative group">
-              <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-ml-monte-verde w-5 h-5 group-focus-within:scale-110 transition-transform" />
+              <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-emerald-900 w-5 h-5 group-focus-within:scale-110 transition-transform" />
               <input 
                 type="text"
                 placeholder="¿Qué estás buscando hoy?"
@@ -156,7 +157,7 @@ export default function Catalog() {
                     return prev;
                   }, { replace: true });
                 }}
-                className="w-full bg-white/95 backdrop-blur-xl border-none rounded-[30px] py-5 pl-16 pr-24 text-ml-monte-verde placeholder:text-ml-monte-verde/40 font-bold shadow-2xl focus:ring-4 focus:ring-ml-quebrada/30 transition-all outline-none"
+                className="w-full bg-white/95 backdrop-blur-xl border-none rounded-[30px] py-5 pl-16 pr-24 text-emerald-900 placeholder:text-emerald-900/40 font-bold shadow-2xl focus:ring-4 focus:ring-amber-400/30 transition-all outline-none"
               />
               <button 
                 onClick={() => {
@@ -164,7 +165,7 @@ export default function Catalog() {
                     setSearchParams({ q: searchQuery.trim() });
                   }
                 }}
-                className="absolute right-3 top-3 bottom-3 px-6 bg-ml-quebrada text-white rounded-[20px] hover:bg-ml-monte-verde transition-all flex items-center gap-2 shadow-lg"
+                className="absolute right-3 top-3 bottom-3 px-6 bg-emerald-800 text-white rounded-[20px] hover:bg-emerald-700 transition-all flex items-center gap-2 shadow-lg"
               >
                 <Search className="w-4 h-4" />
                 <span className="text-[10px] font-black uppercase tracking-widest">Buscar</span>
@@ -198,7 +199,7 @@ export default function Catalog() {
                     >
                       <div className="w-10 h-10 bg-stone-100 rounded-xl flex items-center justify-center text-ml-monte-verde group-hover:bg-ml-monte-verde group-hover:text-white transition-all overflow-hidden">
                         {item.type === 'product' ? (
-                          <img src={item.images[0]} className="w-full h-full object-cover" alt="" />
+                          <img src={parseImages(item.images)[0] || 'https://picsum.photos/seed/product/40/40'} className="w-full h-full object-cover" alt="" />
                         ) : (
                           <IconRenderer iconId={item.icon} className="w-5 h-5" />
                         )}
@@ -283,7 +284,7 @@ export default function Catalog() {
             >
               <Link to={`/producto/${product.id}`} className="relative aspect-square overflow-hidden block">
                 <img 
-                  src={product.images[0] || 'https://picsum.photos/seed/product/400/400'} 
+                  src={parseImages(product.images)[0] || 'https://picsum.photos/seed/product/400/400'} 
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                   alt={product.title}
                 />

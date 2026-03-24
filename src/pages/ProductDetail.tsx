@@ -4,6 +4,7 @@ import { supabase, Product, Category, Department } from '../lib/supabase';
 import { ShoppingCart, ArrowLeft, ShieldCheck, Truck, RefreshCw, Check, Tag, Building2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useCart } from '../hooks/useCart';
+import { parseImages } from '../lib/utils';
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -82,7 +83,7 @@ export default function ProductDetail() {
               className="aspect-square max-w-2xl mx-auto"
             >
               <img 
-                src={product.images[0] || 'https://picsum.photos/seed/product/800/800'} 
+                src={parseImages(product.images)[0] || 'https://picsum.photos/seed/product/800/800'} 
                 alt={product.title}
                 className="w-full h-full object-contain"
                 referrerPolicy="no-referrer"

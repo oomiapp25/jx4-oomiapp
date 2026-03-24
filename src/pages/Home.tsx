@@ -8,6 +8,7 @@ import { getIconById } from '../lib/icons';
 import { IconRenderer } from '../components/IconRenderer';
 import { useCart } from '../hooks/useCart';
 import { usePWA } from '../hooks/usePWA';
+import { parseImages } from '../lib/utils';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -164,7 +165,7 @@ export default function Home() {
                       >
                         <div className="w-12 h-12 bg-stone-100 rounded-xl flex items-center justify-center text-ml-monte-verde group-hover:bg-ml-monte-verde group-hover:text-white transition-all overflow-hidden">
                           {item.type === 'product' ? (
-                            <img src={item.images[0]} className="w-full h-full object-cover" alt="" />
+                            <img src={parseImages(item.images)[0] || 'https://picsum.photos/seed/product/40/40'} className="w-full h-full object-cover" alt="" />
                           ) : (
                             <IconRenderer iconId={item.icon} className="w-6 h-6" />
                           )}
@@ -270,7 +271,7 @@ export default function Home() {
                 >
                   <Link to={`/producto/${product.id}`} className="block relative aspect-square overflow-hidden">
                     <img 
-                      src={product.images[0] || 'https://picsum.photos/seed/product/400/400'} 
+                      src={parseImages(product.images)[0] || 'https://picsum.photos/seed/product/400/400'} 
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
                       alt={product.title} 
                     />
