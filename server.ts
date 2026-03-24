@@ -107,6 +107,11 @@ async function startServer() {
     }, null, 2));
   });
 
+  // Ruta para la Política de Privacidad
+  app.get("/politica.html", (req, res) => {
+    res.sendFile("public/politica.html", { root: "." });
+  });
+
   // Otras rutas de API...
   app.post("/api/invite-admin", async (req, res) => {
     const { email, role, invitedBy } = req.body;
