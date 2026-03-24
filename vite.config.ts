@@ -14,7 +14,7 @@ export default defineConfig(({mode}) => {
         registerType: 'autoUpdate',
         injectRegister: 'auto',
         manifestFilename: 'manifest.json',
-        includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+        includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
         manifest: {
           name: 'JX4 Paracotos',
           short_name: 'JX4',
@@ -26,25 +26,19 @@ export default defineConfig(({mode}) => {
           scope: '/',
           icons: [
             {
-              src: '/icon-192x192.png',
+              src: 'https://i.ibb.co/ycmLG7Pw/Gemini-Generated-Image-mm860kmm860kmm86.png',
               sizes: '192x192',
               type: 'image/png'
             },
             {
-              src: '/icon-512x512.png',
+              src: 'https://i.ibb.co/ycmLG7Pw/Gemini-Generated-Image-mm860kmm860kmm86.png',
               sizes: '512x512',
               type: 'image/png'
             },
             {
-              src: '/icon-512x512.png',
+              src: 'https://i.ibb.co/ycmLG7Pw/Gemini-Generated-Image-mm860kmm860kmm86.png',
               sizes: '512x512',
               type: 'image/png',
-              purpose: 'any maskable'
-            },
-            {
-              src: '/icon.svg',
-              sizes: 'any',
-              type: 'image/svg+xml',
               purpose: 'any maskable'
             }
           ]
