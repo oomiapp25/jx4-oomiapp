@@ -68,6 +68,35 @@ export default function MainLayout() {
               </h1>
             </Link>
 
+            {/* Exchange Rates Section */}
+            <div className="flex-1 flex flex-col items-center justify-center px-2">
+              <div className="flex items-center gap-2 sm:gap-4 bg-stone-50/50 px-3 py-1.5 rounded-2xl border border-stone-100 shadow-sm backdrop-blur-sm">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-5 h-5 bg-ml-quebrada/10 rounded-lg flex items-center justify-center">
+                    <span className="text-[10px] font-black text-ml-quebrada">$</span>
+                  </div>
+                  <span className="text-[11px] font-black text-ml-monte-verde tracking-tighter">
+                    {exchangeRate ? `${exchangeRate}` : '---'}
+                  </span>
+                </div>
+                <div className="w-px h-3 bg-stone-200" />
+                <div className="flex items-center gap-1.5">
+                  <div className="w-5 h-5 bg-ml-teja/10 rounded-lg flex items-center justify-center">
+                    <span className="text-[10px] font-black text-ml-teja">€</span>
+                  </div>
+                  <span className="text-[11px] font-black text-ml-monte-verde tracking-tighter">
+                    {euroRate ? `${euroRate}` : '---'}
+                  </span>
+                </div>
+              </div>
+              <div className="mt-1 flex items-center gap-1.5">
+                <div className="w-1 h-1 bg-ml-quebrada rounded-full animate-pulse" />
+                <span className="text-[8px] font-black text-stone-400 uppercase tracking-widest">
+                  {new Date().toLocaleDateString('es-VE', { day: '2-digit', month: 'short', year: 'numeric' })}
+                </span>
+              </div>
+            </div>
+
             <div className="flex items-center gap-2 sm:gap-4">
               <div className="relative">
                 <button 
