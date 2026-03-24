@@ -57,6 +57,23 @@ async function startServer() {
     res.json({ status: "ok" });
   });
 
+  // Ruta específica para .well-known/assetlinks.json (Android App Links)
+  app.get("/.well-known/assetlinks.json", (req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify([
+      {
+        "relation": ["delegate_permission/common.handle_all_urls"],
+        "target": {
+          "namespace": "android_app",
+          "package_name": "app.vercel.jx4_pwa.twa",
+          "sha256_cert_fingerprints": [
+            "CC:30:3A:8B:C7:2C:9A:11:F8:41:1B:35:A2:E5:60:93:EB:D7:C6:57:E7:E9:BD:64:7A:32:79:0D:1A:1E:29:D1"
+          ]
+        }
+      }
+    ], null, 2));
+  });
+
   // Otras rutas de API...
   app.post("/api/invite-admin", async (req, res) => {
     const { email, role, invitedBy } = req.body;
