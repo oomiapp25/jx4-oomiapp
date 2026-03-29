@@ -62,7 +62,7 @@ export default function MainLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-ml-white-cal flex flex-col font-sans overflow-x-hidden">
+    <div className="min-h-[100dvh] bg-ml-white-cal flex flex-col font-sans overflow-x-hidden">
       {/* Header */}
       <header className="glass sticky top-0 z-50 border-b border-white/20">
         <div className="max-w-7xl mx-auto px-4">
@@ -242,8 +242,8 @@ export default function MainLayout() {
       </main>
 
       {/* Floating Bottom Tab Bar (iOS Style) */}
-      <nav className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] w-[90%] max-w-md">
-        <div className="glass bg-white/70 backdrop-blur-xl rounded-[35px] border border-white/40 shadow-2xl p-2 flex items-center justify-around">
+      <nav className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] w-[92%] max-w-md pb-[safe-area-inset-bottom]">
+        <div className="glass bg-white/75 backdrop-blur-2xl rounded-[35px] border border-white/40 shadow-2xl p-1.5 sm:p-2 flex items-center justify-around">
           <Link to="/" className="flex flex-col items-center gap-1 p-3 rounded-2xl hover:bg-ml-monte-verde/10 transition-colors text-ml-monte-verde">
             <Home className="w-6 h-6" />
             <span className="text-[10px] font-black uppercase tracking-tighter">Inicio</span>

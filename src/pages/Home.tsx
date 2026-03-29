@@ -125,13 +125,13 @@ export default function Home() {
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => searchQuery.trim().length > 1 && setShowSuggestions(true)}
               placeholder="¿Qué estás buscando hoy en Paracotos?" 
-              className="w-full pl-8 pr-16 py-6 glass bg-white/80 rounded-[35px] text-lg focus:ring-4 focus:ring-ml-monte-verde/20 transition-all placeholder:text-stone-400 font-bold shadow-2xl"
+              className="w-full pl-6 sm:pl-8 pr-16 py-4 sm:py-6 glass bg-white/80 rounded-[35px] text-base sm:text-lg focus:ring-4 focus:ring-ml-monte-verde/20 transition-all placeholder:text-stone-400 font-bold shadow-2xl"
             />
             <button 
               type="submit"
-              className="absolute right-3 top-3 bottom-3 px-8 bg-ml-monte-verde text-white rounded-[25px] hover:bg-ml-quebrada transition-all flex items-center gap-2 shadow-lg shadow-ml-monte-verde/20"
+              className="absolute right-2 sm:right-3 top-2 sm:top-3 bottom-2 sm:bottom-3 px-4 sm:px-8 bg-ml-monte-verde text-white rounded-[25px] hover:bg-ml-quebrada transition-all flex items-center gap-2 shadow-lg shadow-ml-monte-verde/20"
             >
-              <Search className="w-5 h-5" />
+              <Search className="w-4 h-4 sm:w-5 h-5" />
               <span className="hidden sm:inline text-xs font-black uppercase tracking-widest">Buscar</span>
             </button>
 
