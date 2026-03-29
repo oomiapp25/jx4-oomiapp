@@ -218,6 +218,7 @@ export default function Home() {
                     src={dept.image_url} 
                     className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
                     alt={dept.name} 
+                    loading="lazy"
                     referrerPolicy="no-referrer"
                   />
                 ) : (
@@ -261,7 +262,9 @@ export default function Home() {
                     <img 
                       src={parseImages(product.images)[0] || 'https://picsum.photos/seed/product/400/400'} 
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
-                      alt={product.title} 
+                      alt={product.title}
+                      loading="lazy"
+                      referrerPolicy="no-referrer"
                     />
                     <div className="absolute top-3 right-3">
                       <button 

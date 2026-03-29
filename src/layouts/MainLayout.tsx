@@ -22,10 +22,16 @@ export default function MainLayout() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   useEffect(() => {
-    fetchAds();
-    fetchNews();
-    fetchTransportLines();
-    fetchExchangeRate();
+    async function fetchInitialData() {
+      await Promise.all([
+        fetchAds(),
+        fetchNews(),
+        fetchTransportLines(),
+        fetchExchangeRate()
+      ]);
+    }
+    
+    fetchInitialData();
     
     const handleScroll = () => setShowScrollTop(window.scrollY > 400);
     window.addEventListener('scroll', handleScroll);

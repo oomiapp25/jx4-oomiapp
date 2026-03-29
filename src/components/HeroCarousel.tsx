@@ -33,7 +33,15 @@ export default function HeroCarousel() {
   const next = () => setCurrentIndex((prev) => (prev + 1) % ads.length);
   const prev = () => setCurrentIndex((prev) => (prev - 1 + ads.length) % ads.length);
 
-  if (loading || ads.length === 0) return null;
+  if (loading) {
+    return (
+      <div className="relative w-full aspect-[2/1] sm:aspect-[21/9] md:h-[400px] bg-stone-200 animate-pulse overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-stone-200 via-stone-100 to-stone-200 animate-shimmer" />
+      </div>
+    );
+  }
+
+  if (ads.length === 0) return null;
 
   return (
     <div className="relative w-full aspect-[2/1] sm:aspect-[21/9] md:h-[400px] bg-stone-200 overflow-hidden group">

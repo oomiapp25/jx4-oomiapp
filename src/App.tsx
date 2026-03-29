@@ -117,8 +117,31 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-stone-50">
-        <div className="animate-pulse text-stone-400 font-medium">Cargando JX4 Paracotos...</div>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-ml-white-cal">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+          className="flex flex-col items-center gap-6"
+        >
+          <div className="w-24 h-24 bg-ml-monte-verde rounded-[35px] flex items-center justify-center shadow-2xl relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent" />
+            <span className="text-4xl font-black text-white relative z-10">JX4</span>
+          </div>
+          <div className="flex flex-col items-center gap-2">
+            <div className="h-1 w-32 bg-stone-200 rounded-full overflow-hidden">
+              <motion.div 
+                initial={{ x: '-100%' }}
+                animate={{ x: '100%' }}
+                transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
+                className="h-full w-full bg-ml-monte-verde"
+              />
+            </div>
+            <span className="text-[10px] font-black text-ml-monte-verde uppercase tracking-[0.3em] animate-pulse">
+              Cargando Experiencia
+            </span>
+          </div>
+        </motion.div>
       </div>
     );
   }
