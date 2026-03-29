@@ -207,18 +207,6 @@ export default function Home() {
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-            {/* Delivery Special Card */}
-            <Link to="/transporte?tab=private" className="relative aspect-[4/5] rounded-[35px] overflow-hidden group shadow-xl border border-stone-100">
-              <div className="absolute inset-0 bg-ml-teja" />
-              <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center z-10">
-                <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-[25px] flex items-center justify-center mb-4 border border-white/30 group-hover:scale-110 transition-transform">
-                  <Truck className="w-8 h-8 text-white" />
-                </div>
-                <h3 className="text-white font-black text-lg uppercase tracking-tighter leading-tight">Delivery Express</h3>
-                <p className="text-white/70 text-[10px] font-bold uppercase tracking-widest mt-2">Pide lo que quieras</p>
-              </div>
-            </Link>
-
             {departments.map((dept) => (
               <Link 
                 key={dept.id} 

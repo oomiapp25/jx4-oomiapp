@@ -260,7 +260,7 @@ export default function MainLayout() {
           </Link>
           <Link to="/transporte" className="flex flex-col items-center gap-1 p-3 rounded-2xl hover:bg-ml-quebrada/10 transition-colors text-ml-quebrada">
             <Bus className="w-6 h-6" />
-            <span className="text-[10px] font-black uppercase tracking-tighter">Buses</span>
+            <span className="text-[10px] font-black uppercase tracking-tighter">Transporte</span>
           </Link>
         </div>
       </nav>
@@ -280,14 +280,8 @@ export default function MainLayout() {
               initial={{ opacity: 0, y: 100, scale: 0.8 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 100, scale: 0.8 }}
-              className="fixed bottom-32 left-1/2 -translate-x-1/2 z-[100] w-[80%] max-w-sm grid grid-cols-3 gap-4"
+              className="fixed bottom-32 left-1/2 -translate-x-1/2 z-[100] w-[80%] max-w-sm grid grid-cols-2 gap-4"
             >
-              <Link to="/transporte" onClick={() => setIsFabOpen(false)} className="flex flex-col items-center gap-2 p-4 glass bg-white/80 rounded-[30px] hover:bg-white transition-all group">
-                <div className="w-12 h-12 bg-ml-quebrada/10 rounded-2xl flex items-center justify-center text-ml-quebrada group-hover:bg-ml-quebrada group-hover:text-white transition-all">
-                  <Bus className="w-6 h-6" />
-                </div>
-                <span className="text-[10px] font-black uppercase text-center">Buses</span>
-              </Link>
               <Link to="/empleos" onClick={() => setIsFabOpen(false)} className="flex flex-col items-center gap-2 p-4 glass bg-white/80 rounded-[30px] hover:bg-white transition-all group">
                 <div className="w-12 h-12 bg-ml-monte-verde/10 rounded-2xl flex items-center justify-center text-ml-monte-verde group-hover:bg-ml-monte-verde group-hover:text-white transition-all">
                   <Briefcase className="w-6 h-6" />
@@ -303,12 +297,12 @@ export default function MainLayout() {
               {isInstallable && (
                 <button 
                   onClick={() => { installApp(); setIsFabOpen(false); }} 
-                  className="flex flex-col items-center gap-2 p-4 glass bg-ml-monte-verde text-white rounded-[30px] hover:bg-ml-quebrada transition-all group"
+                  className="col-span-2 flex flex-col items-center gap-2 p-4 glass bg-ml-monte-verde text-white rounded-[30px] hover:bg-ml-quebrada transition-all group"
                 >
                   <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-white transition-all">
                     <Download className="w-6 h-6" />
                   </div>
-                  <span className="text-[10px] font-black uppercase text-center">Instalar</span>
+                  <span className="text-[10px] font-black uppercase text-center">Instalar Aplicación</span>
                 </button>
               )}
             </motion.div>
