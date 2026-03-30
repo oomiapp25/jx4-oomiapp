@@ -193,25 +193,25 @@ export default function Home() {
           </form>
         </motion.div>
 
-        {/* Departments Grid */}
+        {/* Departments Section - Now "Tus tiendas de confianza" */}
         <div className="mt-12">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-2xl md:text-3xl font-black text-ml-monte-verde tracking-tighter uppercase">Nuestros Departamentos</h2>
+              <h2 className="text-2xl md:text-3xl font-black text-ml-monte-verde tracking-tighter uppercase">Tus tiendas de confianza</h2>
               <div className="h-1 w-16 bg-ml-teja mt-1 rounded-full" />
             </div>
-            <Link to="/catalogo" className="flex items-center gap-2 text-[10px] font-black text-ml-hierro uppercase tracking-widest bg-stone-100 px-4 py-2 rounded-full hover:bg-ml-monte-verde hover:text-white transition-all group">
+            <Link to="/catalogo" className="hidden md:flex items-center gap-2 text-[10px] font-black text-ml-hierro uppercase tracking-widest bg-stone-100 px-4 py-2 rounded-full hover:bg-ml-monte-verde hover:text-white transition-all group">
               <ShoppingBag className="w-3 h-3" />
               Ver Todo
             </Link>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+          <div className="flex gap-4 md:grid md:grid-cols-3 lg:grid-cols-4 md:gap-6 overflow-x-auto no-scrollbar -mx-4 px-4 pb-6 md:mx-0 md:px-0">
             {departments.map((dept) => (
               <Link 
                 key={dept.id} 
                 to={`/departamento/${dept.slug}`} 
-                className="relative aspect-[4/5] rounded-[35px] overflow-hidden group shadow-xl border border-stone-100"
+                className="relative min-w-[240px] sm:min-w-[280px] md:min-w-0 aspect-[4/5] rounded-[35px] overflow-hidden group shadow-xl border border-stone-100 flex-shrink-0"
               >
                 {dept.image_url ? (
                   <img 
@@ -235,6 +235,17 @@ export default function Home() {
                 </div>
               </Link>
             ))}
+            
+            {/* Mobile "Ver Todo" Card */}
+            <Link 
+              to="/catalogo"
+              className="md:hidden relative min-w-[240px] aspect-[4/5] rounded-[35px] overflow-hidden group shadow-xl border-2 border-dashed border-ml-monte-verde/30 flex flex-col items-center justify-center gap-4 bg-stone-50 flex-shrink-0"
+            >
+              <div className="w-16 h-16 bg-ml-monte-verde/10 rounded-full flex items-center justify-center text-ml-monte-verde group-hover:bg-ml-monte-verde group-hover:text-white transition-all">
+                <ShoppingBag className="w-8 h-8" />
+              </div>
+              <span className="text-xs font-black text-ml-monte-verde uppercase tracking-widest">Ver Todo el Catálogo</span>
+            </Link>
           </div>
         </div>
 
@@ -256,7 +267,7 @@ export default function Home() {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  className="min-w-[200px] md:min-w-[240px] bg-white rounded-[35px] overflow-hidden shadow-xl border border-stone-100 group"
+                  className="min-w-[260px] md:min-w-[240px] bg-white rounded-[35px] overflow-hidden shadow-xl border border-stone-100 group flex-shrink-0"
                 >
                   <Link to={`/producto/${product.id}`} className="block relative aspect-square overflow-hidden">
                     <img 
