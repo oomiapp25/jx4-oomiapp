@@ -31,6 +31,7 @@ import SocialHelp from './pages/SocialHelp';
 import Community from './pages/Community';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Catalog from './pages/Catalog';
+import Guide from './pages/Guide';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/Dashboard';
@@ -169,6 +170,7 @@ export default function App() {
           <Route path="/comunidad" element={<Community />} />
           <Route path="/privacidad" element={<PrivacyPolicy />} />
           <Route path="/catalogo" element={<Catalog />} />
+          <Route path="/guia" element={<Guide />} />
           
           {/* Protected Customer Routes */}
           <Route path="/checkout" element={<Checkout />} />
