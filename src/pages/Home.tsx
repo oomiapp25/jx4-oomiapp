@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase, Product, Department } from '../lib/supabase';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, CreditCard, Truck, ShieldCheck, Ticket, Smartphone, Store, Footprints, Package, Plus, Search, Download, Play, Trophy, Music, Users, ShoppingBag } from 'lucide-react';
+import { ShoppingCart, CreditCard, Truck, ShieldCheck, Ticket, Smartphone, Store, Footprints, Package, Plus, Search, Download, Play, Trophy, Music, Users, ShoppingBag, X, ExternalLink } from 'lucide-react';
 import HeroCarousel from '../components/HeroCarousel';
 import { getIconById } from '../lib/icons';
 import { IconRenderer } from '../components/IconRenderer';
@@ -23,6 +23,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState<any | null>(null);
 
   useEffect(() => {
     fetchData();
@@ -324,17 +325,15 @@ export default function Home() {
                   className="min-w-[280px] md:min-w-[400px] aspect-video rounded-[30px] overflow-hidden relative group shadow-xl border-2 border-white"
                 >
                   <img src={`https://img.youtube.com/vi/${video.youtube_id}/maxresdefault.jpg`} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={video.title} />
-                  <a 
-                    href={`https://youtube.com/watch?v=${video.youtube_id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  <button 
+                    onClick={() => setSelectedVideo(video)}
+                    className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity w-full h-full"
                   >
                     <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30">
                       <Play className="w-8 h-8 text-white fill-white" />
                     </div>
-                  </a>
-                  <div className="absolute bottom-4 left-4 right-4">
+                  </button>
+                  <div className="absolute bottom-4 left-4 right-4 pointer-events-none">
                     <span className="px-3 py-1 bg-ml-teja text-white text-[8px] font-black uppercase tracking-widest rounded-full mb-2 inline-block">Comunidad</span>
                     <h4 className="text-white font-black text-sm leading-tight uppercase tracking-tighter">{video.title}</h4>
                   </div>
@@ -405,6 +404,52 @@ export default function Home() {
           </div>
         </motion.div>
       </div>
+      {/* Video Modal */}
+      <AnimatePresence>
+        {selectedVideo && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedVideo(null)}
+              className="absolute inset-0 bg-stone-900/80 backdrop-blur-md"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative bg-white w-full max-w-4xl aspect-video rounded-[30px] overflow-hidden shadow-2xl"
+            >
+              <button 
+                onClick={() => setSelectedVideo(null)}
+                className="absolute top-4 right-4 z-10 p-2 bg-black/20 hover:bg-black/40 rounded-full text-white transition-all"
+              >
+                <X className="w-6 h-6" />
+              </button>
+              <iframe 
+                src={`https://www.youtube.com/embed/${selectedVideo.youtube_id}?autoplay=1&rel=0&modestbranding=1`}
+                title={selectedVideo.title}
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                loading="lazy"
+              />
+              <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent pointer-events-none">
+                <h3 className="text-white font-black text-xl uppercase tracking-tighter">{selectedVideo.title}</h3>
+                <a 
+                  href={`https://youtube.com/watch?v=${selectedVideo.youtube_id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-white/70 hover:text-white text-xs font-bold uppercase tracking-widest mt-2 pointer-events-auto"
+                >
+                  Ver en YouTube <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
