@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase, CommunityEntry, CommunitySpace } from '../../lib/supabase';
-import { Trophy, Music, Calendar, MapPin, Phone, Plus, Trash2, Edit2, Search, Filter, X, Loader2, Camera, Upload, FileText, CheckCircle, Church } from 'lucide-react';
+import { Trophy, Music, Calendar, MapPin, Phone, Plus, Trash2, Edit2, Search, Filter, X, Loader2, Camera, Upload, FileText, CheckCircle, Church, Palmtree, Play } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { uploadToImgBB } from '../../services/imgbbService';
 
@@ -19,7 +19,8 @@ export default function CommunityManagement() {
     title: '',
     content: '',
     image_url: '',
-    area: 'sports' as 'sports' | 'culture' | 'religion',
+    youtube_id: '',
+    area: 'sports' as 'sports' | 'culture' | 'religion' | 'tourism',
     type: 'news' as 'news' | 'event' | 'profile',
     category: '',
     event_date: '',
@@ -34,7 +35,8 @@ export default function CommunityManagement() {
     location: '',
     contact_info: '',
     image_url: '',
-    area: 'sports' as 'sports' | 'culture' | 'religion',
+    youtube_id: '',
+    area: 'sports' as 'sports' | 'culture' | 'religion' | 'tourism',
     active: true
   });
 
@@ -92,6 +94,7 @@ export default function CommunityManagement() {
         title: '',
         content: '',
         image_url: '',
+        youtube_id: '',
         area: 'sports',
         type: 'news',
         category: '',
@@ -121,6 +124,7 @@ export default function CommunityManagement() {
         location: '',
         contact_info: '',
         image_url: '',
+        youtube_id: '',
         area: 'sports',
         active: true
       });
@@ -158,7 +162,7 @@ export default function CommunityManagement() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-black text-stone-900 uppercase tracking-tight">Gestión Comunitaria</h1>
-          <p className="text-stone-500 text-sm">Administra noticias, eventos y espacios de Deporte, Cultura y Religión</p>
+          <p className="text-stone-500 text-sm">Administra noticias, eventos y espacios de Deporte, Cultura, Religión y Turismo</p>
         </div>
         <div className="flex gap-2">
           <button 
@@ -236,11 +240,15 @@ export default function CommunityManagement() {
                       <span className={`inline-flex w-fit px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${
                         entry.area === 'sports' ? 'bg-ml-monte-verde text-white' : 
                         entry.area === 'culture' ? 'bg-ml-quebrada text-ml-monte-verde' : 
-                        'bg-ml-teja text-white'
+                        entry.area === 'religion' ? 'bg-ml-teja text-white' :
+                        'bg-ml-monte-verde text-white'
                       }`}>
-                        {entry.area === 'sports' ? 'Deporte' : entry.area === 'culture' ? 'Cultura' : 'Religión'}
+                        {entry.area === 'sports' ? 'Deporte' : entry.area === 'culture' ? 'Cultura' : entry.area === 'religion' ? 'Religión' : 'Turismo'}
                       </span>
-                      <span className="text-[10px] text-stone-400 font-bold uppercase tracking-widest">{entry.type}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-stone-400 font-bold uppercase tracking-widest">{entry.type}</span>
+                        {entry.youtube_id && <Play className="w-3 h-3 text-ml-monte-verde" />}
+                      </div>
                     </div>
                   </td>
                   <td className="px-6 py-4">
@@ -280,13 +288,17 @@ export default function CommunityManagement() {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`inline-flex px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${
-                      space.area === 'sports' ? 'bg-ml-monte-verde text-white' : 
-                      space.area === 'culture' ? 'bg-ml-quebrada text-ml-monte-verde' : 
-                      'bg-ml-teja text-white'
-                    }`}>
-                      {space.area === 'sports' ? 'Deporte' : space.area === 'culture' ? 'Cultura' : 'Religión'}
-                    </span>
+                    <div className="flex flex-col gap-1">
+                      <span className={`inline-flex px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                        space.area === 'sports' ? 'bg-ml-monte-verde text-white' : 
+                        space.area === 'culture' ? 'bg-ml-quebrada text-ml-monte-verde' : 
+                        space.area === 'religion' ? 'bg-ml-teja text-white' :
+                        'bg-ml-monte-verde text-white'
+                      }`}>
+                        {space.area === 'sports' ? 'Deporte' : space.area === 'culture' ? 'Cultura' : space.area === 'religion' ? 'Religión' : 'Turismo'}
+                      </span>
+                      {space.youtube_id && <Play className="w-3 h-3 text-ml-monte-verde" />}
+                    </div>
                   </td>
                   <td className="px-6 py-4">
                     <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-emerald-100 text-emerald-700">
@@ -338,7 +350,18 @@ export default function CommunityManagement() {
                           <option value="sports">Deporte</option>
                           <option value="culture">Cultura</option>
                           <option value="religion">Religión</option>
+                          <option value="tourism">Turismo</option>
                         </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-2">ID de Video (YouTube)</label>
+                        <input 
+                          type="text"
+                          value={entryForm.youtube_id}
+                          onChange={e => setEntryForm({...entryForm, youtube_id: e.target.value})}
+                          placeholder="Ej: dQw4w9WgXcQ"
+                          className="w-full px-5 py-3.5 bg-stone-50 border border-stone-100 rounded-2xl text-sm outline-none"
+                        />
                       </div>
                       <div>
                         <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2 px-1">Tipo de Entrada</label>
@@ -458,7 +481,18 @@ export default function CommunityManagement() {
                           <option value="sports">Deporte</option>
                           <option value="culture">Cultura</option>
                           <option value="religion">Religión</option>
+                          <option value="tourism">Turismo</option>
                         </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-2">ID de Video (YouTube)</label>
+                        <input 
+                          type="text"
+                          value={spaceForm.youtube_id}
+                          onChange={e => setSpaceForm({...spaceForm, youtube_id: e.target.value})}
+                          placeholder="Ej: dQw4w9WgXcQ"
+                          className="w-full px-5 py-3.5 bg-stone-50 border border-stone-100 rounded-2xl text-sm outline-none"
+                        />
                       </div>
                     </div>
 

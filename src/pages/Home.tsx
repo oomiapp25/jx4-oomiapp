@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase, Product, Department } from '../lib/supabase';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, CreditCard, Truck, ShieldCheck, Ticket, Smartphone, Store, Footprints, Package, Plus, Search, Download, Play, Trophy, Music, Users, ShoppingBag, X, ExternalLink, Church } from 'lucide-react';
+import { ShoppingCart, CreditCard, Truck, ShieldCheck, Ticket, Smartphone, Store, Footprints, Package, Plus, Search, Download, Play, Trophy, Music, Users, ShoppingBag, X, ExternalLink, Church, Palmtree } from 'lucide-react';
 import HeroCarousel from '../components/HeroCarousel';
 import { getIconById } from '../lib/icons';
 import { IconRenderer } from '../components/IconRenderer';
@@ -352,7 +352,7 @@ export default function Home() {
             </div>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 md:gap-6">
             <Link to="/comunidad?area=sports" className="p-4 md:p-6 glass bg-white/60 rounded-[30px] md:rounded-[35px] flex flex-col items-center gap-3 md:gap-4 hover:bg-ml-monte-verde hover:text-white transition-all group shadow-lg">
               <div className="w-10 h-10 md:w-14 md:h-14 bg-ml-monte-verde/10 rounded-xl md:rounded-2xl flex items-center justify-center text-ml-monte-verde group-hover:bg-white/20 group-hover:text-white transition-all">
                 <Trophy className="w-5 h-5 md:w-7 md:h-7" />
@@ -371,7 +371,13 @@ export default function Home() {
               </div>
               <span className="text-[9px] md:text-xs font-black uppercase tracking-widest text-center">Religión</span>
             </Link>
-            <Link to="/comunidad" className="p-4 md:p-6 glass bg-white/60 rounded-[30px] md:rounded-[35px] flex flex-col items-center gap-3 md:gap-4 hover:bg-ml-hierro hover:text-white transition-all group shadow-lg">
+            <Link to="/comunidad?area=tourism" className="p-4 md:p-6 glass bg-white/60 rounded-[30px] md:rounded-[35px] flex flex-col items-center gap-3 md:gap-4 hover:bg-ml-monte-verde hover:text-white transition-all group shadow-lg">
+              <div className="w-10 h-10 md:w-14 md:h-14 bg-ml-monte-verde/10 rounded-xl md:rounded-2xl flex items-center justify-center text-ml-monte-verde group-hover:bg-white/20 group-hover:text-white transition-all">
+                <Palmtree className="w-5 h-5 md:w-7 md:h-7" />
+              </div>
+              <span className="text-[9px] md:text-xs font-black uppercase tracking-widest text-center">Turismo</span>
+            </Link>
+            <Link to="/comunidad" className="p-4 md:p-6 glass bg-white/60 rounded-[30px] md:rounded-[35px] flex flex-col items-center gap-3 md:gap-4 hover:bg-ml-hierro hover:text-white transition-all group shadow-lg col-span-2 sm:col-span-1">
               <div className="w-10 h-10 md:w-14 md:h-14 bg-ml-hierro/10 rounded-xl md:rounded-2xl flex items-center justify-center text-ml-hierro group-hover:bg-white/20 group-hover:text-white transition-all">
                 <Users className="w-5 h-5 md:w-7 md:h-7" />
               </div>
