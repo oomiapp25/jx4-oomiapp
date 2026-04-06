@@ -183,7 +183,7 @@ export interface CommunityEntry {
   title: string;
   content: string;
   image_url: string | null;
-  area: 'sports' | 'culture';
+  area: 'sports' | 'culture' | 'religion';
   type: 'news' | 'event' | 'profile';
   category: string | null;
   event_date: string | null;
@@ -201,7 +201,7 @@ export interface CommunitySpace {
   location: string | null;
   contact_info: string | null;
   image_url: string | null;
-  area: 'sports' | 'culture';
+  area: 'sports' | 'culture' | 'religion';
   created_at: string;
   active: boolean;
 }

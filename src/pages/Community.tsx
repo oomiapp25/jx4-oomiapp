@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { supabase, CommunityEntry, CommunitySpace } from '../lib/supabase';
-import { Trophy, Theater, Calendar, MapPin, Phone, Search, Filter, ChevronRight, Info, ExternalLink, Loader2, X, Home, Newspaper } from 'lucide-react';
+import { Trophy, Theater, Calendar, MapPin, Phone, Search, Filter, ChevronRight, Info, ExternalLink, Loader2, X, Home, Newspaper, Church } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useSearchParams } from 'react-router-dom';
 
 export default function Community() {
+  const [searchParams] = useSearchParams();
+  const initialArea = searchParams.get('area') as 'all' | 'sports' | 'culture' | 'religion' || 'all';
+  
   const [entries, setEntries] = useState<CommunityEntry[]>([]);
   const [spaces, setSpaces] = useState<CommunitySpace[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeArea, setActiveArea] = useState<'all' | 'sports' | 'culture'>('all');
+  const [activeArea, setActiveArea] = useState<'all' | 'sports' | 'culture' | 'religion'>(initialArea);
   const [activeTab, setActiveTab] = useState<'news' | 'calendar' | 'directory'>('news');
   const [selectedEntry, setSelectedEntry] = useState<CommunityEntry | null>(null);
 
@@ -65,7 +69,8 @@ export default function Community() {
               {activeArea === 'all' && <Home className="w-3.5 h-3.5" />}
               {activeArea === 'sports' && <Trophy className="w-3.5 h-3.5" />}
               {activeArea === 'culture' && <Theater className="w-3.5 h-3.5" />}
-              {activeArea === 'all' ? 'Todo' : activeArea === 'sports' ? 'Deporte' : 'Cultura'}
+              {activeArea === 'religion' && <Church className="w-3.5 h-3.5" />}
+              {activeArea === 'all' ? 'Todo' : activeArea === 'sports' ? 'Deporte' : activeArea === 'culture' ? 'Cultura' : 'Religión'}
             </motion.div>
           </AnimatePresence>
         </div>
@@ -73,7 +78,7 @@ export default function Community() {
 
       <div className="max-w-7xl mx-auto px-4 -mt-8 relative z-20">
         {/* Navigation Tabs */}
-        <div className="bg-white rounded-3xl shadow-xl border border-stone-100 p-2 grid grid-cols-3 gap-2 mb-8">
+        <div className="bg-white rounded-3xl shadow-xl border border-stone-100 p-2 grid grid-cols-4 gap-2 mb-8">
           <button 
             onClick={() => setActiveArea('all')}
             className={`py-3 rounded-2xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 ${activeArea === 'all' ? 'bg-ml-monte-verde text-white' : 'text-stone-400 hover:bg-stone-50'}`}
@@ -94,6 +99,13 @@ export default function Community() {
           >
             <Theater className="w-5 h-5 sm:w-4 sm:h-4" />
             <span className="hidden sm:inline text-[10px] sm:text-xs">Cultura</span>
+          </button>
+          <button 
+            onClick={() => setActiveArea('religion')}
+            className={`py-3 rounded-2xl text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 ${activeArea === 'religion' ? 'bg-ml-monte-verde text-white' : 'text-stone-400 hover:bg-stone-50'}`}
+          >
+            <Church className="w-5 h-5 sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline text-[10px] sm:text-xs">Religión</span>
           </button>
         </div>
 
@@ -141,7 +153,7 @@ export default function Community() {
             <div className="bg-ml-quebrada/20 p-6 rounded-3xl border border-ml-quebrada/30">
               <h3 className="text-sm font-black text-ml-monte-verde uppercase tracking-widest mb-3">¿Quieres publicar?</h3>
               <p className="text-xs text-ml-monte-verde/70 leading-relaxed mb-4">
-                Si eres organizador de eventos deportivos o culturales, contáctanos para difundir tu actividad.
+                Si eres organizador de eventos deportivos, culturales o religiosos, contáctanos para difundir tu actividad.
               </p>
               <a 
                 href="https://wa.me/584242384014" 
@@ -186,8 +198,12 @@ export default function Community() {
                             </div>
                           )}
                           <div className="absolute top-4 left-4">
-                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${entry.area === 'sports' ? 'bg-ml-monte-verde text-white' : 'bg-ml-quebrada text-ml-monte-verde'}`}>
-                              {entry.area === 'sports' ? 'Deporte' : 'Cultura'}
+                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
+                              entry.area === 'sports' ? 'bg-ml-monte-verde text-white' : 
+                              entry.area === 'culture' ? 'bg-ml-quebrada text-ml-monte-verde' : 
+                              'bg-ml-teja text-white'
+                            }`}>
+                              {entry.area === 'sports' ? 'Deporte' : entry.area === 'culture' ? 'Cultura' : 'Religión'}
                             </span>
                           </div>
                         </div>
@@ -242,8 +258,12 @@ export default function Community() {
                         </div>
                         <div className="flex-grow text-center md:text-left">
                           <div className="flex flex-wrap justify-center md:justify-start gap-2 mb-2">
-                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${event.area === 'sports' ? 'bg-ml-monte-verde text-white' : 'bg-ml-quebrada text-ml-monte-verde'}`}>
-                              {event.area === 'sports' ? 'Deporte' : 'Cultura'}
+                            <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                              event.area === 'sports' ? 'bg-ml-monte-verde text-white' : 
+                              event.area === 'culture' ? 'bg-ml-quebrada text-ml-monte-verde' : 
+                              'bg-ml-teja text-white'
+                            }`}>
+                              {event.area === 'sports' ? 'Deporte' : event.area === 'culture' ? 'Cultura' : 'Religión'}
                             </span>
                             {event.category && (
                               <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest bg-stone-100 text-stone-500">
@@ -347,7 +367,7 @@ export default function Community() {
           <div className="relative z-10">
             <h2 className="text-2xl sm:text-3xl font-black text-white mb-4 tracking-tight">¿Quieres publicar?</h2>
             <p className="text-white/80 text-sm sm:text-base mb-8 max-w-xl mx-auto font-medium">
-              Si eres organizador de eventos deportivos o culturales, contáctanos para difundir tu actividad.
+              Si eres organizador de eventos deportivos, culturales o religiosos, contáctanos para difundir tu actividad.
             </p>
             <a 
               href="https://wa.me/584123868364"
@@ -399,8 +419,12 @@ export default function Community() {
                 )}
                 <div className="p-8 md:p-12">
                   <div className="flex flex-wrap items-center gap-3 mb-6">
-                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${selectedEntry.area === 'sports' ? 'bg-ml-monte-verde text-white' : 'bg-ml-quebrada text-ml-monte-verde'}`}>
-                      {selectedEntry.area === 'sports' ? 'Deporte' : 'Cultura'}
+                    <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
+                      selectedEntry.area === 'sports' ? 'bg-ml-monte-verde text-white' : 
+                      selectedEntry.area === 'culture' ? 'bg-ml-quebrada text-ml-monte-verde' : 
+                      'bg-ml-teja text-white'
+                    }`}>
+                      {selectedEntry.area === 'sports' ? 'Deporte' : selectedEntry.area === 'culture' ? 'Cultura' : 'Religión'}
                     </span>
                     <div className="flex items-center gap-2 text-[10px] text-stone-400 font-bold uppercase tracking-widest">
                       <Calendar className="w-3 h-3" />

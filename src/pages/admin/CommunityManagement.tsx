@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase, CommunityEntry, CommunitySpace } from '../../lib/supabase';
-import { Trophy, Music, Calendar, MapPin, Phone, Plus, Trash2, Edit2, Search, Filter, X, Loader2, Camera, Upload, FileText, CheckCircle } from 'lucide-react';
+import { Trophy, Music, Calendar, MapPin, Phone, Plus, Trash2, Edit2, Search, Filter, X, Loader2, Camera, Upload, FileText, CheckCircle, Church } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { uploadToImgBB } from '../../services/imgbbService';
 
@@ -19,7 +19,7 @@ export default function CommunityManagement() {
     title: '',
     content: '',
     image_url: '',
-    area: 'sports' as 'sports' | 'culture',
+    area: 'sports' as 'sports' | 'culture' | 'religion',
     type: 'news' as 'news' | 'event' | 'profile',
     category: '',
     event_date: '',
@@ -34,7 +34,7 @@ export default function CommunityManagement() {
     location: '',
     contact_info: '',
     image_url: '',
-    area: 'sports' as 'sports' | 'culture',
+    area: 'sports' as 'sports' | 'culture' | 'religion',
     active: true
   });
 
@@ -158,7 +158,7 @@ export default function CommunityManagement() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-2xl font-black text-stone-900 uppercase tracking-tight">Gestión Comunitaria</h1>
-          <p className="text-stone-500 text-sm">Administra noticias, eventos y espacios de Deporte y Cultura</p>
+          <p className="text-stone-500 text-sm">Administra noticias, eventos y espacios de Deporte, Cultura y Religión</p>
         </div>
         <div className="flex gap-2">
           <button 
@@ -233,8 +233,12 @@ export default function CommunityManagement() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex flex-col gap-1">
-                      <span className={`inline-flex w-fit px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${entry.area === 'sports' ? 'bg-ml-monte-verde text-white' : 'bg-ml-quebrada text-ml-monte-verde'}`}>
-                        {entry.area === 'sports' ? 'Deporte' : 'Cultura'}
+                      <span className={`inline-flex w-fit px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                        entry.area === 'sports' ? 'bg-ml-monte-verde text-white' : 
+                        entry.area === 'culture' ? 'bg-ml-quebrada text-ml-monte-verde' : 
+                        'bg-ml-teja text-white'
+                      }`}>
+                        {entry.area === 'sports' ? 'Deporte' : entry.area === 'culture' ? 'Cultura' : 'Religión'}
                       </span>
                       <span className="text-[10px] text-stone-400 font-bold uppercase tracking-widest">{entry.type}</span>
                     </div>
@@ -276,8 +280,12 @@ export default function CommunityManagement() {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className={`inline-flex px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${space.area === 'sports' ? 'bg-ml-monte-verde text-white' : 'bg-ml-quebrada text-ml-monte-verde'}`}>
-                      {space.area === 'sports' ? 'Deporte' : 'Cultura'}
+                    <span className={`inline-flex px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest ${
+                      space.area === 'sports' ? 'bg-ml-monte-verde text-white' : 
+                      space.area === 'culture' ? 'bg-ml-quebrada text-ml-monte-verde' : 
+                      'bg-ml-teja text-white'
+                    }`}>
+                      {space.area === 'sports' ? 'Deporte' : space.area === 'culture' ? 'Cultura' : 'Religión'}
                     </span>
                   </td>
                   <td className="px-6 py-4">
@@ -329,6 +337,7 @@ export default function CommunityManagement() {
                         >
                           <option value="sports">Deporte</option>
                           <option value="culture">Cultura</option>
+                          <option value="religion">Religión</option>
                         </select>
                       </div>
                       <div>
@@ -448,6 +457,7 @@ export default function CommunityManagement() {
                         >
                           <option value="sports">Deporte</option>
                           <option value="culture">Cultura</option>
+                          <option value="religion">Religión</option>
                         </select>
                       </div>
                     </div>
