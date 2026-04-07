@@ -183,7 +183,9 @@ export interface CommunityEntry {
   title: string;
   content: string;
   image_url: string | null;
-  youtube_id?: string | null;
+  video_url?: string | null;
+  video_platform?: 'youtube' | 'tiktok' | null;
+  creator_name?: string | null;
   area: 'sports' | 'culture' | 'religion' | 'tourism';
   type: 'news' | 'event' | 'profile';
   category: string | null;
@@ -202,7 +204,9 @@ export interface CommunitySpace {
   location: string | null;
   contact_info: string | null;
   image_url: string | null;
-  youtube_id?: string | null;
+  video_url?: string | null;
+  video_platform?: 'youtube' | 'tiktok' | null;
+  creator_name?: string | null;
   area: 'sports' | 'culture' | 'religion' | 'tourism';
   created_at: string;
   active: boolean;

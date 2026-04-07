@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { supabase, CommunityEntry, CommunitySpace } from '../../lib/supabase';
-import { Trophy, Music, Calendar, MapPin, Phone, Plus, Trash2, Edit2, Search, Filter, X, Loader2, Camera, Upload, FileText, CheckCircle, Church, Palmtree, Play } from 'lucide-react';
+import { Trophy, Music, Calendar, MapPin, Phone, Plus, Trash2, Edit2, Search, Filter, X, Loader2, Camera, Upload, FileText, CheckCircle, Church, Palmtree, Play, Video } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { uploadToImgBB } from '../../services/imgbbService';
+import { getTikTokOEmbed } from '../../services/tiktokService';
 
 export default function CommunityManagement() {
   const [entries, setEntries] = useState<CommunityEntry[]>([]);
@@ -19,7 +20,9 @@ export default function CommunityManagement() {
     title: '',
     content: '',
     image_url: '',
-    youtube_id: '',
+    video_url: '',
+    video_platform: 'youtube' as 'youtube' | 'tiktok',
+    creator_name: '',
     area: 'sports' as 'sports' | 'culture' | 'religion' | 'tourism',
     type: 'news' as 'news' | 'event' | 'profile',
     category: '',
@@ -35,7 +38,9 @@ export default function CommunityManagement() {
     location: '',
     contact_info: '',
     image_url: '',
-    youtube_id: '',
+    video_url: '',
+    video_platform: 'youtube' as 'youtube' | 'tiktok',
+    creator_name: '',
     area: 'sports' as 'sports' | 'culture' | 'religion' | 'tourism',
     active: true
   });
@@ -60,7 +65,35 @@ export default function CommunityManagement() {
     }
   }
 
-  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>, type: 'entry' | 'space') {
+  async function handleTikTokFetch(url: string, type: 'entry' | 'space') {
+    if (!url.includes('tiktok.com')) return;
+    
+    setUploading(true);
+    try {
+      const data = await getTikTokOEmbed(url);
+      if (data) {
+        if (type === 'entry') {
+          setEntryForm(prev => ({ 
+            ...prev, 
+            image_url: data.thumbnail_url,
+            creator_name: data.author_name,
+            title: prev.title || data.title
+          }));
+        } else {
+          setSpaceForm(prev => ({ 
+            ...prev, 
+            image_url: data.thumbnail_url,
+            creator_name: data.author_name,
+            name: prev.name || data.title
+          }));
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching TikTok data:', error);
+    } finally {
+      setUploading(false);
+    }
+  }
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -94,7 +127,9 @@ export default function CommunityManagement() {
         title: '',
         content: '',
         image_url: '',
-        youtube_id: '',
+        video_url: '',
+        video_platform: 'youtube',
+        creator_name: '',
         area: 'sports',
         type: 'news',
         category: '',
@@ -124,7 +159,9 @@ export default function CommunityManagement() {
         location: '',
         contact_info: '',
         image_url: '',
-        youtube_id: '',
+        video_url: '',
+        video_platform: 'youtube',
+        creator_name: '',
         area: 'sports',
         active: true
       });
@@ -223,6 +260,13 @@ export default function CommunityManagement() {
                       <div className="w-12 h-12 bg-stone-100 rounded-xl overflow-hidden flex-shrink-0">
                         {entry.image_url ? (
                           <img src={entry.image_url} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        ) : entry.youtube_id ? (
+                          <img 
+                            src={`https://img.youtube.com/vi/${entry.youtube_id}/mqdefault.jpg`} 
+                            alt="" 
+                            className="w-full h-full object-cover" 
+                            referrerPolicy="no-referrer"
+                          />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
                             <FileText className="w-6 h-6 text-stone-300" />
@@ -247,7 +291,8 @@ export default function CommunityManagement() {
                       </span>
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] text-stone-400 font-bold uppercase tracking-widest">{entry.type}</span>
-                        {entry.youtube_id && <Play className="w-3 h-3 text-ml-monte-verde" />}
+                        {entry.video_url && <Play className="w-3 h-3 text-ml-monte-verde" />}
+                        {entry.video_platform === 'tiktok' && <Video className="w-3 h-3 text-stone-900" />}
                       </div>
                     </div>
                   </td>
@@ -275,6 +320,13 @@ export default function CommunityManagement() {
                       <div className="w-12 h-12 bg-stone-100 rounded-xl overflow-hidden flex-shrink-0">
                         {space.image_url ? (
                           <img src={space.image_url} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                        ) : space.youtube_id ? (
+                          <img 
+                            src={`https://img.youtube.com/vi/${space.youtube_id}/mqdefault.jpg`} 
+                            alt="" 
+                            className="w-full h-full object-cover" 
+                            referrerPolicy="no-referrer"
+                          />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
                             <MapPin className="w-6 h-6 text-stone-300" />
@@ -297,7 +349,8 @@ export default function CommunityManagement() {
                       }`}>
                         {space.area === 'sports' ? 'Deporte' : space.area === 'culture' ? 'Cultura' : space.area === 'religion' ? 'Religión' : 'Turismo'}
                       </span>
-                      {space.youtube_id && <Play className="w-3 h-3 text-ml-monte-verde" />}
+                      {space.video_url && <Play className="w-3 h-3 text-ml-monte-verde" />}
+                      {space.video_platform === 'tiktok' && <Video className="w-3 h-3 text-stone-900" />}
                     </div>
                   </td>
                   <td className="px-6 py-4">
@@ -354,15 +407,41 @@ export default function CommunityManagement() {
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-2">ID de Video (YouTube)</label>
+                        <label className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-2">Plataforma de Video</label>
+                        <select 
+                          value={entryForm.video_platform}
+                          onChange={e => setEntryForm({...entryForm, video_platform: e.target.value as any})}
+                          className="w-full px-5 py-3.5 bg-stone-50 border border-stone-100 rounded-2xl text-sm outline-none"
+                        >
+                          <option value="youtube">YouTube</option>
+                          <option value="tiktok">TikTok</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-2">URL / ID de Video</label>
                         <input 
                           type="text"
-                          value={entryForm.youtube_id}
-                          onChange={e => setEntryForm({...entryForm, youtube_id: e.target.value})}
-                          placeholder="Ej: dQw4w9WgXcQ"
+                          value={entryForm.video_url}
+                          onChange={e => {
+                            const val = e.target.value;
+                            setEntryForm({...entryForm, video_url: val});
+                            if (entryForm.video_platform === 'tiktok') handleTikTokFetch(val, 'entry');
+                          }}
+                          placeholder={entryForm.video_platform === 'youtube' ? "Ej: dQw4w9WgXcQ" : "URL completa de TikTok"}
                           className="w-full px-5 py-3.5 bg-stone-50 border border-stone-100 rounded-2xl text-sm outline-none"
                         />
                       </div>
+                      {entryForm.creator_name && (
+                        <div>
+                          <label className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-2">Creador (Créditos)</label>
+                          <input 
+                            type="text"
+                            value={entryForm.creator_name}
+                            onChange={e => setEntryForm({...entryForm, creator_name: e.target.value})}
+                            className="w-full px-5 py-3.5 bg-stone-50 border border-stone-100 rounded-2xl text-sm outline-none"
+                          />
+                        </div>
+                      )}
                       <div>
                         <label className="block text-[10px] font-black text-stone-400 uppercase tracking-widest mb-2 px-1">Tipo de Entrada</label>
                         <select 
@@ -485,15 +564,41 @@ export default function CommunityManagement() {
                         </select>
                       </div>
                       <div>
-                        <label className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-2">ID de Video (YouTube)</label>
+                        <label className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-2">Plataforma de Video</label>
+                        <select 
+                          value={spaceForm.video_platform}
+                          onChange={e => setSpaceForm({...spaceForm, video_platform: e.target.value as any})}
+                          className="w-full px-5 py-3.5 bg-stone-50 border border-stone-100 rounded-2xl text-sm outline-none"
+                        >
+                          <option value="youtube">YouTube</option>
+                          <option value="tiktok">TikTok</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-2">URL / ID de Video</label>
                         <input 
                           type="text"
-                          value={spaceForm.youtube_id}
-                          onChange={e => setSpaceForm({...spaceForm, youtube_id: e.target.value})}
-                          placeholder="Ej: dQw4w9WgXcQ"
+                          value={spaceForm.video_url}
+                          onChange={e => {
+                            const val = e.target.value;
+                            setSpaceForm({...spaceForm, video_url: val});
+                            if (spaceForm.video_platform === 'tiktok') handleTikTokFetch(val, 'space');
+                          }}
+                          placeholder={spaceForm.video_platform === 'youtube' ? "Ej: dQw4w9WgXcQ" : "URL completa de TikTok"}
                           className="w-full px-5 py-3.5 bg-stone-50 border border-stone-100 rounded-2xl text-sm outline-none"
                         />
                       </div>
+                      {spaceForm.creator_name && (
+                        <div>
+                          <label className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-2">Creador (Créditos)</label>
+                          <input 
+                            type="text"
+                            value={spaceForm.creator_name}
+                            onChange={e => setSpaceForm({...spaceForm, creator_name: e.target.value})}
+                            className="w-full px-5 py-3.5 bg-stone-50 border border-stone-100 rounded-2xl text-sm outline-none"
+                          />
+                        </div>
+                      )}
                     </div>
 
                     <div>
