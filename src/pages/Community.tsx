@@ -484,7 +484,7 @@ export default function Community() {
                 ) : selectedEntry.video_platform === 'tiktok' && selectedEntry.video_url ? (
                   <div className="w-full aspect-[9/16] max-h-[75vh] mx-auto bg-black flex items-center justify-center">
                     <iframe 
-                      src={`https://www.tiktok.com/player/v1/${selectedEntry.video_url}?autoplay=1`}
+                      src={`https://www.tiktok.com/player/v1/${selectedEntry.video_url}?autoplay=1&music_info=1&description=1`}
                       className="w-full h-full"
                       allowFullScreen
                       allow="autoplay; encrypted-media"

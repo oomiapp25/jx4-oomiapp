@@ -14,6 +14,7 @@ export default function CommunityManagement() {
   const [modalType, setModalType] = useState<'entry' | 'space'>('entry');
   const [submitting, setSubmitting] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [fetchingVideo, setFetchingVideo] = useState(false);
 
   // Form states
   const [entryForm, setEntryForm] = useState({
@@ -68,7 +69,7 @@ export default function CommunityManagement() {
   async function handleTikTokFetch(url: string, type: 'entry' | 'space') {
     if (!url.includes('tiktok.com')) return;
     
-    setUploading(true);
+    setFetchingVideo(true);
     try {
       const data = await fetchTikTokMetadata(url);
       if (data) {
@@ -93,7 +94,7 @@ export default function CommunityManagement() {
     } catch (error) {
       console.error('Error fetching TikTok data:', error);
     } finally {
-      setUploading(false);
+      setFetchingVideo(false);
     }
   }
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>, type: 'entry' | 'space') {
@@ -422,17 +423,26 @@ export default function CommunityManagement() {
                       </div>
                       <div>
                         <label className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-2">URL / ID de Video</label>
-                        <input 
-                          type="text"
-                          value={entryForm.video_url}
-                          onChange={e => {
-                            const val = e.target.value;
-                            setEntryForm({...entryForm, video_url: val});
-                            if (entryForm.video_platform === 'tiktok') handleTikTokFetch(val, 'entry');
-                          }}
-                          placeholder={entryForm.video_platform === 'youtube' ? "Ej: dQw4w9WgXcQ" : "URL completa de TikTok"}
-                          className="w-full px-5 py-3.5 bg-stone-50 border border-stone-100 rounded-2xl text-sm outline-none"
-                        />
+                        <div className="relative">
+                          <input 
+                            type="text"
+                            value={entryForm.video_url}
+                            onChange={e => {
+                              const val = e.target.value;
+                              setEntryForm({...entryForm, video_url: val});
+                              if (entryForm.video_platform === 'tiktok' && val.includes('tiktok.com')) {
+                                handleTikTokFetch(val, 'entry');
+                              }
+                            }}
+                            placeholder={entryForm.video_platform === 'youtube' ? "Ej: dQw4w9WgXcQ" : "URL completa de TikTok"}
+                            className="w-full px-5 py-3.5 bg-stone-50 border border-stone-100 rounded-2xl text-sm outline-none"
+                          />
+                          {fetchingVideo && (
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                              <Loader2 className="w-4 h-4 animate-spin text-ml-monte-verde" />
+                            </div>
+                          )}
+                        </div>
                       </div>
                       {entryForm.creator_name && (
                         <div>
@@ -579,17 +589,26 @@ export default function CommunityManagement() {
                       </div>
                       <div>
                         <label className="block text-xs font-black text-stone-400 uppercase tracking-widest mb-2">URL / ID de Video</label>
-                        <input 
-                          type="text"
-                          value={spaceForm.video_url}
-                          onChange={e => {
-                            const val = e.target.value;
-                            setSpaceForm({...spaceForm, video_url: val});
-                            if (spaceForm.video_platform === 'tiktok') handleTikTokFetch(val, 'space');
-                          }}
-                          placeholder={spaceForm.video_platform === 'youtube' ? "Ej: dQw4w9WgXcQ" : "URL completa de TikTok"}
-                          className="w-full px-5 py-3.5 bg-stone-50 border border-stone-100 rounded-2xl text-sm outline-none"
-                        />
+                        <div className="relative">
+                          <input 
+                            type="text"
+                            value={spaceForm.video_url}
+                            onChange={e => {
+                              const val = e.target.value;
+                              setSpaceForm({...spaceForm, video_url: val});
+                              if (spaceForm.video_platform === 'tiktok' && val.includes('tiktok.com')) {
+                                handleTikTokFetch(val, 'space');
+                              }
+                            }}
+                            placeholder={spaceForm.video_platform === 'youtube' ? "Ej: dQw4w9WgXcQ" : "URL completa de TikTok"}
+                            className="w-full px-5 py-3.5 bg-stone-50 border border-stone-100 rounded-2xl text-sm outline-none"
+                          />
+                          {fetchingVideo && (
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                              <Loader2 className="w-4 h-4 animate-spin text-ml-monte-verde" />
+                            </div>
+                          )}
+                        </div>
                       </div>
                       {spaceForm.creator_name && (
                         <div>
