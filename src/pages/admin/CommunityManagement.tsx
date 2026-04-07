@@ -94,6 +94,7 @@ export default function CommunityManagement() {
       setUploading(false);
     }
   }
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>, type: 'entry' | 'space') {
     const file = e.target.files?.[0];
     if (!file) return;
 
