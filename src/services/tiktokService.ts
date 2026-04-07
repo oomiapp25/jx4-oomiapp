@@ -3,45 +3,60 @@
  * Handles TikTok oEmbed integration to fetch thumbnails and embed codes.
  */
 
-export interface TikTokOEmbedResponse {
+/**
+ * TikTok Service for Jx4 - Senior Implementation
+ */
+
+export interface TikTokData {
+  id: string;
   thumbnail_url: string;
   author_name: string;
-  author_url: string;
-  html: string;
   title: string;
 }
 
 /**
- * Fetches TikTok oEmbed data for a given URL.
- * @param tiktokUrl The full URL of the TikTok video.
- * @returns The oEmbed response or null if it fails.
+ * Extrae el ID de TikTok de cualquier formato de URL.
+ * Soporta: tiktok.com/@user/video/ID, vm.tiktok.com/ID, etc.
  */
-export async function getTikTokOEmbed(tiktokUrl: string): Promise<TikTokOEmbedResponse | null> {
+export function extractTikTokId(url: string): string | null {
   try {
-    // TikTok oEmbed endpoint
-    const endpoint = `https://www.tiktok.com/oembed?url=${encodeURIComponent(tiktokUrl)}`;
-    
-    // In a real browser environment, this might hit CORS issues.
-    // Usually, this would be proxied through a server-side route.
-    // For now, we'll try to fetch it directly.
-    const response = await fetch(endpoint);
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch TikTok oEmbed data');
-    }
-    
-    return await response.ok ? response.json() : null;
-  } catch (error) {
-    console.error('Error fetching TikTok oEmbed:', error);
+    // Caso 1: URL estándar /video/123456789
+    const standardMatch = url.match(/\/video\/(\d+)/);
+    if (standardMatch) return standardMatch[1];
+
+    // Para URLs cortas (vm.tiktok.com), el ID se obtiene mejor vía oEmbed
+    // ya que requiere una redirección que el cliente no siempre puede seguir.
+    return null; 
+  } catch (e) {
     return null;
   }
 }
 
 /**
- * Extracts the video ID from a TikTok URL if needed, 
- * though oEmbed usually takes the full URL.
+ * Obtiene metadatos de TikTok vía oEmbed.
+ * TikTok permite pasar la URL corta directamente a este endpoint.
  */
-export function extractTikTokId(url: string): string | null {
-  const match = url.match(/\/video\/(\d+)/);
-  return match ? match[1] : null;
+export async function fetchTikTokMetadata(url: string): Promise<TikTokData | null> {
+  try {
+    const response = await fetch(`https://www.tiktok.com/oembed?url=${encodeURIComponent(url)}`);
+    if (!response.ok) throw new Error('TikTok privado o inválido');
+    
+    const data = await response.json();
+    
+    // Extraemos el ID del HTML que devuelve oEmbed
+    const idMatch = data.html.match(/data-video-id="(\d+)"/);
+    const videoId = idMatch ? idMatch[1] : extractTikTokId(url);
+
+    if (!videoId) throw new Error('No se pudo extraer el ID del video');
+
+    return {
+      id: videoId,
+      thumbnail_url: data.thumbnail_url,
+      author_name: data.author_name,
+      title: data.title
+    };
+  } catch (error) {
+    console.error('TikTok Fetch Error:', error);
+    return null;
+  }
 }

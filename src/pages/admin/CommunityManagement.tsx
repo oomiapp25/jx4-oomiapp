@@ -3,7 +3,7 @@ import { supabase, CommunityEntry, CommunitySpace } from '../../lib/supabase';
 import { Trophy, Music, Calendar, MapPin, Phone, Plus, Trash2, Edit2, Search, Filter, X, Loader2, Camera, Upload, FileText, CheckCircle, Church, Palmtree, Play, Video } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { uploadToImgBB } from '../../services/imgbbService';
-import { getTikTokOEmbed } from '../../services/tiktokService';
+import { fetchTikTokMetadata } from '../../services/tiktokService';
 
 export default function CommunityManagement() {
   const [entries, setEntries] = useState<CommunityEntry[]>([]);
@@ -70,21 +70,23 @@ export default function CommunityManagement() {
     
     setUploading(true);
     try {
-      const data = await getTikTokOEmbed(url);
+      const data = await fetchTikTokMetadata(url);
       if (data) {
         if (type === 'entry') {
           setEntryForm(prev => ({ 
             ...prev, 
             image_url: data.thumbnail_url,
             creator_name: data.author_name,
-            title: prev.title || data.title
+            title: prev.title || data.title,
+            video_url: data.id // Store the ID for the player
           }));
         } else {
           setSpaceForm(prev => ({ 
             ...prev, 
             image_url: data.thumbnail_url,
             creator_name: data.author_name,
-            name: prev.name || data.title
+            name: prev.name || data.title,
+            video_url: data.id // Store the ID for the player
           }));
         }
       }

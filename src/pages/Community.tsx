@@ -200,18 +200,23 @@ export default function Community() {
                         onClick={() => setSelectedEntry(entry)}
                         className="bg-white rounded-3xl shadow-sm border border-stone-100 overflow-hidden group hover:shadow-md transition-all cursor-pointer"
                       >
-                        <div className="aspect-video relative overflow-hidden">
+                        <div className="aspect-video relative overflow-hidden bg-stone-100">
                           {entry.image_url ? (
-                            <img src={entry.image_url} alt={entry.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" referrerPolicy="no-referrer" />
+                            <img 
+                              src={entry.image_url} 
+                              alt={entry.title} 
+                              className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" 
+                              referrerPolicy="no-referrer" 
+                            />
                           ) : entry.video_platform === 'youtube' && entry.video_url ? (
                             <img 
                               src={`https://img.youtube.com/vi/${entry.video_url}/maxresdefault.jpg`} 
                               alt={entry.title} 
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                              className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" 
                               referrerPolicy="no-referrer"
                             />
                           ) : (
-                            <div className="w-full h-full bg-stone-100 flex items-center justify-center">
+                            <div className="w-full h-full flex items-center justify-center">
                               {entry.area === 'sports' && <Trophy className="w-12 h-12 text-stone-200" />}
                               {entry.area === 'culture' && <Theater className="w-12 h-12 text-stone-200" />}
                               {entry.area === 'religion' && <Church className="w-12 h-12 text-stone-200" />}
@@ -219,8 +224,8 @@ export default function Community() {
                             </div>
                           )}
                           <div className="absolute top-4 left-4 flex flex-col gap-2">
-                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                              entry.area === 'sports' ? 'bg-ml-monte-verde text-white' : 
+                            <span className={`px-3 py-1 rounded-none text-[8px] font-black uppercase tracking-widest ${
+                              entry.area === 'sports' ? 'bg-black text-white' : 
                               entry.area === 'culture' ? 'bg-ml-quebrada text-ml-monte-verde' : 
                               entry.area === 'religion' ? 'bg-ml-teja text-white' :
                               'bg-ml-monte-verde text-white'
@@ -228,21 +233,21 @@ export default function Community() {
                               {entry.area === 'sports' ? 'Deporte' : entry.area === 'culture' ? 'Cultura' : entry.area === 'religion' ? 'Religión' : 'Turismo'}
                             </span>
                             {entry.area === 'sports' && entry.category && (
-                              <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-white/90 text-ml-monte-verde border border-ml-monte-verde/20 backdrop-blur-sm">
+                              <span className="px-3 py-1 rounded-none text-[8px] font-black uppercase tracking-widest bg-white text-black border border-black/10">
                                 {entry.category}
                               </span>
                             )}
                           </div>
                           {entry.video_url && (
                             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/20">
-                              <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center text-ml-monte-verde shadow-xl">
+                              <div className="w-12 h-12 bg-white rounded-none flex items-center justify-center text-black shadow-2xl">
                                 <Play className="w-6 h-6 fill-current" />
                               </div>
                             </div>
                           )}
                           {entry.creator_name && (
                             <div className="absolute bottom-4 left-4">
-                              <span className="px-2 py-1 rounded-lg text-[8px] font-bold bg-black/40 text-white backdrop-blur-md">
+                              <span className="px-2 py-1 rounded-none text-[8px] font-black bg-black text-white uppercase tracking-tighter">
                                 @{entry.creator_name}
                               </span>
                             </div>
@@ -477,9 +482,9 @@ export default function Community() {
                     />
                   </div>
                 ) : selectedEntry.video_platform === 'tiktok' && selectedEntry.video_url ? (
-                  <div className="w-full aspect-[9/16] max-h-[70vh] mx-auto bg-black flex items-center justify-center">
+                  <div className="w-full aspect-[9/16] max-h-[75vh] mx-auto bg-black flex items-center justify-center">
                     <iframe 
-                      src={`https://www.tiktok.com/embed/v2/${selectedEntry.video_url.split('/video/')[1]?.split('?')[0] || selectedEntry.video_url.split('/').pop()}`}
+                      src={`https://www.tiktok.com/player/v1/${selectedEntry.video_url}?autoplay=1`}
                       className="w-full h-full"
                       allowFullScreen
                       allow="autoplay; encrypted-media"
