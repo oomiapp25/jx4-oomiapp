@@ -20,6 +20,7 @@ import {
   Coffee,
   Gift,
   Sparkles,
+  Landmark,
   Utensils as UtensilsIcon
 } from 'lucide-react';
 
@@ -45,7 +46,9 @@ export const AVAILABLE_ICONS = [
   { id: 'Coffee', icon: Coffee, label: 'Café' },
   { id: 'Gift', icon: Gift, label: 'Regalos' },
   { id: 'arepa', icon: UtensilsIcon, label: 'Comida/Arepa' },
-  { id: 'nail-polish', icon: Sparkles, label: 'Belleza/Uñas' }
+  { id: 'nail-polish', icon: Sparkles, label: 'Belleza/Uñas' },
+  { id: 'tradicion', icon: Landmark, label: 'Identidad y Tradición' },
+  { id: 'electricidad', icon: Zap, label: 'Fallas Eléctricas / Luz' }
 ];
 
 export function isIconUrl(id: string | null | undefined): boolean {

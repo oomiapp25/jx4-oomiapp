@@ -1,5 +1,5 @@
 import { Link, Outlet, useNavigate } from 'react-router-dom';
-import { ShoppingCart, User, Menu, MessageCircle, ArrowUp, Home, Package, Shield, MapPin, Bus, Plus, Briefcase, Wrench, Newspaper, CreditCard, Heart, Trophy, Download, LogOut } from 'lucide-react';
+import { ShoppingCart, User, Menu, MessageCircle, ArrowUp, Home, Package, Shield, MapPin, Bus, Plus, Briefcase, Wrench, Newspaper, CreditCard, Heart, Trophy, Download, LogOut, Zap } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase, Ad, News, TransportLine } from '../lib/supabase';
@@ -232,6 +232,10 @@ export default function MainLayout() {
                 <span className="w-1.5 h-1.5 bg-ml-teja rounded-full" />
                 JX4 Paracotos: Calidad y Servicio
               </span>
+              <Link to="/electricidad" className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 text-amber-300 hover:text-white transition-colors">
+                <Zap className="w-3.5 h-3.5 fill-amber-300 animate-pulse" />
+                Reporte de Fallas Eléctricas
+              </Link>
             </React.Fragment>
           ))}
         </div>
@@ -286,8 +290,17 @@ export default function MainLayout() {
               initial={{ opacity: 0, y: 100, scale: 0.8 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 100, scale: 0.8 }}
-              className="fixed bottom-32 left-1/2 -translate-x-1/2 z-[100] w-[80%] max-w-sm grid grid-cols-2 gap-4"
+              className="fixed bottom-32 left-1/2 -translate-x-1/2 z-[100] w-[85%] max-w-sm grid grid-cols-2 gap-3"
             >
+              <Link to="/electricidad" onClick={() => setIsFabOpen(false)} className="col-span-2 flex items-center gap-4 p-4 glass bg-gradient-to-r from-amber-500/15 via-white/90 to-white/90 rounded-[30px] hover:bg-white transition-all group border border-amber-300/50 shadow-xl">
+                <div className="w-12 h-12 bg-amber-500/20 rounded-2xl flex items-center justify-center text-amber-700 group-hover:bg-amber-500 group-hover:text-stone-900 transition-all shrink-0">
+                  <Zap className="w-6 h-6 fill-amber-500 group-hover:fill-stone-900" />
+                </div>
+                <div className="text-left">
+                  <span className="text-xs font-black uppercase tracking-wider block text-stone-900">⚡ Reporte Eléctrico</span>
+                  <span className="text-[10px] font-bold text-amber-700 uppercase">Circuitos A1, A2, A3</span>
+                </div>
+              </Link>
               <Link to="/empleos" onClick={() => setIsFabOpen(false)} className="flex flex-col items-center gap-2 p-4 glass bg-white/80 rounded-[30px] hover:bg-white transition-all group">
                 <div className="w-12 h-12 bg-ml-monte-verde/10 rounded-2xl flex items-center justify-center text-ml-monte-verde group-hover:bg-ml-monte-verde group-hover:text-white transition-all">
                   <Briefcase className="w-6 h-6" />
@@ -327,6 +340,10 @@ export default function MainLayout() {
           
           <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mb-8">
             <Link to="/" className="text-xs font-bold text-ml-hierro hover:text-ml-monte-verde uppercase tracking-widest transition-colors">Inicio</Link>
+            <Link to="/electricidad" className="text-xs font-bold text-amber-600 hover:text-amber-700 uppercase tracking-widest transition-colors flex items-center gap-1">
+              <Zap className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+              Fallas Eléctricas
+            </Link>
             <Link to="/comunidad" className="text-xs font-bold text-ml-hierro hover:text-ml-monte-verde uppercase tracking-widest transition-colors">Comunidad</Link>
             <Link to="/noticias" className="text-xs font-bold text-ml-hierro hover:text-ml-monte-verde uppercase tracking-widest transition-colors">Noticias</Link>
             <Link to="/mis-pedidos" className="text-xs font-bold text-ml-hierro hover:text-ml-monte-verde uppercase tracking-widest transition-colors">Mis Pedidos</Link>

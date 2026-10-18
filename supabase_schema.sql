@@ -172,3 +172,76 @@ CREATE TABLE settings (
 
 -- Initial Data
 -- INSERT INTO settings (key, value) VALUES ('exchange_rate', '{"rate": "43.31", "euro_rate": "50.17"}');
+
+-- =======================================================
+-- MÓDULO DE FALLAS ELÉCTRICAS Y CIRCUITOS JX4 PARACOTOS
+-- =======================================================
+
+-- 1. Tabla Circuits
+CREATE TABLE IF NOT EXISTS circuits (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  code TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  description TEXT,
+  active BOOLEAN DEFAULT true,
+  status TEXT DEFAULT 'normal', -- normal, falla_parcial, corte_total, mantenimiento, reparando
+  status_updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- 2. Tabla Circuit Sectors
+CREATE TABLE IF NOT EXISTS circuit_sectors (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  circuit_id UUID REFERENCES circuits(id) ON DELETE CASCADE,
+  sector_name TEXT NOT NULL,
+  active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(circuit_id, sector_name)
+);
+
+-- 3. Tabla Electrical Reports
+CREATE TABLE IF NOT EXISTS electrical_reports (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  ticket_code TEXT,
+  sector TEXT NOT NULL,
+  circuit TEXT NOT NULL,
+  circuit_id UUID REFERENCES circuits(id) ON DELETE SET NULL,
+  location_detail TEXT,
+  failure_type TEXT NOT NULL, -- corte_total, bajo_voltaje, cable_caido, transformador, poste, otro
+  description TEXT,
+  reporter_name TEXT,
+  reporter_phone TEXT,
+  status TEXT DEFAULT 'pendiente', -- pendiente, en_revision, cuadrilla_asignada, resuelto
+  admin_notes TEXT,
+  assigned_crew TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  resolved_at TIMESTAMP WITH TIME ZONE
+);
+
+-- Indices
+CREATE INDEX IF NOT EXISTS idx_circuit_sectors_circuit_id ON circuit_sectors(circuit_id);
+CREATE INDEX IF NOT EXISTS idx_circuit_sectors_lower_name ON circuit_sectors(LOWER(sector_name));
+CREATE INDEX IF NOT EXISTS idx_electrical_reports_circuit ON electrical_reports(circuit);
+CREATE INDEX IF NOT EXISTS idx_electrical_reports_status ON electrical_reports(status);
+CREATE INDEX IF NOT EXISTS idx_electrical_reports_created ON electrical_reports(created_at DESC);
+
+-- RLS
+ALTER TABLE circuits ENABLE ROW LEVEL SECURITY;
+ALTER TABLE circuit_sectors ENABLE ROW LEVEL SECURITY;
+ALTER TABLE electrical_reports ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Lectura publica circuits" ON circuits FOR SELECT USING (true);
+CREATE POLICY "Lectura publica circuit_sectors" ON circuit_sectors FOR SELECT USING (true);
+CREATE POLICY "Lectura publica electrical_reports" ON electrical_reports FOR SELECT USING (true);
+CREATE POLICY "Insercion publica electrical_reports" ON electrical_reports FOR INSERT WITH CHECK (true);
+CREATE POLICY "Modificacion admin electrical_reports" ON electrical_reports FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Gestion admin circuits" ON circuits FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Gestion admin circuit_sectors" ON circuit_sectors FOR ALL USING (auth.role() = 'authenticated');
+
+-- Datos Iniciales de Circuitos de Paracotos
+INSERT INTO circuits (code, name, description, active, status) VALUES 
+  ('A1', 'Circuito A1 - Casco Central y Zonas Bajas', 'Alimenta el Casco Central de Paracotos, Plaza Bolívar, La Candelaria y sectores aledaños.', true, 'normal'),
+  ('A2', 'Circuito A2 - Maitana, El Hato y Zonas Altas', 'Cubre Maitana, El Hato (alto), La Suiza, Las Lagunitas y cordillera este.', true, 'normal'),
+  ('A3', 'Circuito A3 - Palo Negro, Los Lirios y Caseríos', 'Alimenta Palo Negro, Los Lirios, Bucarito, San Ramón, El Laurel y vía sur.', true, 'normal')
+ON CONFLICT (code) DO NOTHING;
+

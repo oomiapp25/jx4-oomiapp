@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase, Product, Department } from '../lib/supabase';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ShoppingCart, CreditCard, Truck, ShieldCheck, Ticket, Smartphone, Store, Footprints, Package, Plus, Search, Download, Play, Trophy, Music, Users, ShoppingBag, X, ExternalLink, Church, Palmtree } from 'lucide-react';
+import { ShoppingCart, CreditCard, Truck, ShieldCheck, Ticket, Smartphone, Store, Footprints, Package, Plus, Search, Download, Play, Trophy, Music, Users, ShoppingBag, X, ExternalLink, Church, Palmtree, Zap, Landmark } from 'lucide-react';
 import HeroCarousel from '../components/HeroCarousel';
 import { getIconById } from '../lib/icons';
 import { IconRenderer } from '../components/IconRenderer';
@@ -346,13 +346,18 @@ export default function Home() {
         {/* Identity & Tradition Section */}
         <div className="mt-16">
           <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-2xl md:text-3xl font-black text-ml-monte-verde tracking-tighter uppercase">Identidad y Tradición</h2>
-              <div className="h-1 w-16 bg-ml-teja mt-1 rounded-full" />
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 bg-ml-monte-verde/10 rounded-2xl flex items-center justify-center text-ml-monte-verde border border-ml-monte-verde/20 shadow-sm">
+                <Landmark className="w-6 h-6 sm:w-7 sm:h-7" />
+              </div>
+              <div>
+                <h2 className="text-2xl md:text-3xl font-black text-ml-monte-verde tracking-tighter uppercase">Identidad y Tradición</h2>
+                <div className="h-1 w-16 bg-ml-teja mt-1 rounded-full" />
+              </div>
             </div>
           </div>
           
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 md:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 md:gap-4">
             <Link to="/comunidad?area=sports" className="p-4 md:p-6 glass bg-white/60 rounded-[30px] md:rounded-[35px] flex flex-col items-center gap-3 md:gap-4 hover:bg-ml-monte-verde hover:text-white transition-all group shadow-lg">
               <div className="w-10 h-10 md:w-14 md:h-14 bg-ml-monte-verde/10 rounded-xl md:rounded-2xl flex items-center justify-center text-ml-monte-verde group-hover:bg-white/20 group-hover:text-white transition-all">
                 <Trophy className="w-5 h-5 md:w-7 md:h-7" />
@@ -377,7 +382,13 @@ export default function Home() {
               </div>
               <span className="text-[9px] md:text-xs font-black uppercase tracking-widest text-center">Turismo</span>
             </Link>
-            <Link to="/comunidad" className="p-4 md:p-6 glass bg-white/60 rounded-[30px] md:rounded-[35px] flex flex-col items-center gap-3 md:gap-4 hover:bg-ml-hierro hover:text-white transition-all group shadow-lg col-span-2 sm:col-span-1">
+            <Link to="/electricidad" className="p-4 md:p-6 glass bg-white/60 rounded-[30px] md:rounded-[35px] flex flex-col items-center gap-3 md:gap-4 hover:bg-amber-500 hover:text-stone-900 transition-all group shadow-lg border border-amber-400/20">
+              <div className="w-10 h-10 md:w-14 md:h-14 bg-amber-500/15 rounded-xl md:rounded-2xl flex items-center justify-center text-amber-600 group-hover:bg-white/30 group-hover:text-stone-900 transition-all">
+                <Zap className="w-5 h-5 md:w-7 md:h-7 fill-amber-500 group-hover:fill-stone-900" />
+              </div>
+              <span className="text-[9px] md:text-xs font-black uppercase tracking-widest text-center">Electricidad</span>
+            </Link>
+            <Link to="/comunidad" className="p-4 md:p-6 glass bg-white/60 rounded-[30px] md:rounded-[35px] flex flex-col items-center gap-3 md:gap-4 hover:bg-ml-hierro hover:text-white transition-all group shadow-lg">
               <div className="w-10 h-10 md:w-14 md:h-14 bg-ml-hierro/10 rounded-xl md:rounded-2xl flex items-center justify-center text-ml-hierro group-hover:bg-white/20 group-hover:text-white transition-all">
                 <Users className="w-5 h-5 md:w-7 md:h-7" />
               </div>

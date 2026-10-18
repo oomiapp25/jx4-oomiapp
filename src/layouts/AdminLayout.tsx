@@ -19,7 +19,8 @@ import {
   Menu,
   X,
   Video,
-  Heart
+  Heart,
+  Zap
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { supabase } from '../lib/supabase';
@@ -44,6 +45,7 @@ export default function AdminLayout() {
     { icon: Newspaper, label: 'Noticias', path: '/admin/noticias', roles: ['admin', 'journalist'] },
     { icon: Trophy, label: 'Comunidad', path: '/admin/comunidad', roles: ['admin', 'sports_admin', 'culture_admin'] },
     { icon: Heart, label: 'Ayuda Social', path: '/admin/ayuda-social', roles: ['admin', 'social_admin'] },
+    { icon: Zap, label: 'Electricidad', path: '/admin/electricidad', roles: ['admin', 'electric_admin', 'super_admin'] },
     { icon: Settings, label: 'Configuración', path: '/admin/configuracion', roles: ['admin'] },
   ];
 

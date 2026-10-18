@@ -9,7 +9,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-export type UserRole = 'customer' | 'admin' | 'category_admin' | 'department_admin' | 'transport_admin' | 'social_admin' | 'sports_admin' | 'culture_admin';
+export type UserRole = 'customer' | 'admin' | 'category_admin' | 'department_admin' | 'transport_admin' | 'social_admin' | 'sports_admin' | 'culture_admin' | 'electric_admin' | 'super_admin';
 
 export interface UserProfile {
   id: string;
@@ -211,3 +211,57 @@ export interface CommunitySpace {
   created_at: string;
   active: boolean;
 }
+
+// Módulo de Fallas Eléctricas JX4 Paracotos
+export interface Circuit {
+  id: string;
+  code: string; // 'A1', 'A2', 'A3'
+  name: string;
+  description?: string | null;
+  active: boolean;
+  status?: 'normal' | 'falla_parcial' | 'corte_total' | 'mantenimiento' | 'reparando';
+  status_updated_at?: string | null;
+  created_at?: string;
+}
+
+export interface CircuitSector {
+  id: string;
+  circuit_id: string;
+  sector_name: string;
+  active: boolean;
+  created_at?: string;
+  circuit?: Circuit;
+}
+
+export type FailureType = 
+  | 'corte_total' 
+  | 'bajo_voltaje' 
+  | 'cable_caido' 
+  | 'transformador' 
+  | 'poste' 
+  | 'otro';
+
+export type ReportStatus = 
+  | 'pendiente' 
+  | 'en_revision' 
+  | 'cuadrilla_asignada' 
+  | 'resuelto';
+
+export interface ElectricalReport {
+  id: string;
+  ticket_code?: string;
+  sector: string;
+  circuit: string; // 'A1', 'A2', 'A3'
+  circuit_id?: string | null;
+  location_detail?: string | null;
+  failure_type: FailureType;
+  description?: string | null;
+  reporter_name?: string | null;
+  reporter_phone?: string | null;
+  status: ReportStatus;
+  admin_notes?: string | null;
+  assigned_crew?: string | null;
+  created_at: string;
+  resolved_at?: string | null;
+}
+

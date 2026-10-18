@@ -32,6 +32,7 @@ import Community from './pages/Community';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Catalog from './pages/Catalog';
 import Guide from './pages/Guide';
+import Electricity from './pages/Electricity';
 
 // Admin Pages
 import AdminDashboard from './pages/admin/Dashboard';
@@ -47,6 +48,7 @@ import AdminJobs from './pages/admin/Jobs';
 import AdminServices from './pages/admin/Services';
 import AdminSocial from './pages/admin/SocialManagement';
 import AdminCommunity from './pages/admin/CommunityManagement';
+import AdminElectricity from './pages/admin/ElectricityManagement';
 import AdminSettings from './pages/admin/Settings';
 
 function ScrollToTop() {
@@ -171,6 +173,8 @@ export default function App() {
           <Route path="/privacidad" element={<PrivacyPolicy />} />
           <Route path="/catalogo" element={<Catalog />} />
           <Route path="/guia" element={<Guide />} />
+          <Route path="/electricidad" element={<Electricity />} />
+          <Route path="/fallas-electricas" element={<Navigate to="/electricidad" replace />} />
           
           {/* Protected Customer Routes */}
           <Route path="/checkout" element={<Checkout />} />
@@ -204,6 +208,7 @@ export default function App() {
           <Route path="servicios" element={<AdminServices />} />
           <Route path="ayuda-social" element={<AdminSocial />} />
           <Route path="comunidad" element={<AdminCommunity />} />
+          <Route path="electricidad" element={<AdminElectricity />} />
           <Route path="configuracion" element={<AdminSettings />} />
         </Route>
       </Routes>
